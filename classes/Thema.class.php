@@ -58,11 +58,11 @@ class Thema {
 	function setTitel($s) {
 		$this->titel = trim($s);
 	}
-	
+
 	function setBeschreibung($s) {
 		$this->beschreibung = trim($s);
 	}
-	
+
 	function setUserId($s) {
 		$this->user_id = $s;
 	}
@@ -70,7 +70,7 @@ class Thema {
 	function setVisible($s) {
 		$this->visible = $s;
 	}
-	
+
 	function setThemaId($s) {
 		$this->thema_id = $s;
 	}
@@ -106,7 +106,33 @@ class Thema {
 	function getMkdate() {
 		return $this->mkdatum;
 	}
-	
+
+}
+
+/**
+ * ?!?
+ *
+ */
+class ThemaExt extends Thema
+{
+
+	var $artikel_count;
+
+	function ThemaExt($id=FALSE)
+	{
+		parent::Thema($id);
+		$this->artikel_count = 0;
+	}
+
+	function setArtikelCount($c)
+	{
+		$this->artikel_count = $c;
+	}
+
+	function getArtikelCount()
+	{
+		return $this->artikel_count;
+	}
 }
 
 ?>

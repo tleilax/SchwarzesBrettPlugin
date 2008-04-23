@@ -1,0 +1,5 @@
+pluginclassname=SchwarzesBrettPlugin
+pluginname=SchwarzesBrett
+origin=ZMML
+version=1.0
+dbscheme=schwarzesbrett.sql

@@ -1,0 +1,170 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-11-16 14:27+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: SchwarzesBrettPlugin.class.php:49
+msgid "Schwarzes Brett"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:73
+msgid "SchwarzesBrett"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:87
+msgid "Schwarzes Brett Plugin"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:107 SchwarzesBrettPlugin.class.php:161
+msgid "Titel"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:111 SchwarzesBrettPlugin.class.php:165
+msgid "Beschreibung"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:115
+msgid "Berechtigung"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:125 SchwarzesBrettPlugin.class.php:169
+msgid "Sichtbar"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:157
+msgid "Thema"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:175
+#, c-format
+msgid "Laufzeit bis %s"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:184
+msgid "Hinweise zur Anzeigenerstellung:"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:186
+#, c-format
+msgid ""
+"Eine Anzeige hat z.Z. eine Laufzeit von <B>%d Tagen</B>. Nach Ablauf dieser "
+"Frist wird die Anzeige automatisch nicht mehr angezeigt."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:187
+msgid ""
+"Sobald eine Anzeige nicht mehr aktuell ist (z.B. in dem Fall, dass ein Buch "
+"verkauft oder eine Mitfahrgelegenheit gefunden wurde), sollte die Anzeige "
+"durch den Autor entfernt werden."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:188
+msgid ""
+"Bitte die Anzeigen in die dafr&uuml;r vorgesehenen Themen einstellen. "
+"Falsche thematische Zuordnungen werden entfernt."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:189
+msgid ""
+"Wird ein Gegenstand oder eine Dienstleistung gegen Bezahlung angeboten, "
+"sollte der Betrag genannt werden, um unn&ouml;tige Nachfragen zu vermeiden."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:190
+msgid ""
+"Jede Anzeige, die gegen die Nutzungsordnung verst&ouml;&szlig;t, wird "
+"umgehend entfernt."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:217
+msgid "von"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:218
+msgid "bis"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:281 SchwarzesBrettPlugin.class.php:381
+msgid "nicht sichtbar"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:295
+msgid "Zur Zeit sind keine Anzeigen vorhanden!"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:301
+msgid "Neue Anzeige anlegen"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:365
+msgid "Zur Zeit sind keine Themengebiete vorhanden!"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:383
+msgid "bearbeiten"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:385
+msgid "Soll das Thema mit allen Eintr&auml;gen wirklich gel&ouml;scht werden?"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:385
+msgid "l&ouml;schen"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:461
+msgid "Suche nach Anzeigen:"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:472
+#, c-format
+msgid "Aktuelle Laufzeit: max. %d Tage"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:534
+msgid "Thema wurde gespeichert."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:543
+#, c-format
+msgid "Soll das Thema \"%s\" wirklich gel&ouml;scht werden?<BR>%s %s"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:549
+msgid "Thema wurde gel&ouml;scht."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:560
+msgid "Anzeige wurde gespeichert."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:571
+#, c-format
+msgid "Soll die Anzeige \"%s\" von %s wirklich gel&ouml;scht werden?<BR>%s %s"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:580
+#, c-format
+msgid "Die Anzeige \"%s\" wurde von der Administration geloescht."
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:581
+msgid "Anzeige geloescht!"
+msgstr ""
+
+#: SchwarzesBrettPlugin.class.php:583
+msgid "Anzeige gel&ouml;scht!"
+msgstr ""

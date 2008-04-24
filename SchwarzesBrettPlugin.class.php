@@ -8,7 +8,7 @@
 * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
 * @package 		ZMML_SchwarzesBrettPlugin
 * @copyright	2008 IBIT und ZMML
-* @version 		1.0.1
+* @version 		1.0.2
 */
 
 // +---------------------------------------------------------------------------+
@@ -51,13 +51,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	var $zeit;
 
 	/**
-	 * Enter description here...
-	 *
-	 * @var array
-	 */
-	var $user_agent;
-
-	/**
 	 * Objekt der Templateklasse
 	 *
 	 * @var unknown_type
@@ -71,31 +64,19 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	function __construct()
 	{
 		parent::AbstractStudIPSystemPlugin();
-		$this->setPluginiconname('images/script.png');
 		$this->template_factory = new Flexi_TemplateFactory(dirname(__FILE__).'/templates');
-		//sprachen deaktiviert erstmal bindtextdomain('sb',dirname(__FILE__).'/locale'); //Sprachen?
-		/*
-		if ($this->new_items_since_last_visit())
-			// $this->setPluginiconname('images/script_red.png');
 
-		else
-			// $this->setPluginiconname('images/script.png');
-			$this->setPluginiconname('images/header_pinn1.gif');
-		*/
+		//plugin-icon
+		$this->setPluginiconname('images/script.png');
+		//$this->setPluginiconname('images/header_pinn1.gif'); //für safiredesign
+
 		// Navigationsreiter erzeugen
 		$nav = new PluginNavigation();
 		$nav->setDisplayname(_('Schwarzes Brett'));
 		$this->setNavigation($nav);
 
-		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60; // 30 Tage Laufzeit
-
-		/* wofür ist das?
-		$ua = $_SERVER['HTTP_USER_AGENT'];
-		$this->user_agent = array('PC'=>0, 'PPC'=>0);
-		if (strpos($ua, "PPC") !== false || strpos($ua, "Windows CE") !== false)
-			$this->user_agent['PPC'] = 1;
-		else*/
-			$this->user_agent['PC'] = 1;
+		// Holt die Laufzeit aus der Config. Default: 30Tage
+		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
 	}
 
 	/**
@@ -129,148 +110,180 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	public function getPluginname()
 	{
-		return _('Schwarzes Brett Plugin');
+		return _('SchwarzesBrettPlugin');
 	}
 
-	function edit_artikel_form($thema_id, $artikel_id=FALSE)
+	/**
+	 * Überprüft, ob eine Anzeige bereits vorhanden ist
+	 *
+	 * @param string $titel
+	 * @return boolean
+	 */
+	function is_duplicate($titel)
 	{
-		$a = new Artikel($artikel_id);
-		if (!$artikel_id)
-			$a->setThemaId($thema_id);
-		$t = new Thema($thema_id);
-
-		echo "<CENTER>\n";
-		echo "<FORM NAME=\"add\" METHOD=\"POST\" ACTION=\"".PluginEngine::getLink($this,array())."\">\n";
-		echo "<DIV STYLE=\"text-align:left; width:600px; margin:5px; padding:5px; border-color:red; border-width:thin; border-style:solid;\">\n";
-		echo "  <INPUT TYPE=\"hidden\" NAME=\"modus\" VALUE=\"add_artikel\">\n";
-		echo "  <INPUT TYPE=\"hidden\" NAME=\"open\" VALUE=\"$thema_id\">\n";
-		if ($artikel_id)
-			echo "  <INPUT TYPE=\"hidden\" NAME=\"artikel_id\" VALUE=\"".$a->getArtikelId()."\">\n";
-		echo "  <TABLE BORDER=\"0\" WIDTH=\"590\">\n";
-		echo "    <TR>\n";
-		echo "      <TD><SPAN STYLE=\"font-size:smaller; font-weight:bold;\">".dgettext('sb',"Thema").":</SPAN></TD>\n";
-		echo "      <TD><SPAN STYLE=\"font-size:smaller; font-weight:bold; color:red;\">".htmlReady($t->getTitel())."</SPAN></TD>\n";
-		echo "    </TR>\n";
-		echo "    <TR>\n";
-		echo "      <TD><SPAN STYLE=\"font-size:smaller; font-weight:bold;\">".dgettext('sb',"Titel").":</SPAN></TD>\n";
-		echo "      <TD><INPUT TYPE=\"text\" NAME=\"titel\" VALUE=\"".htmlReady($a->getTitel())."\" MAXLENGTH=\"255\" STYLE=\"width:500px;\"></TD>\n";
-		echo "    </TR>\n";
-		echo "    <TR>\n";
-		echo "      <TD VALIGN=\"TOP\"><SPAN STYLE=\"font-size:smaller; font-weight:bold;\">".dgettext('sb',"Beschreibung").":</SPAN></TD>\n";
-		echo "      <TD><TEXTAREA NAME=\"beschreibung\" STYLE=\"width:500px; height:150px;\">".htmlReady($a->getBeschreibung())."</TEXTAREA></TD>\n";
-		echo "    </TR>\n";
-		echo "    <TR>\n";
-		echo "      <TD VALIGN=\"TOP\"><SPAN STYLE=\"font-size:smaller; font-weight:bold;\">".dgettext('sb',"Sichtbar").":</SPAN></TD>\n";
-		echo "      <TD><INPUT TYPE=\"checkbox\" NAME=\"visible\" VALUE=\"1\" ".($a->getVisible()?"CHECKED":"")."></TD>\n";
-		echo "    </TR>\n";
-		echo "    <TR>\n";
-		echo "      <TD COLSPAN=\"2\" ALIGN=\"CENTER\">\n";
-		echo "        <DIV STYLE=\"width:100%; color:red; font-size:smaller; margin-bottom:10px;\">".sprintf(dgettext('sb',"Laufzeit bis %s"),date("d.m.Y",($a->getMkdate()?$a->getMkdate():time())+$this->zeit))."</DIV>";
-		echo "        <INPUT TYPE=\"image\" ".makeButton("speichern","src")." />\n";
-		echo "        <A HREF=\"".PluginEngine::getLink($this,array("open"=>$thema_id))."\"><IMG ".makeButton("abbrechen","src")." BORDER=\"0\"/></A>\n";
-		echo "    </TD>\n";
-		echo "    </TR>\n";
-		echo "  </TABLE>\n";
-		echo "</DIV>\n";
-		echo "</FORM>\n";
-		echo "<DIV STYLE=\"text-align:left; width:600px; margin:5px; padding:5px; font-size:smaller;\">\n";
-		echo "  <SPAN STYLE=\"font-weight:bold;\">".dgettext('sb',"Hinweise zur Anzeigenerstellung:")."</SPAN>\n";
-		echo "    <UL>\n";
-		echo "      <LI>".dgettext('sb',"Jede Anzeige <B>muss</B> einen <B>universitären Bezug</B> haben, alle anderen Anzeigen werden entfernt.");
-		echo "      <LI>".sprintf(dgettext('sb',"Eine Anzeige hat z.Z. eine Laufzeit von <B>%d Tagen</B>. Nach Ablauf dieser Frist wird die Anzeige automatisch nicht mehr angezeigt."),($this->zeit / (24 * 60 * 60)))."\n";
-		echo "      <LI>".dgettext('sb',"Sobald eine Anzeige nicht mehr aktuell ist (z.B. in dem Fall, dass ein Buch verkauft oder eine Mitfahrgelegenheit gefunden wurde), sollte die Anzeige durch den Autor entfernt werden.")."\n";
-		echo "      <LI>".dgettext('sb',"Bitte die Anzeigen in die dafrür vorgesehenen Themen einstellen. Falsche thematische Zuordnungen werden entfernt.")."\n";
-		echo "      <LI>".dgettext('sb',"Wird ein Gegenstand oder eine Dienstleistung gegen Bezahlung angeboten, sollte der Betrag genannt werden, um unnötige Nachfragen zu vermeiden.")."\n";
-		echo "      <LI>".dgettext('sb',"Jede Anzeige, die gegen die Nutzungsordnung verstö&szlig;t, wird umgehend entfernt.");
-		echo "      <LI>".dgettext('sb',"Kommerzielle Anzeigen sind nicht erwünscht und werden entfernt.");
-		echo "    </UL>\n";
-		echo "</DIV>\n";
-		echo "</CENTER>\n";
+		$db = new DB_Seminar();
+		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE user_id='%s' AND titel='%s' AND mkdate>(UNIX_TIMESTAMP()-60*60*24)",$GLOBALS['auth']->auth['uid'],$titel);
+		if ($db->num_rows()>0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
-	function get_artikel($thema_id) {
+	/**
+	 * Gibt alle Anzeigen zu einem Thema zurück
+	 *
+	 * @param string $thema_id
+	 * @return array Anzeigen
+	 */
+	function get_artikel($thema_id)
+	{
 		$ret = array();
 		$db = new DB_Seminar();
 		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s' AND UNIX_TIMESTAMP() < (mkdate + %d) AND (visible=1 OR (visible=0 AND (user_id='%s' OR 'root'='%s'))) ORDER BY mkdate DESC",$thema_id,$this->zeit,$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
-		while ($db->next_record()) {
+		while ($db->next_record())
+		{
 			$a = new Artikel($db->f("artikel_id"));
 			array_push($ret, $a);
 		}
 		return $ret;
 	}
 
-	function is_duplicate($titel) {
-		$db = new DB_Seminar();
-		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE user_id='%s' AND titel='%s' AND mkdate>(UNIX_TIMESTAMP()-60*60*24)",$GLOBALS['auth']->auth['uid'],$titel);
-		if ($db->num_rows()>0)
-			return TRUE;
-		else
-			return FALSE;
-	}
-
-	function get_artikel_count_visible($thema_id) {
+	/**
+	 * Enter description here...
+	 *
+	 * @param unknown_type $thema_id
+	 * @return unknown
+	 */
+	function get_artikel_count_visible($thema_id)
+	{
 		$db = new DB_Seminar();
 		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s' AND UNIX_TIMESTAMP() < (mkdate + %d) AND (visible=1 OR (visible=0 AND (user_id='%s' OR 'root'='%s'))) ORDER BY mkdate DESC",$thema_id,$this->zeit,$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
 		return $db->num_rows();
 	}
 
-	function show_artikel_body($a, $t) {
-		$a_open = trim($_REQUEST['a_open']);
-		echo "  <DIV STYLE=\"clear:both;\"></DIV>\n";
-		echo "  <DIV ID=\"content".$a->getArtikelId()."\" STYLE=\"display:".($a_open==$a->getArtikelId()?"block":"none").";\">\n";
-		echo "    <DIV STYLE=\"float:left; font-size:smaller; padding-bottom:10px; padding-top:10px;\">".dgettext('sb',"von")." <A HREF=\"about.php?username=".get_username($a->getUserId())."\">".get_fullname($a->getUserId())."</A></DIV>";
-		echo "    <DIV STYLE=\"float:right; font-size:smaller; width:20%; max-width:20%; padding-top:5px; color:red;\">".dgettext('sb',"bis")." ".date("d.m.Y",$a->getMkdate()+$this->zeit)."</DIV>";
-		echo "    <DIV STYLE=\"clear:both;\"></DIV>\n";
-		echo "    <DIV>".formatReady($a->getBeschreibung())."</DIV>\n";
-		echo "    <DIV STYLE=\"text-align:center; margin;10px; padding:10px;\">\n";
-		if ($a->getUserId() != $GLOBALS['auth']->auth['uid'])
-			echo "      <A HREF=\"sms_send.php?rec_uname=".get_username($a->getUserId())."&messagesubject=".rawurlencode($a->getTitel())."&message=".rawurlencode('[quote] '.$a->getBeschreibung().' [/quote]')."\">".makeButton("antworten","img")."</A>\n";
-		if ($a->getUserId() == $GLOBALS['auth']->auth['uid'] || $GLOBALS['perm']->have_perm("root")) {
-			echo "      <A HREF=\"".PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form", "thema_id"=>$t->getThemaId(), "artikel_id"=>$a->getArtikelId()))."\">".makeButton("bearbeiten","img")."</A>\n";
-			echo "      <A HREF=\"".PluginEngine::getLink($this,array("modus"=>"delete_artikel", "thema_id"=>$t->getThemaId(), "artikel_id"=>$a->getArtikelId()))."\">".makeButton("loeschen","img")."</A>\n";
-		}
-		echo "    </DIV>\n";
-		echo "  </DIV>\n";
+	/**
+	 * Enter description here...
+	 *
+	 * @param unknown_type $artikel_id
+	 * @return unknown
+	 */
+	function get_artikel_lookups($artikel_id)
+	{
+		$db = new DB_Seminar();
+		$db->queryf("SELECT * FROM sb_visits WHERE type='artikel' AND object_id='%s'",$artikel_id);
+		return $db->num_rows();
 	}
 
 	/**
-	 * Zeigt eine Anzeige an
+	 * Gibt eine Liste aller Themen aus der Datenbank zurück
 	 *
-	 * @param Object $a eine Anzeige
+	 * @return array Liste aller Themen
 	 */
-	function show_artikel($a)
+	private function get_themen()
 	{
-
-		$a_open = trim($_REQUEST['a_open']);
-		$t = new Thema($a->getThemaId());
-
-		$pfeil = ($this->has_visited($a->getArtikelId()) ? "forumgrau" : "forumrot");
-		$pfeil_runter = ($this->has_visited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt");
-
-		if ($this->user_agent['PC']) {
-?>
-<script type="text/javascript" language="javascript">
-show_content['<?=$a->getArtikelId()?>'] = false;
-</script>
-<?
+		$ret = array();
+		$db = new DB_Seminar();
+		$db->queryf("SELECT t.*, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR (t.visible=0 AND (t.user_id='%s' OR 'root'='%s')) GROUP BY t.thema_id ORDER BY count_artikel DESC",$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
+		while ($db->next_record())
+		{
+			$t = new ThemaExt($db->f("thema_id"));
+			$t->setArtikelCount($db->f("count_artikel"));
+			array_push($ret, $t);
 		}
+		return $ret;
+	}
 
-		echo "<DIV STYLE=\"font-size:smaller; padding-left:5px;\">\n";
-		echo "  <DIV>\n";
-		echo "    <DIV STYLE=\"float:left; width:80%; max-width:80%;\">\n";
-		echo "      <A ID=\"a".$a->getArtikelId()."\" STYLE=\"font-weight:normal;\" \n";
-		echo "        HREF=\"".PluginEngine::getLink($this,array("a_open"=>($a_open==$a->getArtikelId()?"":$a->getArtikelId())))."\" ";
-		if ($this->user_agent['PC']) echo "        onClick=\"f('".$a->getArtikelId()."','".$pfeil."','".$pfeil_runter."'); return false;\"";
-		echo ">\n";
-		echo "      <IMG ID=\"indikator".$a->getArtikelId()."\" SRC=\"".$GLOBALS['ASSETS_URL']."/images/".($a_open==$a->getArtikelId()?$pfeil_runter:$pfeil).".gif\" BORDER=\"0\">\n";
-		echo htmlReady($a->getTitel())."</A> <SPAN STYLE=\"font-size:smaller;\">[".$this->get_artikel_lookups($a->getArtikelId())."]</SPAN>\n";
-		if ($a->getVisible() == 0) echo "<IMG SRC=\"".$this->getPluginpath()."/images/exclamation.png\" ALT=\"".dgettext('sb',"nicht sichtbar")."\" TITLE=\"".dgettext('sb',"nicht sichtbar")."\">\n";
-		echo "    </DIV>\n";
-		echo "    <DIV STYLE=\"float:right; font-size:smaller; width:18%; max-width:18%; padding-top:5px;\">".date("d.m.Y",$a->getMkdate())."</DIV>\n";
-		echo "  </DIV>\n";
-		if ($this->user_agent['PC'] || trim($_REQUEST['a_open'])==$a->getArtikelId())
-			$this->show_artikel_body($a, $t, "none");
-		echo "</DIV>\n";
+	/**
+	 * Gibt die Benutzerrechte eines Themas zurück
+	 *
+	 * @param string $thema_id
+	 * @return string $permission
+	 */
+	private function get_thema_perm($thema_id)
+	{
+		$db = new DB_Seminar();
+		$db->queryf("SELECT perm FROM sb_themen WHERE thema_id='%s'",$thema_id);
+		$db->next_record();
+		return $db->f("perm");
+	}
+
+	/**
+	 * Gibt die Anzahl aller Anzeigen zu einem Thema zurück
+	 *
+	 * @param string $thema_id
+	 * @return int Anzahl aller Anzeigen zu einem Thema
+	 */
+	function get_artikel_count($thema_id)
+	{
+		$db = new DB_Seminar();
+		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s'",$thema_id);
+		return $db->num_rows();
+	}
+
+	/**
+	 * Enter description here...
+	 *
+	 * @param unknown_type $obj_id
+	 * @param unknown_type $type
+	 */
+	function visit($obj_id, $type)
+	{
+		$db = new DB_Seminar();
+		$db->queryf("REPLACE INTO sb_visits SET object_id='%s', user_id='%s', type='%s', last_visitdate=UNIX_TIMESTAMP()",$obj_id,$GLOBALS['auth']->auth['uid'],$type);
+	}
+
+	/**
+	 * Enter description here...
+	 *
+	 * @param string $obj_id
+	 * @return datetime oder boolean
+	 */
+	function has_visited($obj_id)
+	{
+		$db = new DB_Seminar();
+		$db->queryf("SELECT last_visitdate FROM sb_visits WHERE object_id='%s' AND user_id='%s'",$obj_id,$GLOBALS['auth']->auth['uid']);
+		if ($db->next_record())
+		{
+			return $db->f("last_visitdate");
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Gibt die Anzahl aller Anzeigen zurück
+	 *
+	 * @return int Anzahl aller Anzeigen
+	 */
+	function num_all_postings()
+	{
+		$db = new DB_Seminar();
+		$db->query("SELECT * FROM sb_artikel");
+		return $db->num_rows();
+	}
+
+	/**
+	 * Enter description here...
+	 *
+	 * @return unknown
+	 */
+	function new_items_since_last_visit()
+	{
+		$db = new DB_Seminar();
+		$db->queryf("SELECT last_visitdate FROM sb_visits WHERE user_id='%s' AND object_id='root'",$GLOBALS['auth']->auth['uid']);
+		if ($db->next_record())
+		{
+			$lv = $db->f("last_visitdate");
+			$db->queryf("SELECT a.* FROM sb_artikel a, sb_themen t WHERE a.visible=1 AND t.thema_id=a.thema_id AND t.visible=1 AND a.mkdate>%d AND a.user_id!='%s' AND NOT EXISTS (SELECT object_id FROM sb_visits WHERE object_id=a.artikel_id AND type='artikel' AND user_id='%s')",$lv,$GLOBALS['auth']->auth['uid'],$GLOBALS['auth']->auth['uid']);
+			return $db->num_rows();
+		}
+		return $this->num_all_postings();
 	}
 
 	/**
@@ -311,51 +324,87 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 		<?
 	}
 
-	function list_artikel($thema_id) {
-		$a_open = trim($_REQUEST['a_open']);
-		$t = new Thema($thema_id);
-		$artikel = $this->get_artikel($thema_id);
-		if (count($artikel) == 0)
-			echo "<DIV STYLE=\"font-size:smaller; margin-bottom:10px; padding-left:5px;\">".dgettext('sb',"Zur Zeit sind keine Anzeigen vorhanden!")."</DIV>\n";
-		else
-			foreach ($artikel as $a) {
-				$this->show_artikel($a);
-			}
-		if ($GLOBALS['perm']->have_perm($t->getPerm()))
-			echo "<DIV STYLE=\"clear:both;\"></DIV><DIV STYLE=\"margin-top:10px; text-align:center;\"><A STYLE=\"font-size:smaller;\" HREF=\"".PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form", "thema_id"=>$thema_id))."\">".dgettext('sb',"Neue Anzeige anlegen")."</A></DIV>\n";
-
-	}
-
-	function get_artikel_lookups($artikel_id) {
-		$db = new DB_Seminar();
-		$db->queryf("SELECT * FROM sb_visits WHERE type='artikel' AND object_id='%s'",$artikel_id);
-		return $db->num_rows();
-	}
-
 	/**
-	 * Gibt eine Liste aller Themen aus der Datenbank zurück
+	 * Führt die Suche nach Anzeigen durch und zeigt die Ergebnisse an.
 	 *
-	 * @return array Liste aller Themen
+	 * @param String $search_text Suchwort
 	 */
-	private function get_themen()
+	private function search($search_text)
 	{
-		$ret = array();
-		$db = new DB_Seminar();
-		$db->queryf("SELECT t.*, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR (t.visible=0 AND (t.user_id='%s' OR 'root'='%s')) GROUP BY t.thema_id ORDER BY count_artikel DESC",$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
-		while ($db->next_record())
+		//Benutzereingaben abfangen (Wörter kürzer als 3 Zeichen)
+		if(empty($search_text) || strlen($search_text) < 4)
 		{
-			$t = new ThemaExt($db->f("thema_id"));
-			$t->setArtikelCount($db->f("count_artikel"));
-			array_push($ret, $t);
+			StudIPTemplateEngine::showErrorMessage("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
+			$this->show_themen();
+			die;
 		}
-		return $ret;
+
+		//Datenbankabfrage
+		$db = new DB_Seminar();
+		$sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel AS a, sb_themen AS t WHERE
+				t.thema_id=a.thema_id AND (UPPER(a.titel) LIKE '%s' OR UPPER(a.beschreibung) LIKE '%s') AND UNIX_TIMESTAMP() < (a.mkdate + %d)
+				AND (a.visible=1 OR (a.visible=0 AND (a.user_id='%s' OR 'root'='%s'))) ORDER BY t.titel, a.titel
+			","%".strtoupper($search_text)."%","%".strtoupper($search_text)."%",$this->zeit,$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
+		$db->query($sql);
+
+		// keine Ergebnisse vorhanden
+		if($db->num_rows()==0)
+		{
+			StudIPTemplateEngine::showErrorMessage("Es wurden keine Ergebnisse gefunden. Bitte versuchen Sie es mit einem anderen Wort erneut.");
+			$this->show_themen();
+		}
+		//Ergebnisse anzeigen
+		else
+		{
+			$a_open = trim($_REQUEST['a_open']);
+
+			$pfeil = ($this->has_visited($a->getArtikelId()) ? "forumgrau" : "forumrot");
+			$pfeil_runter = ($this->has_visited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt");
+
+			$results = array();
+			$thema = array();
+			while ($db->next_record())
+			{
+				$a = new Artikel($db->f("artikel_id"));
+				if(empty($thema['thema_id']))
+				{
+					$thema['thema_id'] = $db->f("thema_id");
+					$thema['thema_titel'] = htmlReady($db->f("t_titel"));
+					$thema['artikel'] = array();
+
+				}
+				elseif($db->f("thema_id") != $thema['thema_id'])
+				{
+					array_push($results, $thema);
+					unset($thema);
+					$thema['thema_id'] = $db->f("thema_id");
+					$thema['thema_titel'] = htmlReady($db->f("t_titel"));
+					$thema['artikel'] = array();
+				}
+				else
+				{
+
+				}
+				array_push($thema['artikel'], $a);
+			}
+			array_push($results, $thema);
+
+			//Ausgabe erzeugen
+			$this->print_js_opener();
+			$template = $this->template_factory->open('search_results');
+			$template->set_attribute('zeit', $this->zeit);
+			$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
+			$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
+			$template->set_attribute('results', $results);
+			echo $template->render();
+		}
 	}
 
 	/**
 	 * Zeigt alle Themen und Anzeigen an
 	 *
 	 */
-	private function list_themen()
+	private function show_themen()
 	{
 		$open = trim($_REQUEST['open']);
 		$a_open = trim($_REQUEST['a_open']);
@@ -363,7 +412,10 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 		$themen = $this->get_themen();
 
 		$this->print_js_opener();
-		$template = $this->template_factory->open('list_themen');
+		$template = $this->template_factory->open('show_themen');
+		$template->set_attribute('zeit', $this->zeit);
+		$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
+		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
 		//Keine themen vorhanden
 		if (count($themen) == 0)
 		{
@@ -424,7 +476,22 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 					echo "    </DIV>\n";
 					if ($t->getBeschreibung())
 						echo "  <DIV STYLE=\"font-size:x-small;\">".htmlReady($t->getBeschreibung())."</DIV>\n";
-					$this->list_artikel($t->getThemaId());
+					$artikel = $this->get_artikel($t->getThemaId());
+					if (count($artikel) == 0)
+					{
+						echo "<DIV STYLE=\"font-size:smaller; margin-bottom:10px; padding-left:5px;\">".dgettext('sb',"Zur Zeit sind keine Anzeigen vorhanden!")."</DIV>\n";
+					}
+					else
+					{
+						foreach ($artikel as $a)
+						{
+							$this->show_artikel($a);
+						}
+					}
+					if ($GLOBALS['perm']->have_perm($t->getPerm()))
+					{
+						echo "<DIV STYLE=\"clear:both;\"></DIV><DIV STYLE=\"margin-top:10px; text-align:center;\"><A STYLE=\"font-size:smaller;\" HREF=\"".PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form", "thema_id"=>$thema_id))."\">".dgettext('sb',"Neue Anzeige anlegen")."</A></DIV>\n";
+					}
 					echo "</DIV>\n";
 				}
 				echo "  </TD>\n";
@@ -442,141 +509,59 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 	}
 
 	/**
-	 * Gibt die Benutzerrechte eines Themas zurück
+	 * Zeigt eine Anzeige an
 	 *
-	 * @param string $thema_id
-	 * @return string $permission
+	 * @param Object $a eine Anzeige
 	 */
-	private function get_thema_perm($thema_id)
+	function show_artikel($a)
 	{
-		$db = new DB_Seminar();
-		$db->queryf("SELECT perm FROM sb_themen WHERE thema_id='%s'",$thema_id);
-		$db->next_record();
-		return $db->f("perm");
-	}
 
-	function get_artikel_count($thema_id) {
-		$db = new DB_Seminar();
-		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s'",$thema_id);
-		return $db->num_rows();
-	}
+		$a_open = trim($_REQUEST['a_open']);
+		$t = new Thema($a->getThemaId());
 
-	function visit($obj_id, $type) {
-		$db = new DB_Seminar();
-		$db->queryf("REPLACE INTO sb_visits SET object_id='%s', user_id='%s', type='%s', last_visitdate=UNIX_TIMESTAMP()",$obj_id,$GLOBALS['auth']->auth['uid'],$type);
-	}
+		$pfeil = ($this->has_visited($a->getArtikelId()) ? "forumgrau" : "forumrot");
+		$pfeil_runter = ($this->has_visited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt");
 
-	function has_visited($obj_id) {
-		$db = new DB_Seminar();
-		$db->queryf("SELECT last_visitdate FROM sb_visits WHERE object_id='%s' AND user_id='%s'",$obj_id,$GLOBALS['auth']->auth['uid']);
-		if ($db->next_record())
-			return $db->f("last_visitdate");
-		else
-			return FALSE;
-	}
+?>
+<script type="text/javascript" language="javascript">
+show_content['<?=$a->getArtikelId()?>'] = false;
+</script>
+<?
 
-	function num_all_postings() {
-		$db = new DB_Seminar();
-		$db->query("SELECT * FROM sb_artikel");
-		return $db->num_rows();
-	}
 
-	function new_items_since_last_visit() {
-		$db = new DB_Seminar();
-		$db->queryf("SELECT last_visitdate FROM sb_visits WHERE user_id='%s' AND object_id='root'",$GLOBALS['auth']->auth['uid']);
-		if ($db->next_record()) {
-			$lv = $db->f("last_visitdate");
-			$db->queryf("SELECT a.* FROM sb_artikel a, sb_themen t WHERE a.visible=1 AND t.thema_id=a.thema_id AND t.visible=1 AND a.mkdate>%d AND a.user_id!='%s' AND NOT EXISTS (SELECT object_id FROM sb_visits WHERE object_id=a.artikel_id AND type='artikel' AND user_id='%s')",$lv,$GLOBALS['auth']->auth['uid'],$GLOBALS['auth']->auth['uid']);
-			return $db->num_rows();
-		}
-		return $this->num_all_postings();;
-	}
-
-	/**
-	 * Zeigt das Formular an, mit dem man nach Anzeigen suchen kann.
-	 *
-	 */
-	private function show_search_form()
-	{
-		$template = $this->template_factory->open('search_form');
-		$template->set_attribute('zeit', $this->zeit);
-		$template->set_attribute('link', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
-		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
-		echo $template->render();
-	}
-
-	/**
-	 * Führt die Suche nach Anzeigen durch und zeigt die Ergebnisse an.
-	 *
-	 * @param String $search_text Suchwort
-	 */
-	private function do_search($search_text)
-	{
-		//Benutzereingaben abfangen
-		if(empty($search_text) || strlen($search_text) < 4)
+		echo "<DIV STYLE=\"font-size:smaller; padding-left:5px;\">\n";
+		echo "  <DIV>\n";
+		echo "    <DIV STYLE=\"float:left; width:80%; max-width:80%;\">\n";
+		echo "      <A ID=\"a".$a->getArtikelId()."\" STYLE=\"font-weight:normal;\" \n";
+		echo "        HREF=\"".PluginEngine::getLink($this,array("a_open"=>($a_open==$a->getArtikelId()?"":$a->getArtikelId())))."\" ";
+		if ($this->user_agent['PC']) echo "        onClick=\"f('".$a->getArtikelId()."','".$pfeil."','".$pfeil_runter."'); return false;\"";
+		echo ">\n";
+		echo "      <IMG ID=\"indikator".$a->getArtikelId()."\" SRC=\"".$GLOBALS['ASSETS_URL']."/images/".($a_open==$a->getArtikelId()?$pfeil_runter:$pfeil).".gif\" BORDER=\"0\">\n";
+		echo htmlReady($a->getTitel())."</A> <SPAN STYLE=\"font-size:smaller;\">[".$this->get_artikel_lookups($a->getArtikelId())."]</SPAN>\n";
+		if ($a->getVisible() == 0) echo "<IMG SRC=\"".$this->getPluginpath()."/images/exclamation.png\" ALT=\"".dgettext('sb',"nicht sichtbar")."\" TITLE=\"".dgettext('sb',"nicht sichtbar")."\">\n";
+		echo "    </DIV>\n";
+		echo "    <DIV STYLE=\"float:right; font-size:smaller; width:18%; max-width:18%; padding-top:5px;\">".date("d.m.Y",$a->getMkdate())."</DIV>\n";
+		echo "  </DIV>\n";
+		if ($this->user_agent['PC'] || trim($_REQUEST['a_open'])==$a->getArtikelId())
 		{
-			StudIPTemplateEngine::showErrorMessage("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
-			$this->show_search_form();
-			$this->list_themen();
-			die;
-		}
-
-		//Datenbankabfrage
-		$db = new DB_Seminar();
-		// suche nur nach titeln, werweitern, das auch nach beschreibung gesucht wird...
-		$sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel a, sb_themen t WHERE
-				t.thema_id=a.thema_id AND UPPER(a.titel) LIKE '%s' AND UNIX_TIMESTAMP() < (a.mkdate + %d)
-				AND (a.visible=1 OR (a.visible=0 AND (a.user_id='%s' OR 'root'='%s'))) ORDER BY t.titel, a.titel
-			","%".strtoupper($search_text)."%",$this->zeit,$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
-		//echo $sql;
-		$db->query($sql);
-		$thema_id = ""; //?
-
-		// keine Ergebnisse vorhanden
-		if($db->num_rows()==0)
-		{
-			StudIPTemplateEngine::showErrorMessage("Es wurden keine Ergebnisse gefunden. Bitte versuchen Sie es mit einem anderen Wort erneut.");
-			$this->show_search_form();
-			$this->list_themen();
-		}
-		//Ergebnisse anzeigen
-		else
-		{
-			$this->print_js_opener();
-			$this->show_search_form();
-
-			//TODO: überarbeiten...
-			echo "<DIV STYLE=\"width:33%;\">\n";
-			while ($db->next_record()) {
-				$a = new Artikel($db->f("artikel_id"));
-				if ($thema_id != $db->f("thema_id") && $thema_id != "")
-					echo "</DIV>\n";
-				if ($thema_id != $db->f("thema_id")) {
-					echo "<DIV STYLE=\"display:block; width:94%; max-width:94%; min-width:94%; background-color:#FBFBF5; border:1px solid #808080; padding:10px 10px 10px 10px; text-align:left; margin:5px; float:left;\">\n";
-					echo "    <DIV STYLE=\"float:left; font-weight:bold;\">".htmlReady($db->f("t_titel"))."</DIV>\n";
-					echo "  <DIV STYLE=\"clear:both; display:block;\"></DIV>\n";
-					echo "  <DIV STYLE=\"border-bottom:1px solid #808080; margin-bottom:10px;\">\n";
-					echo "  </DIV>\n";
-					$thema_id = $db->f("thema_id");
-				}
-				$this->show_artikel($a);
+			echo "  <DIV STYLE=\"clear:both;\"></DIV>\n";
+			echo "  <DIV ID=\"content".$a->getArtikelId()."\" STYLE=\"display:".($a_open==$a->getArtikelId()?"block":"none").";\">\n";
+			echo "    <DIV STYLE=\"float:left; font-size:smaller; padding-bottom:10px; padding-top:10px;\">".dgettext('sb',"von")." <A HREF=\"about.php?username=".get_username($a->getUserId())."\">".get_fullname($a->getUserId())."</A></DIV>";
+			echo "    <DIV STYLE=\"float:right; font-size:smaller; width:20%; max-width:20%; padding-top:5px; color:red;\">".dgettext('sb',"bis")." ".date("d.m.Y",$a->getMkdate()+$this->zeit)."</DIV>";
+			echo "    <DIV STYLE=\"clear:both;\"></DIV>\n";
+			echo "    <DIV>".formatReady($a->getBeschreibung())."</DIV>\n";
+			echo "    <DIV STYLE=\"text-align:center; margin;10px; padding:10px;\">\n";
+			if ($a->getUserId() != $GLOBALS['auth']->auth['uid'])
+				echo "      <A HREF=\"sms_send.php?rec_uname=".get_username($a->getUserId())."&messagesubject=".rawurlencode($a->getTitel())."&message=".rawurlencode('[quote] '.$a->getBeschreibung().' [/quote]')."\">".makeButton("antworten","img")."</A>\n";
+			if ($a->getUserId() == $GLOBALS['auth']->auth['uid'] || $GLOBALS['perm']->have_perm("root")) {
+				echo "      <A HREF=\"".PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form", "thema_id"=>$t->getThemaId(), "artikel_id"=>$a->getArtikelId()))."\">".makeButton("bearbeiten","img")."</A>\n";
+				echo "      <A HREF=\"".PluginEngine::getLink($this,array("modus"=>"delete_artikel", "thema_id"=>$t->getThemaId(), "artikel_id"=>$a->getArtikelId()))."\">".makeButton("loeschen","img")."</A>\n";
 			}
-			echo "</DIV>\n";
+			echo "    </DIV>\n";
+			echo "  </DIV>\n";
 		}
-	}
 
-	/**
-	 * Zeigt die Infobox an
-	 * //TODO: warum nciht gleich die StudIPTemplate Funktion benutzen?
-	 * -> also entfernen!!!
-	 *
-	 * @param unknown_type $txt
-	 */
-	function parse_msg($txt)
-	{
-		echo "<TABLE BORDER=\"0\">\n";
-		parse_msg($txt);
-		echo "</TABLE>\n";
+		echo "</DIV>\n";
 	}
 
 	/**
@@ -591,9 +576,6 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 		if ($a_open) $this->visit($a_open,"artikel");
 
 		$this->visit("root","thema");
-
-		#$this->get_scriptaculous(); //bereits in studip drin...
-
 		$modus = trim($_REQUEST['modus']);
 
 		if ($modus)
@@ -616,7 +598,7 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 				// Thema anlegen oder bearbeiten
 				if ($modus == "show_add_thema_form")
 				{
-					$t = new Thema($thema_id);
+					$t = new Thema($_REQUEST['thema_id']);
 					$template = $this->template_factory->open('edit_thema');
 					$template->set_attribute('t', $t);
 					$template->set_attribute('link', PluginEngine::getLink($this,array()));
@@ -640,6 +622,7 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 					unset($modus);
 				}
 			}
+			//Anzeige speichern
 			if ($modus == "add_artikel" && $GLOBALS['perm']->have_perm($this->get_thema_perm($open)))
 			{
 				if ((!$this->is_duplicate($_REQUEST['titel']) && !isset($_REQUEST['artikel_id'])) || isset($_REQUEST['artikel_id']))
@@ -650,23 +633,42 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 					$a->setThemaId($open);
 					$a->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
 					$a->save();
-					$this->parse_msg("msg§".dgettext('sb',"Anzeige wurde gespeichert."));
+					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gespeichert.");
 				}
 				unset($modus);
 			}
+			//Anzeige erstellen/bearbeiten
 			if ($modus == "show_add_artikel_form")
 			{
-				$this->edit_artikel_form($_REQUEST['thema_id'], $_REQUEST['artikel_id']);
+				$a = new Artikel($_REQUEST['artikel_id']);
+				if (!$artikel_id)
+				{
+					$a->setThemaId($thema_id);
+				}
+				$t = new Thema($_REQUEST['thema_id']);
+				$template = $this->template_factory->open('edit_artikel');
+				$template->set_attribute('t', $t);
+				$template->set_attribute('a', $a);
+				$template->set_attribute('zeit', $this->zeit);
+				$template->set_attribute('link', PluginEngine::getLink($this,array()));
+				$template->set_attribute('link_thema', PluginEngine::getLink($this,array("open"=>$thema_id)));
+				echo $template->render();
+
 			}
+			//Anzeige löschen Sicherheitsabfrage
 			if ($modus == "delete_artikel")
 			{
 				$a = new Artikel($_REQUEST['artikel_id']);
 				if ($a->getUserId() == $GLOBALS['auth']->auth['uid'] || $GLOBALS['perm']->have_perm("root"))
 				{
-					$autor_name = "<A HREF=\"about.php?username=".get_username($a->getUserId())."\">".get_fullname($a->getUserId())."</A>";
-					$yes = "<A HREF=\"".PluginEngine::getLink($this,array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId()))."\">".makeButton("ja","img")."</A>";
-					$no = "<A HREF=\"".PluginEngine::getLink($this,array())."\">".makeButton("nein","img")."</A>";
-					$this->parse_msg(sprintf("info§".dgettext('sb',"Soll die Anzeige \"%s\" von %s wirklich gelöscht werden?<BR>%s %s"),$a->getTitel(), $autor_name, $yes, $no));
+					$autor_name = '<a href="about.php?username='.get_username($a->getUserId()).'">'.get_fullname($a->getUserId()).'</a>';
+					$yes = '<a href="'.PluginEngine::getLink($this,array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId())).'">'.makeButton("ja","img").'</a>';
+					$no = '<a href="'.PluginEngine::getLink($this,array()).'">'.makeButton("nein","img").'</a>';
+					StudIPTemplateEngine::showInfoMessage(sprintf("Soll die Anzeige <b>\"%s\"</b> von %s wirklich gelöscht werden?<br/>%s %s",$a->getTitel(), $autor_name, $yes, $no));
+				}
+				else
+				{
+					StudIPTemplateEngine::showErrorMessage("Sie haben nicht die erforderlichen Rechte diese Anzeige zu löschen.");
 				}
 				unset($modus);
 			}
@@ -681,22 +683,21 @@ show_content['<?=$a->getArtikelId()?>'] = false;
                         $msg = sprintf(dgettext('sb',"Die Anzeige \"%s\" wurde von der Administration geloescht."),$a->getTitel());
                         $messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, dgettext('sb',"Anzeige geloescht!"));
                     }
-					$this->parse_msg("msg§".dgettext('sb',"Anzeige gelöscht!"));
 					$a->delete();
+					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gelöscht.");
 				}
 				unset($modus);
 			}
 			//Suchergebnisse abfragen und anzeigen, falls vorhanden
 			if ($modus == "show_search_results")
 			{
-				$this->do_search(trim($_REQUEST['search_text']));
+				$this->search(trim($_REQUEST['search_text']));
 			}
 		}
 		// Standardansicht, wenn kein modus ausgewählt ist.
 		if(!$modus)
 		{
-			$this->show_search_form();
-			$this->list_themen();
+			$this->show_themen();
 		}
 
 	}

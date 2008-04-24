@@ -2,7 +2,7 @@
 <br/>
 <table border="0" cellpadding="2" cellspacing="0" width="100%">
 	<tr>
-		<td class="topic"><b>Schwarzes Brett - Thema anlegen/bearbeiten:</b></td>
+		<td class="topic"><b>Thema anlegen/bearbeiten:</b></td>
 	</tr>
 </table>
 <form name="add" method="post" action="<?=$link?>">

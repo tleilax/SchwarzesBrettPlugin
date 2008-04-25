@@ -10,7 +10,7 @@
 * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
 * @package 		ZMML_SchwarzesBrettPlugin
 * @copyright	2008 IBIT und ZMML
-* @version 		1.0.2
+* @version 		1.1
 */
 
 // +---------------------------------------------------------------------------+

@@ -8,7 +8,7 @@
 * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
 * @package 		ZMML_SchwarzesBrettPlugin
 * @copyright	2008 IBIT und ZMML
-* @version 		1.0.2
+* @version 		1.1
 */
 
 // +---------------------------------------------------------------------------+
@@ -187,7 +187,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	{
 		$ret = array();
 		$db = new DB_Seminar();
-		$db->queryf("SELECT t.*, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR (t.visible=0 AND (t.user_id='%s' OR 'root'='%s')) GROUP BY t.thema_id ORDER BY count_artikel DESC",$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
+		$db->queryf("SELECT t.*, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR (t.visible=0 AND (t.user_id='%s' OR 'root'='%s')) GROUP BY t.thema_id ORDER BY t.titel",$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
 		while ($db->next_record())
 		{
 			$t = new ThemaExt($db->f("thema_id"));
@@ -230,7 +230,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @param unknown_type $obj_id
 	 * @param unknown_type $type
 	 */
-	function visit($obj_id, $type)
+	public function visit($obj_id, $type)
 	{
 		$db = new DB_Seminar();
 		$db->queryf("REPLACE INTO sb_visits SET object_id='%s', user_id='%s', type='%s', last_visitdate=UNIX_TIMESTAMP()",$obj_id,$GLOBALS['auth']->auth['uid'],$type);
@@ -287,44 +287,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 * Fügt ein Javascript für Ajax-Funktionen ein
-	 *
-	 */
-	private function print_js_opener()
-	{
-		?>
-		<script type="text/javascript" language="javascript">
-		var show_content = new Array();
-		function f(id, p, pr) {
-			var pfeil = p;
-			var pfeil_runter = pr;
-			if (!show_content[id]) {
-				new Ajax.Request('<?=$GLOBALS['ABSOLUTE_URI_STUDIP'].$this->getPluginpath()?>/ajaxDispatcher.php?ajax_cmd=visitObj&objid='+id, {
-		                	method: 'post',
-					onSuccess: function(transport) {
-						pfeil = 'forumgrau';
-						pfeil_runter = 'forumgraurunt';
-		                	},
-		       	        	onFailure: function(t) {alert('Error ' + t.status + ' -- ' + t.statusText); },
-		               		on404: function(t) {alert('Error 404: location "' + t.statusText + '" was not found.'); }
-		        	});
-				$('content'+id).style.display='block';
-				show_content[id]=true;
-				$('indikator'+id).src='<?=$GLOBALS['ASSETS_URL']."/images/"?>'+pfeil_runter+'.gif';
-				$('a'+id).style.fontWeight='bold';
-
-			} else {
-				$('content'+id).style.display='none';
-				show_content[id]=false;
-				$('indikator'+id).src='<?=$GLOBALS['ASSETS_URL']."/images/"?>'+pfeil+'.gif';
-				$('a'+id).style.fontWeight='normal';
-			}
-		}
-		</script>
-		<?
-	}
-
-	/**
 	 * Führt die Suche nach Anzeigen durch und zeigt die Ergebnisse an.
 	 *
 	 * @param String $search_text Suchwort
@@ -332,7 +294,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	private function search($search_text)
 	{
 		//Benutzereingaben abfangen (Wörter kürzer als 3 Zeichen)
-		if(empty($search_text) || strlen($search_text) < 4)
+		if(empty($search_text) || strlen($search_text) < 3)
 		{
 			StudIPTemplateEngine::showErrorMessage("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
 			$this->show_themen();
@@ -356,11 +318,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		//Ergebnisse anzeigen
 		else
 		{
-			$a_open = trim($_REQUEST['a_open']);
-
-			$pfeil = ($this->has_visited($a->getArtikelId()) ? "forumgrau" : "forumrot");
-			$pfeil_runter = ($this->has_visited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt");
-
 			$results = array();
 			$thema = array();
 			while ($db->next_record())
@@ -385,12 +342,12 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				{
 
 				}
-				array_push($thema['artikel'], $a);
+				array_push($thema['artikel'], $this->show_artikel($a));
 			}
 			array_push($results, $thema);
 
 			//Ausgabe erzeugen
-			$this->print_js_opener();
+			$this->showAjaxScript();
 			$template = $this->template_factory->open('search_results');
 			$template->set_attribute('zeit', $this->zeit);
 			$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
@@ -401,21 +358,47 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
+	 * Fügt ein Javascript für Ajax-Funktionen ein
+	 *
+	 */
+	private function showAjaxScript()
+	{
+		?>
+		<script type="text/javascript" language="javascript">
+		function showArtikel(id) 
+		{
+			$('content_'+id).style.display='block';
+			$('headline_'+id).style.display='none';
+			new Ajax.Request('<?=$GLOBALS['ABSOLUTE_URI_STUDIP'].$this->getPluginpath()?>/ajaxDispatcher.php?ajax_cmd=visitObj&objid='+id, {method: 'post'});
+		}
+		function closeArtikel(id)
+		{
+			$('content_'+id).style.display='none';
+			$('headline_'+id).style.display='block';
+		}
+		</script>
+		<?
+	}
+	
+	/**
 	 * Zeigt alle Themen und Anzeigen an
 	 *
 	 */
 	private function show_themen()
 	{
-		$open = trim($_REQUEST['open']);
-		$a_open = trim($_REQUEST['a_open']);
-
+		$open = trim($_REQUEST['open']); //?
 		$themen = $this->get_themen();
 
-		$this->print_js_opener();
+		$this->showAjaxScript();
 		$template = $this->template_factory->open('show_themen');
 		$template->set_attribute('zeit', $this->zeit);
+		$template->set_attribute('pluginpfad', $this->getPluginpath());
+		$template->set_attribute('link_edit', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
+		$template->set_attribute('link_artikel', PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form")));
+		$template->set_attribute('link_delete', PluginEngine::getLink($this,array("delete_thema")));
 		$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
 		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
+		
 		//Keine themen vorhanden
 		if (count($themen) == 0)
 		{
@@ -424,80 +407,34 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		//themen anzeigen
 		else
 		{
-			//TODO: überarbeiten:
-			$tmp_count = array(0=>0, 1=>0, 2=>0);
-			$tmp_themen = array(0=>array(), 1=>array(), 2=>array());
-			foreach ($themen as $tt)
-			{
-				$anzahl = $tt->getArtikelCount();
-				foreach ($tmp_count as $c_key=>$c_val)
-				{
-					$tmp_count[$c_key] += $anzahl;
-					array_push($tmp_themen[$c_key], $tt);
-					break;
-				}
-				asort($tmp_count,SORT_NUMERIC);
-			}
-			asort($tmp_count,SORT_NUMERIC);
-
-			//3 Spalten
+			//Anzahl Spalten berechnen
 			if(count($themen)%3 == 0 || count($themen) > 6)
 			{
-				echo "3 Spalten";
+				$template->set_attribute('themen_rows', count($themen)/3);
 			}
-			// 2 Spalten
 			elseif(count($themen)%2 == 0)
 			{
-				echo "2 Spalten";
+				$template->set_attribute('themen_rows', count($themen)/2);
 			}
 			else
 			{
-				echo "eine Spalte";
+				$template->set_attribute('themen_rows', count($themen)/1);
 			}
 
-			//TODO: Template...
-			echo "<TABLE BORDER=\"0\" STYLE=\"width:100%; text-align:center;\">\n";
-			echo "  <TR>\n";
-			foreach ($tmp_themen as $tt)
+			$results = array();
+			$thema = array();
+			foreach ($themen as $tt)
 			{
-				echo "  <TD VALIGN=\"TOP\" STYLE=\"width:33%; max-width:33%; min-width:33%;\">\n";
-				foreach ($tt as $t) {
-					echo "<DIV STYLE=\"".($this->user_agent['PPC'] ? "display:block; ":"")."width:94%; max-width:94%; min-width:94%; background-color:#FBFBF5; border:1px solid #808080; padding:10px 10px 10px 10px; text-align:left; margin:5px; float:left;\">\n";
-					echo "    <DIV STYLE=\"float:left; font-weight:bold;\">".htmlReady($t->getTitel())."</DIV>\n";
-					if ($GLOBALS['perm']->have_perm("root")) {
-						echo "    <DIV STYLE=\"float:right;\">\n";
-						if ($t->getVisible() == 0) echo "<IMG SRC=\"".$this->getPluginpath()."/images/exclamation.png\" ALT=\"".dgettext('sb',"nicht sichtbar")."\" TITLE=\"".dgettext('sb',"nicht sichtbar")."\">\n";
-						echo "      <A HREF=\"".PluginEngine::getLink($this,array("modus"=>"show_add_thema_form","thema_id"=>$t->getThemaId()))."\"><IMG SRC=\"".$this->getPluginpath()."/images/table_edit.png\" BORDER=\"0\" ALT=\"".dgettext('sb',"bearbeiten")."\" TITLE=\"".dgettext('sb',"bearbeiten")."\"></A>\n";
-						echo "      <A HREF=\"".PluginEngine::getLink($this,array("modus"=>"delete_thema","thema_id"=>$t->getThemaId()))."\" onClick=\"return confirm('".dgettext('sb',"Soll das Thema mit allen Einträgen wirklich gelöscht werden?")."');\"><IMG SRC=\"".$this->getPluginpath()."/images/cross.png\" BORDER=\"0\" ALT=\"".dgettext('sb',"löschen")."\" TITLE=\"".dgettext('sb',"löschen")."\"></A>\n";
-						echo "    </DIV>\n";
-					}
-					echo "  <DIV STYLE=\"clear:both;\"></DIV>\n";
-					echo "  <DIV STYLE=\"border-bottom:1px solid #808080; margin-bottom:10px;\">\n";
-					echo "    </DIV>\n";
-					if ($t->getBeschreibung())
-						echo "  <DIV STYLE=\"font-size:x-small;\">".htmlReady($t->getBeschreibung())."</DIV>\n";
-					$artikel = $this->get_artikel($t->getThemaId());
-					if (count($artikel) == 0)
-					{
-						echo "<DIV STYLE=\"font-size:smaller; margin-bottom:10px; padding-left:5px;\">".dgettext('sb',"Zur Zeit sind keine Anzeigen vorhanden!")."</DIV>\n";
-					}
-					else
-					{
-						foreach ($artikel as $a)
-						{
-							$this->show_artikel($a);
-						}
-					}
-					if ($GLOBALS['perm']->have_perm($t->getPerm()))
-					{
-						echo "<DIV STYLE=\"clear:both;\"></DIV><DIV STYLE=\"margin-top:10px; text-align:center;\"><A STYLE=\"font-size:smaller;\" HREF=\"".PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form", "thema_id"=>$thema_id))."\">".dgettext('sb',"Neue Anzeige anlegen")."</A></DIV>\n";
-					}
-					echo "</DIV>\n";
+				$thema['thema'] = $tt;
+				$thema['artikel'] = array();
+				$artikel = $this->get_artikel($tt->getThemaId());
+				foreach($artikel as $a)
+				{
+					array_push($thema['artikel'], $this->show_artikel($a));
 				}
-				echo "  </TD>\n";
+				array_push($results, $thema);
 			}
-			echo "  </TR>\n";
-			echo "</TABLE>\n";
+			$template->set_attribute('results', $results);
 		}
 		//Adminfunktionen anzeigen
 		if ($GLOBALS['perm']->have_perm("root"))
@@ -513,55 +450,30 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 *
 	 * @param Object $a eine Anzeige
 	 */
-	function show_artikel($a)
+	private function show_artikel($a)
 	{
-
-		$a_open = trim($_REQUEST['a_open']);
-		$t = new Thema($a->getThemaId());
-
-		$pfeil = ($this->has_visited($a->getArtikelId()) ? "forumgrau" : "forumrot");
-		$pfeil_runter = ($this->has_visited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt");
-
-?>
-<script type="text/javascript" language="javascript">
-show_content['<?=$a->getArtikelId()?>'] = false;
-</script>
-<?
-
-
-		echo "<DIV STYLE=\"font-size:smaller; padding-left:5px;\">\n";
-		echo "  <DIV>\n";
-		echo "    <DIV STYLE=\"float:left; width:80%; max-width:80%;\">\n";
-		echo "      <A ID=\"a".$a->getArtikelId()."\" STYLE=\"font-weight:normal;\" \n";
-		echo "        HREF=\"".PluginEngine::getLink($this,array("a_open"=>($a_open==$a->getArtikelId()?"":$a->getArtikelId())))."\" ";
-		if ($this->user_agent['PC']) echo "        onClick=\"f('".$a->getArtikelId()."','".$pfeil."','".$pfeil_runter."'); return false;\"";
-		echo ">\n";
-		echo "      <IMG ID=\"indikator".$a->getArtikelId()."\" SRC=\"".$GLOBALS['ASSETS_URL']."/images/".($a_open==$a->getArtikelId()?$pfeil_runter:$pfeil).".gif\" BORDER=\"0\">\n";
-		echo htmlReady($a->getTitel())."</A> <SPAN STYLE=\"font-size:smaller;\">[".$this->get_artikel_lookups($a->getArtikelId())."]</SPAN>\n";
-		if ($a->getVisible() == 0) echo "<IMG SRC=\"".$this->getPluginpath()."/images/exclamation.png\" ALT=\"".dgettext('sb',"nicht sichtbar")."\" TITLE=\"".dgettext('sb',"nicht sichtbar")."\">\n";
-		echo "    </DIV>\n";
-		echo "    <DIV STYLE=\"float:right; font-size:smaller; width:18%; max-width:18%; padding-top:5px;\">".date("d.m.Y",$a->getMkdate())."</DIV>\n";
-		echo "  </DIV>\n";
-		if ($this->user_agent['PC'] || trim($_REQUEST['a_open'])==$a->getArtikelId())
+		$template = $this->template_factory->open('show_artikel');
+		$template->set_attribute('zeit', $this->zeit);
+		$template->set_attribute('a', $a);
+		$template->set_attribute('anzahl', $this->get_artikel_lookups($a->getArtikelId()));
+		$template->set_attribute('pluginpfad', $this->getPluginpath());
+		$template->set_attribute('pfeil', ($this->has_visited($a->getArtikelId()) ? "forumgrau" : "forumrot"));
+		$template->set_attribute('pfeil_runter', ($this->has_visited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt"));
+		//benutzer und root extrafunktionen anzeigen
+		if($a->getUserId() == $GLOBALS['auth']->auth['uid'] || $GLOBALS['perm']->have_perm("root"))
 		{
-			echo "  <DIV STYLE=\"clear:both;\"></DIV>\n";
-			echo "  <DIV ID=\"content".$a->getArtikelId()."\" STYLE=\"display:".($a_open==$a->getArtikelId()?"block":"none").";\">\n";
-			echo "    <DIV STYLE=\"float:left; font-size:smaller; padding-bottom:10px; padding-top:10px;\">".dgettext('sb',"von")." <A HREF=\"about.php?username=".get_username($a->getUserId())."\">".get_fullname($a->getUserId())."</A></DIV>";
-			echo "    <DIV STYLE=\"float:right; font-size:smaller; width:20%; max-width:20%; padding-top:5px; color:red;\">".dgettext('sb',"bis")." ".date("d.m.Y",$a->getMkdate()+$this->zeit)."</DIV>";
-			echo "    <DIV STYLE=\"clear:both;\"></DIV>\n";
-			echo "    <DIV>".formatReady($a->getBeschreibung())."</DIV>\n";
-			echo "    <DIV STYLE=\"text-align:center; margin;10px; padding:10px;\">\n";
-			if ($a->getUserId() != $GLOBALS['auth']->auth['uid'])
-				echo "      <A HREF=\"sms_send.php?rec_uname=".get_username($a->getUserId())."&messagesubject=".rawurlencode($a->getTitel())."&message=".rawurlencode('[quote] '.$a->getBeschreibung().' [/quote]')."\">".makeButton("antworten","img")."</A>\n";
-			if ($a->getUserId() == $GLOBALS['auth']->auth['uid'] || $GLOBALS['perm']->have_perm("root")) {
-				echo "      <A HREF=\"".PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form", "thema_id"=>$t->getThemaId(), "artikel_id"=>$a->getArtikelId()))."\">".makeButton("bearbeiten","img")."</A>\n";
-				echo "      <A HREF=\"".PluginEngine::getLink($this,array("modus"=>"delete_artikel", "thema_id"=>$t->getThemaId(), "artikel_id"=>$a->getArtikelId()))."\">".makeButton("loeschen","img")."</A>\n";
-			}
-			echo "    </DIV>\n";
-			echo "  </DIV>\n";
+			$template->set_attribute('access', true);
+			$template->set_attribute('link_delete', PluginEngine::getLink($this,array("modus"=>"delete_artikel", "thema_id"=>$a->getThemaId(), "artikel_id"=>$a->getArtikelId())));
+			$template->set_attribute('link_edit', PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form", "thema_id"=>$a->getThemaId(), "artikel_id"=>$a->getArtikelId())));
 		}
-
-		echo "</DIV>\n";
+		// oder einen antwortbutton
+		if($a->getUserId() != $GLOBALS['auth']->auth['uid'])
+		{
+			$template->set_attribute('antwort', true);
+		}
+		$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
+		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
+		return $template->render();
 	}
 
 	/**
@@ -570,11 +482,8 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 	 */
 	public function show()
 	{
-		$db = new DB_Seminar();
+		//$db = new DB_Seminar();
 		$open = trim($_REQUEST['open']);
-		$a_open = trim($_REQUEST['a_open']);
-		if ($a_open) $this->visit($a_open,"artikel");
-
 		$this->visit("root","thema");
 		$modus = trim($_REQUEST['modus']);
 
@@ -681,8 +590,12 @@ show_content['<?=$a->getArtikelId()?>'] = false;
 					{
 						$messaging=new messaging;
                         $msg = sprintf(dgettext('sb',"Die Anzeige \"%s\" wurde von der Administration geloescht."),$a->getTitel());
-                        $messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, dgettext('sb',"Anzeige geloescht!"));
+                        $messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, "Anzeige geloescht!");
                     }
+					else
+					{
+						StudIPTemplateEngine::showErrorMessage("Sie haben nicht die erforderlichen Rechte diese Anzeige zu löschen.");
+					}
 					$a->delete();
 					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gelöscht.");
 				}

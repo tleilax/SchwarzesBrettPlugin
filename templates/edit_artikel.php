@@ -6,7 +6,7 @@
 	</tr>
 </table>
 
-<form name="add" method="post" action="<?=$link?>">
+<form name="add" method="post" action="<?=$link_thema?>">
 	<input type="hidden" name="modus" value="add_artikel" />
 	<input type="hidden" name="open" value="<?=$t->getThemaId()?>" />
 	<input type="hidden" name="artikel_id" value="<?=$a->getartikelid()?>" />
@@ -29,9 +29,11 @@
 		</tr>
 		<tr class="steel1">
 			<td colspan="2" align="center">
-			Laufzeit bis zum <?=date("d.m.y",($a->getmkdate()?$a->getmkdate():time())+$zeit)?><br/>
+			<!-- Laufzeit bis zum <?=date("d.m.y",($a->getmkdate()?$a->getmkdate():time())+$zeit)?><br/> -->
 			<?=makebutton("speichern", "input", "Die Anzeige speichern")?>
-			<a href="<?=$link_thema?>"><?=makebutton("abbrechen","img", "abbrechen und zurück zur Übersicht")?></a>
+			<a href="<?=$link?>"><?=makebutton("abbrechen","img", "abbrechen und zurück zur Übersicht")?></a>
+			<a href="show_smiley.php" target="_blank">Smileys</a>
+			<a href="http://hilfe.studip.de/index.php/Basis.VerschiedenesFormat?setstudipview=dozent&setstudiplocationid=default" target="_blank">Formatierungshilfen</a>
 			</td>
 		</tr>
 	</table>

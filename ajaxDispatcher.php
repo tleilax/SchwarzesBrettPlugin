@@ -2,11 +2,13 @@
 /**
 * ajaxDispatcher.php
 *
-* @author               Jan Kulmann <jankul@zmml.uni-bremen.de>
+* @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
+* @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
+* @package 		ZMML_SchwarzesBrettPlugin
+* @copyright	2008 IBIT und ZMML
+* @version 		1.1
 */
 
-// +---------------------------------------------------------------------------+
-// Copyright (C) 2007-2008 Jan Kulmann <jankul@zmml.uni-bremen.de>
 // +---------------------------------------------------------------------------+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,19 +24,20 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // +---------------------------------------------------------------------------+
 
-page_open(array('sess' => 'Seminar_Session', 'auth' => 'Seminar_Default_Auth', 'perm' => 'Seminar_Perm', 'user' => 'Seminar_User'));
-
-if (!array_key_exists('ajax_cmd', $_REQUEST)) die;
+#page_open(array('sess' => 'Seminar_Session', 'auth' => 'Seminar_Default_Auth', 'perm' => 'Seminar_Perm', 'user' => 'Seminar_User'));
 
 
-switch($_REQUEST['ajax_cmd']) {
-	case 'visitObj':
-		$obj_id = trim($_REQUEST['objid']);
-		if (!$obj_id) break;
-		require_once dirname(__FILE__) . '/SchwarzesBrettPlugin.class.php';
-		SchwarzesBrettPlugin::visit($obj_id, "artikel");
-		echo "success";
-		break;
-	default: ;
+if(!empty($_REQUEST['ajax_cmd']) && $_REQUEST['ajax_cmd'] == 'visitObj') 
+{
+	$obj_id = trim($_REQUEST['objid']);
+	require_once 'SchwarzesBrettPlugin.class.php';
+	SchwarzesBrettPlugin::visit($obj_id, "artikel");
+	echo "visit erfolgreich";
+	die;
+}
+else
+{
+	echo "fehler";
+	die;
 }
 ?>

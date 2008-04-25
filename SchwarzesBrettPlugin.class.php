@@ -1,15 +1,16 @@
 <?php
 /**
-* SchwarzesBrettPlugin.class.php
-*
-* Plugin zum Verwalten von Schwarzen Brettern (Angebote und Gesuche)
-*
-* @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
-* @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
-* @package 		ZMML_SchwarzesBrettPlugin
-* @copyright	2008 IBIT und ZMML
-* @version 		1.1
-*/
+ * SchwarzesBrettPlugin.class.php (SystemPlugin)
+ *
+ * Plugin zum Verwalten von Schwarzen Brettern (Angebote und Gesuche)
+ * Diese Datei enthält die Hauptklasse des Plugins
+ * Dieses Plugin basiert auf PHP5 und steht unter der GPL.
+ * @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
+ * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
+ * @package 	ZMML_SchwarzesBrettPlugin
+ * @copyright	2008 IBIT und ZMML
+ * @version 	1.1.1
+ */
 
 // +---------------------------------------------------------------------------+
 // This program is free software; you can redistribute it and/or
@@ -42,7 +43,6 @@ require_once('vendor/flexi/flexi.php');
  */
 class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 {
-
 	/**
 	 * Laufzeit der Einträge in Sekunden
 	 *
@@ -67,7 +67,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$this->template_factory = new Flexi_TemplateFactory(dirname(__FILE__).'/templates');
 
 		//plugin-icon
-		$this->setPluginiconname('images/script.png');
+		$this->setPluginiconname('images/paste_plain.png');
 		//$this->setPluginiconname('images/header_pinn1.gif'); //für safiredesign
 
 		// Navigationsreiter erzeugen
@@ -225,10 +225,10 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 * Enter description here...
+	 * Speichert den "Besuch" in die Datenbank, wenn jemand ein Thema oder Atikel sich angesehen hat.
 	 *
-	 * @param unknown_type $obj_id
-	 * @param unknown_type $type
+	 * @param string $obj_id
+	 * @param string $type
 	 */
 	public function visit($obj_id, $type)
 	{
@@ -237,7 +237,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 * Enter description here...
+	 * Überprüft, ob der Benutzer dieses Objekt (Thema oder Artikel) bereits angesehen hat.
 	 *
 	 * @param string $obj_id
 	 * @return datetime oder boolean
@@ -395,7 +395,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$template->set_attribute('pluginpfad', $this->getPluginpath());
 		$template->set_attribute('link_edit', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
 		$template->set_attribute('link_artikel', PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form")));
-		$template->set_attribute('link_delete', PluginEngine::getLink($this,array("delete_thema")));
+		$template->set_attribute('link_delete', PluginEngine::getLink($this,array("modus"=>"delete_thema")));
 		$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
 		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
 		
@@ -407,18 +407,18 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		//themen anzeigen
 		else
 		{
-			//Anzahl Spalten berechnen
-			if(count($themen)%3 == 0 || count($themen) > 6)
+			//Anzahl Themen pro Spalte berechnen
+			if(count($themen) > 6) //3 Spalten
 			{
-				$template->set_attribute('themen_rows', count($themen)/3);
+				$template->set_attribute('themen_rows', (count($themen)%3==0)? count($themen)/3 : (count($themen)/3)+1);
 			}
-			elseif(count($themen)%2 == 0)
+			elseif(count($themen) > 2) //2 Spalten
 			{
-				$template->set_attribute('themen_rows', count($themen)/2);
+				$template->set_attribute('themen_rows', 2);
 			}
-			else
+			else //1 Spalte
 			{
-				$template->set_attribute('themen_rows', count($themen)/1);
+				$template->set_attribute('themen_rows', 1);
 			}
 
 			$results = array();

@@ -35,16 +35,18 @@
 			<b><?=htmlReady($result['thema']->getTitel()) ?></b><br/>
 			<span style="font-size: smaller"><?=htmlReady($result['thema']->getBeschreibung()) ?></span>
 		</div>
-		<? if($rootaccess): ?>
 		<div style="float:right">
+				<a href="javascript:toogleThema('<?=$result['thema']->getThemaId() ?>');"><img src="<?=$pluginpfad ?>/images/table_refresh.png" alt="Artikel auf/zuklappen" title="Alle Artikel anzeigen oder verstecken (auf/zuklappen)" /></a>
+		<? if($rootaccess): ?>
 			<? if($result['thema']->getVisible() == 0): ?>
-				<img src="<?=$pluginpfad ?>/images/exclamation.png" alt="nicht sichtbar" title="nicht sichtbar" />
+				<img src="<?=$pluginpfad ?>/images/exclamation.png" alt="nicht sichtbar" title="Dieses Thema ist für Benutzer nicht sichtbar" />
 			<? endif; ?>
 				<a href="<?=$link_edit ?>&thema_id=<?=$result['thema']->getThemaId() ?>"><img src="<?=$pluginpfad ?>/images/table_edit.png" alt="Thema bearbeiten" title="Thema bearbeiten" /></a>
 				<a href="<?=$link_delete ?>&thema_id=<?=$result['thema']->getThemaId() ?>"><img src="<?=$pluginpfad ?>/images/cross.png" alt="Thema löschen" title="Thema inkl. aller Anzeigen löschen" /></a>
-		</div>
 		<? endif; ?>
+		</div>
 		<div style="clear:both; border-bottom: 1px solid #8e8e8e;"></div>
+		<div id="list_<?=$result['thema']->getThemaId() ?>">
 		<table border="0" cellpadding="5" cellspacing="0" width="100%">
 			<? foreach ($result['artikel'] as $index=>$a): ?>
 			<tr>
@@ -54,11 +56,14 @@
 			</tr>
 			<? endforeach; ?>
 			<? if($result['thema']->getArtikelCount() == 0): ?>
-			<span style="font-size: smaller;">keine Anzeigen vorhanden</span>
+			<tr>
+				<td><span style="font-size: smaller;">keine Anzeigen vorhanden</span></td>
+			</tr>
 			<? endif; ?>
 		</table>
 		<div align="center" style="padding: 3px;">
 		Anzeige <a href="<?=$link_artikel?>&thema_id=<?=$result['thema']->getThemaId()?>"><?=makeButton("neuanlegen", "img", "Eine neue Anzeige anlegen")?></a>
+		</div>
 		</div>
 	</div>
 	<? if($tindex%$themen_rows == 0): ?>

@@ -9,7 +9,7 @@
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	ZMML_SchwarzesBrettPlugin
  * @copyright	2008 IBIT und ZMML
- * @version 	1.1.1
+ * @version 	1.1.2
  */
 
 // +---------------------------------------------------------------------------+
@@ -345,11 +345,20 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				array_push($thema['artikel'], $this->show_artikel($a));
 			}
 			array_push($results, $thema);
-
+			
 			//Ausgabe erzeugen
 			$this->showAjaxScript();
 			$template = $this->template_factory->open('search_results');
+
+			//Adminfunktionen anzeigen
+			if ($GLOBALS['perm']->have_perm("root"))
+			{
+				$template->set_attribute('rootlink', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
+				$template->set_attribute('rootaccess', TRUE);
+			}
+			
 			$template->set_attribute('zeit', $this->zeit);
+			$template->set_attribute('pluginpfad', $this->getPluginpath());
 			$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
 			$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
 			$template->set_attribute('results', $results);
@@ -364,6 +373,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	private function showAjaxScript()
 	{
 		?>
+		
 		<script type="text/javascript" language="javascript">
 		function showArtikel(id) 
 		{
@@ -376,6 +386,10 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			$('content_'+id).style.display='none';
 			$('headline_'+id).style.display='block';
 		}
+		function toogleThema(id)
+		{
+			$('list_'+id).toggle();
+		}		
 		</script>
 		<?
 	}
@@ -592,12 +606,12 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
                         $msg = sprintf(dgettext('sb',"Die Anzeige \"%s\" wurde von der Administration geloescht."),$a->getTitel());
                         $messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, "Anzeige geloescht!");
                     }
-					else
-					{
-						StudIPTemplateEngine::showErrorMessage("Sie haben nicht die erforderlichen Rechte diese Anzeige zu löschen.");
-					}
 					$a->delete();
 					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gelöscht.");
+				}
+				else
+				{
+					StudIPTemplateEngine::showErrorMessage("Sie haben nicht die erforderlichen Rechte diese Anzeige zu löschen.");
 				}
 				unset($modus);
 			}

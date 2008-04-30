@@ -61,9 +61,11 @@
 			</tr>
 			<? endif; ?>
 		</table>
+		<? if($result['permission'] === true): ?>
 		<div align="center" style="padding: 3px;">
 		Anzeige <a href="<?=$link_artikel?>&thema_id=<?=$result['thema']->getThemaId()?>"><?=makeButton("neuanlegen", "img", "Eine neue Anzeige anlegen")?></a>
 		</div>
+		<? endif; ?>
 		</div>
 	</div>
 	<? if($tindex%$themen_rows == 0): ?>
@@ -85,3 +87,16 @@
 </div>
 <br/>
 <? endif; ?>
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+	<tr>
+		<td class="topic"><b>Allgemeine Hinweise:</b></td>
+	</tr>
+</table>
+<div class="steel1" style="padding:5px;">
+	<ul>
+		<li>Eine Anzeige hat zur Zeit eine Laufzeit von <b><?=($zeit/24/60/60)?> Tagen</b>. Nach Ablauf dieser Frist wird die Anzeige automatisch nicht mehr angezeigt.</li>
+		<li>Sie können nur in Themen eine Anzeige erstellen, in denen Sie die nötigen Rechte haben.</li>
+		<li>Mit der Suche werden sowohl Titel, als auch Beschreibung aller Anzeigen durchsucht.</li>
+	</ul>
+</div>
+<br/>

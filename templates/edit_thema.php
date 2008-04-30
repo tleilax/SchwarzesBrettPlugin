@@ -27,6 +27,7 @@
 				<option value="<?=$p?>" <? if($t->getperm()==$p) echo'selected="selected"';?>><?=$p?></option>
 			<? endforeach; ?>
 			</select>
+			Diese Berechtigung bezieht sich auf die Benutzer, die einen Artikel erstellen dürfen. Betrachten können alle Benutzer!
 			</td>
 		</tr>
 		<tr class="steelgraulight">

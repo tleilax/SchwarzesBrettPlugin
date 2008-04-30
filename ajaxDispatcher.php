@@ -26,18 +26,10 @@
 
 page_open(array('sess' => 'Seminar_Session', 'auth' => 'Seminar_Default_Auth', 'perm' => 'Seminar_Perm', 'user' => 'Seminar_User'));
 
-
-if(!empty($_REQUEST['ajax_cmd']) && $_REQUEST['ajax_cmd'] == 'visitObj') 
+if(!empty($_REQUEST['objid']))
 {
-	$obj_id = trim($_REQUEST['objid']);
-	require_once 'SchwarzesBrettPlugin.class.php';
-	SchwarzesBrettPlugin::visit($obj_id, "artikel");
-	echo "visit erfolgreich";
-	die;
+	$db = new DB_Seminar();
+	$db->queryf("REPLACE INTO sb_visits SET object_id='%s', user_id='%s', type='%s', last_visitdate=UNIX_TIMESTAMP()",trim($_REQUEST['objid']),$GLOBALS['auth']->auth['uid'],"artikel");
 }
-else
-{
-	echo "fehler";
-	die;
-}
+die;
 ?>

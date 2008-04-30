@@ -1,7 +1,7 @@
 <div id="headline_<?=$a->getArtikelId()?>" style="display:block;">
 	<div style="float:left;">
 		<a href="javascript:showArtikel('<?=$a->getArtikelId()?>');">
-		<img id="indikator_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/<?=$pfeil?>.gif" />
+		<img id="indikator_<?=$a->getArtikelId()?>" src="<?=Assets::url()?>images/<?=$pfeil?>.gif" />
 		<?=htmlReady($a->getTitel())?></a>
 		<? if ($a->getVisible() == 0): ?>
 			<img src="<?=$pluginpfad?>/images/exclamation.png" alt="nicht sichtbar" title="Diese Anzeige ist nicht für andere sichtbar" align="absmiddle" />
@@ -13,7 +13,7 @@
 <div id="content_<?=$a->getArtikelId()?>" style="display:none;">
 	<div style="float:left;">
 		<a href="javascript:closeArtikel('<?=$a->getArtikelId()?>');">
-		<img id="indikator_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/<?=$pfeil_runter?>.gif" />
+		<img id="indikator_<?=$a->getArtikelId()?>" src="<?=Assets::url()?>images/<?=$pfeil_runter?>.gif" />
 		<?=htmlReady($a->getTitel())?></a>
 		<? if ($a->getVisible() == 0): ?>
 			<img src="<?=$pluginpfad?>/images/exclamation.png" alt="nicht sichtbar" title="Diese Anzeige ist nicht für andere sichtbar" align="absmiddle" />

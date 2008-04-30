@@ -9,7 +9,7 @@
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	ZMML_SchwarzesBrettPlugin
  * @copyright	2008 IBIT und ZMML
- * @version 	1.1.2
+ * @version 	1.2
  */
 
 // +---------------------------------------------------------------------------+
@@ -37,6 +37,7 @@ require_once('vendor/flexi/flexi.php');
 //debug
 //error_reporting( E_ALL );
 
+
 /**
  * SchwarzesBrettPlugin Hauptklasse
  *
@@ -48,7 +49,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 *
 	 * @var int
 	 */
-	var $zeit;
+	public $zeit;
 
 	/**
 	 * Objekt der Templateklasse
@@ -58,6 +59,20 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	private $template_factory;
 
 	/**
+	 * aktueller Benutzer
+	 *
+	 * @var user Objekt
+	 */
+	public $user;	
+
+	/**
+	 * aktuelle Benutzerrechte
+	 *
+	 * @var permission Objekt
+	 */
+	public $permission;
+	
+	/**
 	 * Konstruktor, erzeugt das Plugin.
 	 *
 	 */
@@ -65,6 +80,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	{
 		parent::AbstractStudIPSystemPlugin();
 		$this->template_factory = new Flexi_TemplateFactory(dirname(__FILE__).'/templates');
+		$this->user = $this->getUser();
+		$this->permission = $this->user->getPermission();
 
 		//plugin-icon
 		$this->setPluginiconname('images/paste_plain.png');
@@ -114,36 +131,17 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 * Überprüft, ob eine Anzeige bereits vorhanden ist
-	 *
-	 * @param string $titel
-	 * @return boolean
-	 */
-	function is_duplicate($titel)
-	{
-		$db = new DB_Seminar();
-		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE user_id='%s' AND titel='%s' AND mkdate>(UNIX_TIMESTAMP()-60*60*24)",$GLOBALS['auth']->auth['uid'],$titel);
-		if ($db->num_rows()>0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
 	 * Gibt alle Anzeigen zu einem Thema zurück
 	 *
 	 * @param string $thema_id
 	 * @return array Anzeigen
 	 */
-	function get_artikel($thema_id)
+	private function getArtikel($thema_id)
 	{
 		$ret = array();
 		$db = new DB_Seminar();
-		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s' AND UNIX_TIMESTAMP() < (mkdate + %d) AND (visible=1 OR (visible=0 AND (user_id='%s' OR 'root'='%s'))) ORDER BY mkdate DESC",$thema_id,$this->zeit,$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
+		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s' AND UNIX_TIMESTAMP() < (mkdate + %d) AND (visible=1 OR (visible=0 AND (user_id='%s' OR 'root'='%s'))) ORDER BY mkdate DESC",$thema_id,$this->zeit,$this->user->getUserid(),$this->permission->perm->get_perm($this->user->getUserid()));
+		$ret = array();
 		while ($db->next_record())
 		{
 			$a = new Artikel($db->f("artikel_id"));
@@ -153,41 +151,31 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 * Enter description here...
+	 * Gibt die Anzahl Besucher eines Artikels zurück.
 	 *
-	 * @param unknown_type $thema_id
-	 * @return unknown
+	 * @param string $artikel_id
+	 * @return int Anzahl Besucher
 	 */
-	function get_artikel_count_visible($thema_id)
+	private function getArtikelLookups($artikel_id)
 	{
 		$db = new DB_Seminar();
-		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s' AND UNIX_TIMESTAMP() < (mkdate + %d) AND (visible=1 OR (visible=0 AND (user_id='%s' OR 'root'='%s'))) ORDER BY mkdate DESC",$thema_id,$this->zeit,$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
-		return $db->num_rows();
+		$db->queryf("SELECT COUNT(*) AS count FROM sb_visits WHERE type='artikel' AND object_id='%s'",$artikel_id);
+		$db->next_record();
+		return $db->f('count');
 	}
 
 	/**
-	 * Enter description here...
-	 *
-	 * @param unknown_type $artikel_id
-	 * @return unknown
-	 */
-	function get_artikel_lookups($artikel_id)
-	{
-		$db = new DB_Seminar();
-		$db->queryf("SELECT * FROM sb_visits WHERE type='artikel' AND object_id='%s'",$artikel_id);
-		return $db->num_rows();
-	}
-
-	/**
-	 * Gibt eine Liste aller Themen aus der Datenbank zurück
+	 * Gibt eine Liste aller Themen aus der Datenbank zurück, die sichtbar sind 
+	 * oder in denen der Benutzer bereits einen Artikel erstellt hat.
 	 *
 	 * @return array Liste aller Themen
 	 */
-	private function get_themen()
+	private function getThemen()
 	{
 		$ret = array();
 		$db = new DB_Seminar();
-		$db->queryf("SELECT t.*, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR (t.visible=0 AND (t.user_id='%s' OR 'root'='%s')) GROUP BY t.thema_id ORDER BY t.titel",$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
+		$db->queryf("SELECT t.*, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR t.user_id='%s' OR 'perm'='%s' GROUP BY t.thema_id ORDER BY t.titel",$this->user->getUserid(),$this->permission->perm->get_perm($this->user->getUserid()));
+		$ret = array();
 		while ($db->next_record())
 		{
 			$t = new ThemaExt($db->f("thema_id"));
@@ -203,7 +191,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @param string $thema_id
 	 * @return string $permission
 	 */
-	private function get_thema_perm($thema_id)
+	private function getThemaPermission($thema_id)
 	{
 		$db = new DB_Seminar();
 		$db->queryf("SELECT perm FROM sb_themen WHERE thema_id='%s'",$thema_id);
@@ -212,29 +200,26 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 * Gibt die Anzahl aller Anzeigen zu einem Thema zurück
+	 * Überprüft, ob eine Anzeige bereits vorhanden ist, dabei werden
+	 * Titel, UserID und Datum verglichen.
 	 *
-	 * @param string $thema_id
-	 * @return int Anzahl aller Anzeigen zu einem Thema
+	 * @param string $titel
+	 * @return boolean
 	 */
-	function get_artikel_count($thema_id)
+	private function isDuplicate($titel)
 	{
 		$db = new DB_Seminar();
-		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s'",$thema_id);
-		return $db->num_rows();
-	}
-
-	/**
-	 * Speichert den "Besuch" in die Datenbank, wenn jemand ein Thema oder Atikel sich angesehen hat.
-	 *
-	 * @param string $obj_id
-	 * @param string $type
-	 */
-	public function visit($obj_id, $type)
-	{
-		$db = new DB_Seminar();
-		$db->queryf("REPLACE INTO sb_visits SET object_id='%s', user_id='%s', type='%s', last_visitdate=UNIX_TIMESTAMP()",$obj_id,$GLOBALS['auth']->auth['uid'],$type);
-	}
+		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE user_id='%s' AND titel='%s' AND mkdate>(UNIX_TIMESTAMP()-(60*60*24))",$this->user->getUserid(),$titel);
+		echo "Anzahl Ergebnisse : ".$db->num_rows();
+		if ($db->num_rows()>0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}	
 
 	/**
 	 * Überprüft, ob der Benutzer dieses Objekt (Thema oder Artikel) bereits angesehen hat.
@@ -242,10 +227,10 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @param string $obj_id
 	 * @return datetime oder boolean
 	 */
-	function has_visited($obj_id)
+	private function hasVisited($obj_id)
 	{
 		$db = new DB_Seminar();
-		$db->queryf("SELECT last_visitdate FROM sb_visits WHERE object_id='%s' AND user_id='%s'",$obj_id,$GLOBALS['auth']->auth['uid']);
+		$db->queryf("SELECT last_visitdate FROM sb_visits WHERE object_id='%s' AND user_id='%s'",$obj_id,$this->user->getUserid());
 		if ($db->next_record())
 		{
 			return $db->f("last_visitdate");
@@ -254,36 +239,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		{
 			return FALSE;
 		}
-	}
-
-	/**
-	 * Gibt die Anzahl aller Anzeigen zurück
-	 *
-	 * @return int Anzahl aller Anzeigen
-	 */
-	function num_all_postings()
-	{
-		$db = new DB_Seminar();
-		$db->query("SELECT * FROM sb_artikel");
-		return $db->num_rows();
-	}
-
-	/**
-	 * Enter description here...
-	 *
-	 * @return unknown
-	 */
-	function new_items_since_last_visit()
-	{
-		$db = new DB_Seminar();
-		$db->queryf("SELECT last_visitdate FROM sb_visits WHERE user_id='%s' AND object_id='root'",$GLOBALS['auth']->auth['uid']);
-		if ($db->next_record())
-		{
-			$lv = $db->f("last_visitdate");
-			$db->queryf("SELECT a.* FROM sb_artikel a, sb_themen t WHERE a.visible=1 AND t.thema_id=a.thema_id AND t.visible=1 AND a.mkdate>%d AND a.user_id!='%s' AND NOT EXISTS (SELECT object_id FROM sb_visits WHERE object_id=a.artikel_id AND type='artikel' AND user_id='%s')",$lv,$GLOBALS['auth']->auth['uid'],$GLOBALS['auth']->auth['uid']);
-			return $db->num_rows();
-		}
-		return $this->num_all_postings();
 	}
 
 	/**
@@ -297,7 +252,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		if(empty($search_text) || strlen($search_text) < 3)
 		{
 			StudIPTemplateEngine::showErrorMessage("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
-			$this->show_themen();
+			$this->showThemen();
 			die;
 		}
 
@@ -306,14 +261,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel AS a, sb_themen AS t WHERE
 				t.thema_id=a.thema_id AND (UPPER(a.titel) LIKE '%s' OR UPPER(a.beschreibung) LIKE '%s') AND UNIX_TIMESTAMP() < (a.mkdate + %d)
 				AND (a.visible=1 OR (a.visible=0 AND (a.user_id='%s' OR 'root'='%s'))) ORDER BY t.titel, a.titel
-			","%".strtoupper($search_text)."%","%".strtoupper($search_text)."%",$this->zeit,$GLOBALS['auth']->auth["uid"],$GLOBALS['auth']->auth["perm"]);
+			","%".strtoupper($search_text)."%","%".strtoupper($search_text)."%",$this->zeit,$this->user->getUserid(),$this->permission->perm->get_perm($this->user->getUserid()));
 		$db->query($sql);
 
 		// keine Ergebnisse vorhanden
 		if($db->num_rows()==0)
 		{
 			StudIPTemplateEngine::showErrorMessage("Es wurden keine Ergebnisse gefunden. Bitte versuchen Sie es mit einem anderen Wort erneut.");
-			$this->show_themen();
+			$this->showThemen();
 		}
 		//Ergebnisse anzeigen
 		else
@@ -342,7 +297,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				{
 
 				}
-				array_push($thema['artikel'], $this->show_artikel($a));
+				array_push($thema['artikel'], $this->showArtikel($a));
 			}
 			array_push($results, $thema);
 			
@@ -351,7 +306,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			$template = $this->template_factory->open('search_results');
 
 			//Adminfunktionen anzeigen
-			if ($GLOBALS['perm']->have_perm("root"))
+			if ($this->permission->hasRootPermission())
 			{
 				$template->set_attribute('rootlink', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
 				$template->set_attribute('rootaccess', TRUE);
@@ -379,7 +334,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		{
 			$('content_'+id).style.display='block';
 			$('headline_'+id).style.display='none';
-			new Ajax.Request('<?=$GLOBALS['ABSOLUTE_URI_STUDIP'].$this->getPluginpath()?>/ajaxDispatcher.php?ajax_cmd=visitObj&objid='+id, {method: 'post'});
+			new Ajax.Request('<?=$this->getPluginpath()?>/ajaxDispatcher.php?objid='+id, {method: 'post'});
 		}
 		function closeArtikel(id)
 		{
@@ -398,11 +353,11 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * Zeigt alle Themen und Anzeigen an
 	 *
 	 */
-	private function show_themen()
+	private function showThemen()
 	{
 		$open = trim($_REQUEST['open']); //?
-		$themen = $this->get_themen();
-
+		$themen = $this->getThemen();
+		
 		$this->showAjaxScript();
 		$template = $this->template_factory->open('show_themen');
 		$template->set_attribute('zeit', $this->zeit);
@@ -440,18 +395,22 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			foreach ($themen as $tt)
 			{
 				$thema['thema'] = $tt;
+				if($this->permission->perm->have_perm($tt->getPerm(), $this->user->getUserid()) ||  $this->permission->hasRootPermission())
+				{
+					$thema['permission'] = true;
+				}
 				$thema['artikel'] = array();
-				$artikel = $this->get_artikel($tt->getThemaId());
+				$artikel = $this->getArtikel($tt->getThemaId());
 				foreach($artikel as $a)
 				{
-					array_push($thema['artikel'], $this->show_artikel($a));
+					array_push($thema['artikel'], $this->showArtikel($a));
 				}
 				array_push($results, $thema);
 			}
 			$template->set_attribute('results', $results);
 		}
 		//Adminfunktionen anzeigen
-		if ($GLOBALS['perm']->have_perm("root"))
+		if ($this->permission->hasRootPermission())
 		{
 			$template->set_attribute('rootlink', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
 			$template->set_attribute('rootaccess', TRUE);
@@ -464,24 +423,24 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 *
 	 * @param Object $a eine Anzeige
 	 */
-	private function show_artikel($a)
+	private function showArtikel($a)
 	{
 		$template = $this->template_factory->open('show_artikel');
 		$template->set_attribute('zeit', $this->zeit);
 		$template->set_attribute('a', $a);
-		$template->set_attribute('anzahl', $this->get_artikel_lookups($a->getArtikelId()));
+		$template->set_attribute('anzahl', $this->getArtikelLookups($a->getArtikelId()));
 		$template->set_attribute('pluginpfad', $this->getPluginpath());
-		$template->set_attribute('pfeil', ($this->has_visited($a->getArtikelId()) ? "forumgrau" : "forumrot"));
-		$template->set_attribute('pfeil_runter', ($this->has_visited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt"));
+		$template->set_attribute('pfeil', ($this->hasVisited($a->getArtikelId()) ? "forumgrau" : "forumrot"));
+		$template->set_attribute('pfeil_runter', ($this->hasVisited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt"));
 		//benutzer und root extrafunktionen anzeigen
-		if($a->getUserId() == $GLOBALS['auth']->auth['uid'] || $GLOBALS['perm']->have_perm("root"))
+		if($a->getUserId() == $this->user->getuserid() || $this->permission->hasRootPermission())
 		{
 			$template->set_attribute('access', true);
 			$template->set_attribute('link_delete', PluginEngine::getLink($this,array("modus"=>"delete_artikel", "thema_id"=>$a->getThemaId(), "artikel_id"=>$a->getArtikelId())));
 			$template->set_attribute('link_edit', PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form", "thema_id"=>$a->getThemaId(), "artikel_id"=>$a->getArtikelId())));
 		}
 		// oder einen antwortbutton
-		if($a->getUserId() != $GLOBALS['auth']->auth['uid'])
+		if($a->getUserId() != $this->user->getuserid())
 		{
 			$template->set_attribute('antwort', true);
 		}
@@ -496,15 +455,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	public function show()
 	{
-		//$db = new DB_Seminar();
 		$open = trim($_REQUEST['open']);
-		$this->visit("root","thema");
+		//$this->visit("root","thema"); unnötige datenbankverbindung...
 		$modus = trim($_REQUEST['modus']);
 
 		if ($modus)
 		{
 			// Nur Root-Funktionen
-			if ($GLOBALS['perm']->have_perm("root"))
+			if ($this->permission->hasRootPermission())
 			{
 				// Thema speichern
 				if ($modus == "save_thema")
@@ -546,9 +504,9 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				}
 			}
 			//Anzeige speichern
-			if ($modus == "add_artikel" && $GLOBALS['perm']->have_perm($this->get_thema_perm($open)))
+			if ($modus == "add_artikel" && $this->permission->perm->have_perm($this->getThemaPermission($open)))
 			{
-				if ((!$this->is_duplicate($_REQUEST['titel']) && !isset($_REQUEST['artikel_id'])) || isset($_REQUEST['artikel_id']))
+				if ((!$this->isDuplicate($_REQUEST['titel']) && empty($_REQUEST['artikel_id'])) || !empty($_REQUEST['artikel_id']))
 				{
 					$a = new Artikel($_REQUEST['artikel_id']);
 					$a->setTitel($_REQUEST['titel']);
@@ -557,6 +515,10 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 					$a->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
 					$a->save();
 					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gespeichert.");
+				}
+				else
+				{
+					StudIPTemplateEngine::showErrorMessage("Sie haben nicht die erforderlichen Rechte eine Anzeige zu erstellen bzw. Sie haben bereits einen Artikel mit diesem Titel erstellt.");
 				}
 				unset($modus);
 			}
@@ -582,7 +544,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			if ($modus == "delete_artikel")
 			{
 				$a = new Artikel($_REQUEST['artikel_id']);
-				if ($a->getUserId() == $GLOBALS['auth']->auth['uid'] || $GLOBALS['perm']->have_perm("root"))
+				if ($a->getUserId() == $this->user->getUserid() || $this->permission->hasRootPermission())
 				{
 					$autor_name = '<a href="about.php?username='.get_username($a->getUserId()).'">'.get_fullname($a->getUserId()).'</a>';
 					$yes = '<a href="'.PluginEngine::getLink($this,array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId())).'">'.makeButton("ja","img").'</a>';
@@ -595,24 +557,19 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				}
 				unset($modus);
 			}
+			//Artikel löschen
 			if ($modus == "delete_artikel_really")
 			{
 				$a = new Artikel($_REQUEST['artikel_id']);
-				if ($a->getUserId() == $GLOBALS['auth']->auth['uid'] || $GLOBALS['perm']->have_perm("root"))
+				//Root löscht Artikel eines Benutzers, also diesen benachrichtigen.
+				if ($a->getUserId() != $this->user->getUserid() && $this->permission->hasRootPermission())
 				{
-					if ($a->getUserId() != $GLOBALS['auth']->auth['uid'] && $GLOBALS['perm']->have_perm("root"))
-					{
-						$messaging=new messaging;
-                        $msg = sprintf(dgettext('sb',"Die Anzeige \"%s\" wurde von der Administration geloescht."),$a->getTitel());
-                        $messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, "Anzeige geloescht!");
-                    }
-					$a->delete();
-					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gelöscht.");
+					$messaging=new messaging;
+					$msg = sprintf("Die Anzeige \"%s\" wurde von der Administration gelöscht.",$a->getTitel());
+					$messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, "Anzeige gelöscht!");
 				}
-				else
-				{
-					StudIPTemplateEngine::showErrorMessage("Sie haben nicht die erforderlichen Rechte diese Anzeige zu löschen.");
-				}
+				$a->delete();
+				StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gelöscht.");
 				unset($modus);
 			}
 			//Suchergebnisse abfragen und anzeigen, falls vorhanden
@@ -624,7 +581,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		// Standardansicht, wenn kein modus ausgewählt ist.
 		if(!$modus)
 		{
-			$this->show_themen();
+			$this->showThemen();
 		}
 
 	}

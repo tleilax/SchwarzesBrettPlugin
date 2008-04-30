@@ -210,7 +210,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	{
 		$db = new DB_Seminar();
 		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE user_id='%s' AND titel='%s' AND mkdate>(UNIX_TIMESTAMP()-(60*60*24))",$this->user->getUserid(),$titel);
-		echo "Anzahl Ergebnisse : ".$db->num_rows();
 		if ($db->num_rows()>0)
 		{
 			return true;

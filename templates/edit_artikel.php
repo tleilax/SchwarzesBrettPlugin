@@ -56,6 +56,4 @@
 		<li>Jede Anzeige, die gegen diese Nutzungsordnung verstößt, wird umgehend entfernt.</li>
 	</ul>
 </div>
-
-<span style="font-weight:bold;"></span>
-
+<br/>

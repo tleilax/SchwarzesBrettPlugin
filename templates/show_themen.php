@@ -97,6 +97,8 @@
 		<li>Eine Anzeige hat zur Zeit eine Laufzeit von <b><?=($zeit/24/60/60)?> Tagen</b>. Nach Ablauf dieser Frist wird die Anzeige automatisch nicht mehr angezeigt.</li>
 		<li>Sie können nur in Themen eine Anzeige erstellen, in denen Sie die nötigen Rechte haben.</li>
 		<li>Mit der Suche werden sowohl Titel, als auch Beschreibung aller Anzeigen durchsucht.</li>
+		<li>Sie können Ihre eigenen Anzeigen jederzeit nachträglich <em>bearbeiten</em> oder <em>löschen</em>. Die Buttons befinden sich unter dem Text.</li>
+		<li>Bitte stellen Sie Ihre Anzeigen in die richtigen Kategorien ein. Damit das Schwarze Brett übersichtlich bleibt, <em>löschen</em> Sie bitte Ihre Anzeigen umgehend nach Abschluss/Verkauf.</li>
 	</ul>
 </div>
 <br/>

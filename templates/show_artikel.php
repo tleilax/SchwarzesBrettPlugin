@@ -1,7 +1,7 @@
-<div id="headline_<?=$a->getArtikelId()?>" style="display:block;">
+<div id="headline_<?=$a->getArtikelId()?>" style="display:block; font-size:12px;">
 	<div style="float:left;">
 		<a href="javascript:showArtikel('<?=$a->getArtikelId()?>');">
-		<img id="indikator_<?=$a->getArtikelId()?>" src="<?=Assets::url()?>images/<?=$pfeil?>.gif" />
+		<img id="indikator_<?=$a->getArtikelId()?>" src="assets/images/<?=$pfeil?>.gif" />
 		<?=htmlReady($a->getTitel())?></a>
 		<? if ($a->getVisible() == 0): ?>
 			<img src="<?=$pluginpfad?>/images/exclamation.png" alt="nicht sichtbar" title="Diese Anzeige ist nicht für andere sichtbar" align="absmiddle" />
@@ -10,10 +10,10 @@
 	<div style="float:right; font-size:smaller;"><?=date("d.m.Y",$a->getMkdate())?> | <?=$anzahl?> |</div>
 	<div style="clear:both;"></div>
 </div>
-<div id="content_<?=$a->getArtikelId()?>" style="display:none;">
+<div id="content_<?=$a->getArtikelId()?>" style="display:none; font-size:12px;">
 	<div style="float:left;">
 		<a href="javascript:closeArtikel('<?=$a->getArtikelId()?>');">
-		<img id="indikator_<?=$a->getArtikelId()?>" src="<?=Assets::url()?>images/<?=$pfeil_runter?>.gif" />
+		<img id="indikator_<?=$a->getArtikelId()?>" src="assets/images/<?=$pfeil_runter?>.gif" />
 		<?=htmlReady($a->getTitel())?></a>
 		<? if ($a->getVisible() == 0): ?>
 			<img src="<?=$pluginpfad?>/images/exclamation.png" alt="nicht sichtbar" title="Diese Anzeige ist nicht für andere sichtbar" align="absmiddle" />

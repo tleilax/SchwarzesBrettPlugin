@@ -9,7 +9,7 @@
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	ZMML_SchwarzesBrettPlugin
  * @copyright	2008 IBIT und ZMML
- * @version 	1.2
+ * @version 	1.2.2
  */
 
 // +---------------------------------------------------------------------------+
@@ -63,7 +63,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 *
 	 * @var user Objekt
 	 */
-	public $user;	
+	public $user;
 
 	/**
 	 * aktuelle Benutzerrechte
@@ -71,7 +71,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @var permission Objekt
 	 */
 	public $permission;
-	
+
 	/**
 	 * Konstruktor, erzeugt das Plugin.
 	 *
@@ -165,7 +165,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 * Gibt eine Liste aller Themen aus der Datenbank zurück, die sichtbar sind 
+	 * Gibt eine Liste aller Themen aus der Datenbank zurück, die sichtbar sind
 	 * oder in denen der Benutzer bereits einen Artikel erstellt hat.
 	 *
 	 * @return array Liste aller Themen
@@ -218,7 +218,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		{
 			return false;
 		}
-	}	
+	}
 
 	/**
 	 * Überprüft, ob der Benutzer dieses Objekt (Thema oder Artikel) bereits angesehen hat.
@@ -299,7 +299,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				array_push($thema['artikel'], $this->showArtikel($a));
 			}
 			array_push($results, $thema);
-			
+
 			//Ausgabe erzeugen
 			$this->showAjaxScript();
 			$template = $this->template_factory->open('search_results');
@@ -310,7 +310,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				$template->set_attribute('rootlink', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
 				$template->set_attribute('rootaccess', TRUE);
 			}
-			
+
 			$template->set_attribute('zeit', $this->zeit);
 			$template->set_attribute('pluginpfad', $this->getPluginpath());
 			$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
@@ -327,9 +327,9 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	private function showAjaxScript()
 	{
 		?>
-		
+
 		<script type="text/javascript" language="javascript">
-		function showArtikel(id) 
+		function showArtikel(id)
 		{
 			$('content_'+id).style.display='block';
 			$('headline_'+id).style.display='none';
@@ -343,11 +343,11 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		function toogleThema(id)
 		{
 			$('list_'+id).toggle();
-		}		
+		}
 		</script>
 		<?
 	}
-	
+
 	/**
 	 * Zeigt alle Themen und Anzeigen an
 	 *
@@ -356,7 +356,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	{
 		$open = trim($_REQUEST['open']); //?
 		$themen = $this->getThemen();
-		
+
 		$this->showAjaxScript();
 		$template = $this->template_factory->open('show_themen');
 		$template->set_attribute('zeit', $this->zeit);
@@ -366,7 +366,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$template->set_attribute('link_delete', PluginEngine::getLink($this,array("modus"=>"delete_thema")));
 		$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
 		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
-		
+
 		//Keine themen vorhanden
 		if (count($themen) == 0)
 		{

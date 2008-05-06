@@ -9,7 +9,7 @@
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	ZMML_SchwarzesBrettPlugin
  * @copyright	2008 IBIT und ZMML
- * @version 	1.2.2
+ * @version 	1.2.3
  */
 
 // +---------------------------------------------------------------------------+
@@ -17,14 +17,6 @@
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or any later version.
-// +---------------------------------------------------------------------------+
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // +---------------------------------------------------------------------------+
 
 // Imports
@@ -454,6 +446,13 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	public function show()
 	{
+		// Login prüfen
+		if (!isset($_SESSION['auth']) or !is_object($_SESSION['auth']) or !isset($_SESSION['auth']->auth) or !isset($_SESSION['auth']->auth['uid']) or ($_SESSION['auth']->auth['uid']=='nobody'))
+		{
+			StudIPTemplateEngine::showErrorMessage('Sie müssen eingeloggt sein, um dieses Plugin aufrufen zu dürfen');
+			return;
+		}
+
 		$open = trim($_REQUEST['open']);
 		//$this->visit("root","thema"); unnötige datenbankverbindung...
 		$modus = trim($_REQUEST['modus']);

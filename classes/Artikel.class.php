@@ -8,7 +8,7 @@
 * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
 * @package 		ZMML_SchwarzesBrettPlugin
 * @copyright	2008 IBIT und ZMML
-* @version 		1.1
+* @version 		1.2.4
 */
 
 // +---------------------------------------------------------------------------+
@@ -83,10 +83,13 @@ class Artikel
 		$db = new DB_Seminar();
 		if ($this->thema_id != "" && $this->titel != "")
 		{
+			//vorhanden Artikel updaten
 			if ($this->artikel_id != "")
 			{
-				$db->queryf("UPDATE sb_artikel SET titel='%s', beschreibung='%s', visible='%s' WHERE artikel_id='%s'",$this->titel, $this->beschreibung, $this->visible, $this->artikel_id);
+
+				$db->queryf("UPDATE sb_artikel SET titel='%s', beschreibung='%s', visible='%s', thema_id='%s' WHERE artikel_id='%s'",$this->titel, $this->beschreibung, $this->visible, $this->thema_id, $this->artikel_id);
 			}
+			//Neuen Artikel speichern
 			else
 			{
 				$id = md5(uniqid(time()));

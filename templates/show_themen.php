@@ -32,7 +32,7 @@
 	<? endif; $tindex++; ?>
 	<div class="steel1" style="padding:2px; margin:3px">
 		<div style="float:left">
-			<b><?=htmlReady($result['thema']->getTitel()) ?></b><br/>
+			<b><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b><br/>
 			<span style="font-size: smaller"><?=htmlReady($result['thema']->getBeschreibung()) ?></span>
 		</div>
 		<div style="float:right">
@@ -63,7 +63,7 @@
 		</table>
 		<? if($result['permission'] === true): ?>
 		<div align="center" style="padding: 3px;">
-		Anzeige <a href="<?=$link_artikel?>&thema_id=<?=$result['thema']->getThemaId()?>"><?=makeButton("neuanlegen", "img", "Eine neue Anzeige anlegen")?></a>
+		<a href="<?=$link_artikel?>&thema_id=<?=$result['thema']->getThemaId()?>"><img src="<?=$pluginpfad ?>/images/anzeige-button.png" alt="Eine neue Anzeige erstellen" title="Eine neue Anzeige erstellen" /></a>
 		</div>
 		<? endif; ?>
 		</div>

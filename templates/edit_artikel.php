@@ -8,16 +8,21 @@
 
 <form name="add" method="post" action="<?=$link_thema?>">
 	<input type="hidden" name="modus" value="add_artikel" />
-	<input type="hidden" name="open" value="<?=$t->getThemaId()?>" />
 	<input type="hidden" name="artikel_id" value="<?=$a->getartikelid()?>" />
 	<table border="0" cellpadding="5" cellspacing="0" width="100%">
 		<tr class="steel1">
 			<td>Thema:</td>
-			<td><b><?=htmlready($t->gettitel())?></b></td>
+			<td>
+			<select name="thema_id" style="width:500px;">
+			<? foreach ($themen as $thema): ?>
+				<option value="<?=$thema->getThemaId() ?>" <?= ($thema->getThemaId() == $thema_id)? 'selected="selected"':''?>>	<?=$thema->getTitel() ?></option>
+			<? endforeach; ?>
+			</select>
+		</td>
 		</tr>
 		<tr class="steelgraulight">
 			<td>Titel:</td>
-			<td><input type="text" name="titel" value="<?=htmlready($a->gettitel())?>"  style="width:500px;" /></td>
+			<td><input type="text" name="titel" value="<?=htmlready($a->gettitel())?>" style="width:500px;" /></td>
 		</tr>
 		<tr class="steel1">
 			<td valign="top">Beschreibung:</td>

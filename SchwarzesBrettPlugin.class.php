@@ -9,7 +9,7 @@
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	ZMML_SchwarzesBrettPlugin
  * @copyright	2008 IBIT und ZMML
- * @version 	1.2.3
+ * @version 	1.2.4
  */
 
 // +---------------------------------------------------------------------------+
@@ -318,14 +318,13 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function showAjaxScript()
 	{
-		?>
-
-		<script type="text/javascript" language="javascript">
+?>
+<script type="text/javascript" language="javascript">
 		function showArtikel(id)
 		{
 			$('content_'+id).style.display='block';
 			$('headline_'+id).style.display='none';
-			new Ajax.Request('<?=$this->getPluginpath()?>/ajaxDispatcher.php?objid='+id, {method: 'post'});
+			new Ajax.Request('<?=$GLOBALS['ABSOLUTE_URI_STUDIP']?><?=$this->getPluginpath()?>/ajaxDispatcher.php?objid='+id, {method: 'post'});
 		}
 		function closeArtikel(id)
 		{
@@ -337,7 +336,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			$('list_'+id).toggle();
 		}
 		</script>
-		<?
+<?
 	}
 
 	/**
@@ -346,7 +345,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function showThemen()
 	{
-		$open = trim($_REQUEST['open']); //?
 		$themen = $this->getThemen();
 
 		$this->showAjaxScript();
@@ -396,6 +394,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				{
 					array_push($thema['artikel'], $this->showArtikel($a));
 				}
+
+				$thema['countArtikel'] = count($artikel);
 				array_push($results, $thema);
 			}
 			$template->set_attribute('results', $results);
@@ -453,10 +453,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			return;
 		}
 
-		$open = trim($_REQUEST['open']);
-		//$this->visit("root","thema"); unnötige datenbankverbindung...
 		$modus = trim($_REQUEST['modus']);
-
 		if ($modus)
 		{
 			// Nur Root-Funktionen
@@ -502,14 +499,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				}
 			}
 			//Anzeige speichern
-			if ($modus == "add_artikel" && $this->permission->perm->have_perm($this->getThemaPermission($open)))
+			if ($modus == "add_artikel" && $this->permission->perm->have_perm($this->getThemaPermission($_REQUEST['thema_id'])))
 			{
 				if ((!$this->isDuplicate($_REQUEST['titel']) && empty($_REQUEST['artikel_id'])) || !empty($_REQUEST['artikel_id']))
 				{
 					$a = new Artikel($_REQUEST['artikel_id']);
 					$a->setTitel($_REQUEST['titel']);
 					$a->setBeschreibung($_REQUEST['beschreibung']);
-					$a->setThemaId($open);
+					$a->setThemaId($_REQUEST['thema_id']);
 					$a->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
 					$a->save();
 					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gespeichert.");
@@ -528,9 +525,9 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				{
 					$a->setThemaId($thema_id);
 				}
-				$t = new Thema($_REQUEST['thema_id']);
 				$template = $this->template_factory->open('edit_artikel');
-				$template->set_attribute('t', $t);
+				$template->set_attribute('thema_id', $_REQUEST['thema_id']);
+				$template->set_attribute('themen', $this->getThemen());
 				$template->set_attribute('a', $a);
 				$template->set_attribute('zeit', $this->zeit);
 				$template->set_attribute('link', PluginEngine::getLink($this,array()));

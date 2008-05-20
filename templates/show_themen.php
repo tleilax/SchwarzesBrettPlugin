@@ -63,7 +63,7 @@
 		</table>
 		<? if($result['permission'] === true): ?>
 		<div align="center" style="padding: 3px;">
-		<a href="<?=$link_artikel?>&thema_id=<?=$result['thema']->getThemaId()?>"><img src="<?=$pluginpfad ?>/images/anzeige-button.png" alt="Eine neue Anzeige erstellen" title="Eine neue Anzeige erstellen" /></a>
+		<a href="<?=$link_artikel?>&thema_id=<?=$result['thema']->getThemaId()?>"><img class="button" src="<?=$pluginpfad ?>/images/anzeige-button.png" alt="Eine neue Anzeige erstellen" title="Eine neue Anzeige erstellen" /></a>
 		</div>
 		<? endif; ?>
 		</div>

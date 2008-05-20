@@ -9,7 +9,7 @@
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	ZMML_SchwarzesBrettPlugin
  * @copyright	2008 IBIT und ZMML
- * @version 	1.2.4
+ * @version 	1.2.5
  */
 
 // +---------------------------------------------------------------------------+
@@ -87,6 +87,17 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		// Holt die Laufzeit aus der Config. Default: 30Tage
 		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
 	}
+
+	/**
+	 * lädt beim aufrufen zusätzliche infos in den html-header...
+	 *
+	 */
+	public function initialize()
+	{
+		$path = str_replace($GLOBALS['ABSOLUTE_PATH_STUDIP'], '', dirname(__FILE__));
+		$GLOBALS['_include_additional_header'] .= '<script src="'.$path.'/js/schwarzesbrett.js" type="text/javascript"></script>'."\n";
+	}
+
 
 	/**
 	 * Setzt den Pfad zum Plugin.
@@ -293,7 +304,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			array_push($results, $thema);
 
 			//Ausgabe erzeugen
-			$this->showAjaxScript();
 			$template = $this->template_factory->open('search_results');
 
 			//Adminfunktionen anzeigen
@@ -313,33 +323,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 * Fügt ein Javascript für Ajax-Funktionen ein
-	 *
-	 */
-	private function showAjaxScript()
-	{
-?>
-<script type="text/javascript" language="javascript">
-		function showArtikel(id)
-		{
-			$('content_'+id).style.display='block';
-			$('headline_'+id).style.display='none';
-			new Ajax.Request('<?=$GLOBALS['ABSOLUTE_URI_STUDIP']?><?=$this->getPluginpath()?>/ajaxDispatcher.php?objid='+id, {method: 'post'});
-		}
-		function closeArtikel(id)
-		{
-			$('content_'+id).style.display='none';
-			$('headline_'+id).style.display='block';
-		}
-		function toogleThema(id)
-		{
-			$('list_'+id).toggle();
-		}
-		</script>
-<?
-	}
-
-	/**
 	 * Zeigt alle Themen und Anzeigen an
 	 *
 	 */
@@ -347,7 +330,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	{
 		$themen = $this->getThemen();
 
-		$this->showAjaxScript();
 		$template = $this->template_factory->open('show_themen');
 		$template->set_attribute('zeit', $this->zeit);
 		$template->set_attribute('pluginpfad', $this->getPluginpath());
@@ -437,6 +419,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		}
 		$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
 		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
+		$template->set_attribute('link_ajax', $GLOBALS['ABSOLUTE_URI_STUDIP'].$this->getPluginpath().'/ajaxDispatcher.php');
 		return $template->render();
 	}
 

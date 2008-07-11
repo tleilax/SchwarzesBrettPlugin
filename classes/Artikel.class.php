@@ -104,10 +104,11 @@ class Artikel
 	 */
 	function delete()
 	{
-		if ($this->artikel_id)
+		if (!empty($this->artikel_id))
 		{
 			$db = new DB_Seminar();
 			$db->queryf("DELETE FROM sb_artikel WHERE artikel_id='%s'",$this->artikel_id);
+			$db->queryf("DELETE FROM sb_visits WHERE object_id='%s'",$this->artikel_id);
 		}
 	}
 

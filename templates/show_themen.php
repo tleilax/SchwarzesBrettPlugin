@@ -79,12 +79,13 @@
 <? endif; if($rootaccess): ?>
 <table border="0" cellpadding="2" cellspacing="0" width="100%">
 	<tr>
-		<td class="topic"><b>Administration:</b></td>
+		<td class="topic" colspan="2"><b>Administration:</b></td>
+	</tr>
+	<tr class="steel1">
+		<td width="150">Thema<br/><a href="<?=$rootlinknew?>"><?=makeButton("neuanlegen", "img", "Neues Thema anlegen")?></a></td>
+		<td>Alle abgelaufene Artikel<br/><a href="<?=$rootlinkdelete?>"><?=makeButton("loeschen", "img", "Alle alten Artikel löschen")?></a></td>
 	</tr>
 </table>
-<div class="steel1" style="padding:5px;">
-	Thema <a href="<?=$rootlink?>"><?=makeButton("neuanlegen", "img", "Neues Thema anlegen")?></a>
-</div>
 <br/>
 <? endif; ?>
 <table border="0" cellpadding="2" cellspacing="0" width="100%">

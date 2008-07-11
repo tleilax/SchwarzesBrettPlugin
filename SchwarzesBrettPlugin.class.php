@@ -9,7 +9,7 @@
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	ZMML_SchwarzesBrettPlugin
  * @copyright	2008 IBIT und ZMML
- * @version 	1.2.5
+ * @version 	1.2.6
  */
 
 // +---------------------------------------------------------------------------+
@@ -385,7 +385,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		//Adminfunktionen anzeigen
 		if ($this->permission->hasRootPermission())
 		{
-			$template->set_attribute('rootlink', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
+			$template->set_attribute('rootlinknew', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
+			$template->set_attribute('rootlinkdelete', PluginEngine::getLink($this,array(), 'deleteOldArtikel'));
 			$template->set_attribute('rootaccess', TRUE);
 		}
 		echo $template->render();
@@ -427,7 +428,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * Hauptfunktion, dient in diesem Plugin als Frontcontroller und steuert die Ausgaben
 	 *
 	 */
-	public function show()
+	public function actionshow()
 	{
 		// Login prüfen
 		if (!isset($_SESSION['auth']) or !is_object($_SESSION['auth']) or !isset($_SESSION['auth']->auth) or !isset($_SESSION['auth']->auth['uid']) or ($_SESSION['auth']->auth['uid']=='nobody'))
@@ -504,9 +505,9 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			if ($modus == "show_add_artikel_form")
 			{
 				$a = new Artikel($_REQUEST['artikel_id']);
-				if (!$artikel_id)
+				if (!$_REQUEST['artikel_id'])
 				{
-					$a->setThemaId($thema_id);
+					$a->setThemaId($_REQUEST['thema_id']);
 				}
 				$template = $this->template_factory->open('edit_artikel');
 				$template->set_attribute('thema_id', $_REQUEST['thema_id']);
@@ -514,7 +515,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				$template->set_attribute('a', $a);
 				$template->set_attribute('zeit', $this->zeit);
 				$template->set_attribute('link', PluginEngine::getLink($this,array()));
-				$template->set_attribute('link_thema', PluginEngine::getLink($this,array("open"=>$thema_id)));
+				$template->set_attribute('link_thema', PluginEngine::getLink($this,array("open"=>$_REQUEST['thema_id'])));
 				echo $template->render();
 
 			}
@@ -561,18 +562,32 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		{
 			$this->showThemen();
 		}
-
 	}
-
+	
 	/**
-	 * Kompatiblität zu Pluginschnittstellenänderungen
-	 * Ruft die show(); auf.
+	 * Root kann mit dieser Funktion alle veralteten Artikel aus der DB löschen
 	 *
-	 * @return show();
 	 */
-	public function actionShow()
+	public function actiondeleteOldArtikel()
 	{
-		return $this->show();
+		if ($this->permission->hasRootPermission())
+		{
+			$ret = array();
+			$db = new DB_Seminar();
+			$db->queryf("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() > (mkdate + %d)", $this->zeit);
+			$count = 0;
+			while ($db->next_record())
+			{
+				$a = new Artikel($db->f("artikel_id"));
+				$a->delete();
+				$count++;
+			}			
+			StudIPTemplateEngine::showSuccessMessage("Es wurden erfolgreich <b>".$count."</b> Artikel aus der Datenbank gelöscht.");
+		}
+		else
+		{
+			StudIPTemplateEngine::showErrorMessage("Sie haben nicht die Berechtigung Artikel zu löschen.");
+		}
+		$this->showThemen();
 	}
-
 }

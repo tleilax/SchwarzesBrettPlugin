@@ -5,10 +5,11 @@ function showArtikel(id, link)
 	new Ajax.Request(link, {method: 'post', parameters: {objid: id} });
 }
 
-function closeArtikel(id)
+function closeArtikel(id, url)
 {
 	$('content_'+id).hide();
 	$('headline_'+id).show();
+	$('indikator_'+id).src = 'assets/images/forumgrau.gif';
 }
 
 function toogleThema(id)

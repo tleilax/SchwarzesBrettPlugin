@@ -405,7 +405,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$template->set_attribute('anzahl', $this->getArtikelLookups($a->getArtikelId()));
 		$template->set_attribute('pluginpfad', $this->getPluginpath());
 		$template->set_attribute('pfeil', ($this->hasVisited($a->getArtikelId()) ? "forumgrau" : "forumrot"));
-		$template->set_attribute('pfeil_runter', ($this->hasVisited($a->getArtikelId()) ? "forumgraurunt" : "forumrotrunt"));
+		$template->set_attribute('pfeil_runter', "forumgraurunt");
 		//benutzer und root extrafunktionen anzeigen
 		if($a->getUserId() == $this->user->getuserid() || $this->permission->hasRootPermission())
 		{
@@ -563,7 +563,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			$this->showThemen();
 		}
 	}
-	
+
 	/**
 	 * Root kann mit dieser Funktion alle veralteten Artikel aus der DB löschen
 	 *
@@ -581,7 +581,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				$a = new Artikel($db->f("artikel_id"));
 				$a->delete();
 				$count++;
-			}			
+			}
 			StudIPTemplateEngine::showSuccessMessage("Es wurden erfolgreich <b>".$count."</b> Artikel aus der Datenbank gelöscht.");
 		}
 		else

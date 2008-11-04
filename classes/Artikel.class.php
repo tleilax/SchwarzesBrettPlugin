@@ -33,13 +33,14 @@
 class Artikel
 {
 
-	var $titel;
-	var $beschreibung;
-	var $user_id;
-	var $visible;
-	var $thema_id;
-	var $artikel_id;
-	var $mkdatum;
+	private $titel;
+	private $beschreibung;
+	private $user_id;
+	private $visible;
+	private $thema_id;
+	private $thema_titel;
+	private $artikel_id;
+	private $mkdatum;
 
 	/**
 	 * Konstruktor, erstellt Artikel-Objekte
@@ -70,6 +71,11 @@ class Artikel
                 $this->thema_id = $db->f("thema_id");
                 $this->artikel_id = $db->f("artikel_id");
 				$this->mkdatum = $db->f("mkdate");
+			}
+			$db->queryf("SELECT titel FROM sb_themen WHERE thema_id='%s'", $this->thema_id);
+			if ($db->next_record())
+			{
+                $this->thema_titel = $db->f("titel");
 			}
 		}
 	}
@@ -160,6 +166,11 @@ class Artikel
 	function getThemaId()
 	{
 		return $this->thema_id;
+	}
+
+	function getThemaTitel()
+	{
+		return $this->thema_titel;
 	}
 
 	function getArtikelId() {

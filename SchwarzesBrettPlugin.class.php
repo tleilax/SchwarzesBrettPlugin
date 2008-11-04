@@ -381,6 +381,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				array_push($results, $thema);
 			}
 			$template->set_attribute('results', $results);
+
+			//zusätzlich die letzten 10 Artikel
+			$newOnes = $this->getLastArtikel('10');
+			foreach($newOnes as $a)
+			{
+				$lastArtikel[] = $this->showArtikel($a, 'show_lastartikel');
+			}
+			$template->set_attribute('lastArtikel', $lastArtikel);
 		}
 		//Adminfunktionen anzeigen
 		if ($this->permission->hasRootPermission())
@@ -397,9 +405,9 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 *
 	 * @param Object $a eine Anzeige
 	 */
-	private function showArtikel($a)
+	private function showArtikel($a, $template='show_artikel')
 	{
-		$template = $this->template_factory->open('show_artikel');
+		$template = $this->template_factory->open($template);
 		$template->set_attribute('zeit', $this->zeit);
 		$template->set_attribute('a', $a);
 		$template->set_attribute('anzahl', $this->getArtikelLookups($a->getArtikelId()));
@@ -589,5 +597,25 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			StudIPTemplateEngine::showErrorMessage("Sie haben nicht die Berechtigung Artikel zu löschen.");
 		}
 		$this->showThemen();
+	}
+
+	/**
+	 * Holt die 10 aktuellsten Artikel aus der Datenbank
+	 *
+	 * @param int $last
+	 * @return array()
+	 */
+	private function getLastArtikel($last = '10')
+	{
+		$ret = array();
+		$db = new DB_Seminar();
+		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() < (mkdate + %s) AND visible=1 ORDER BY mkdate DESC LIMIT %s;", $this->zeit, $last);
+		$ret = array();
+		while ($db->next_record())
+		{
+			$a = new Artikel($db->f("artikel_id"));
+			array_push($ret, $a);
+		}
+		return $ret;
 	}
 }

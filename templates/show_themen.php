@@ -12,17 +12,51 @@
 </div>
 </form>
 <br/>
+<? if(count($lastArtikel) > 0): $last=count($lastArtikel); ?>
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+	<tr>
+		<td class="topic"><b>Die <?=$last<10? $last:'10'; ?> neusten Anzeigen:</b></td>
+	</tr>
+</table>
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+	<tr class="steel1">
+		<td valign="top" width="50%">
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<? for ($i=0; $i<ceil($last/2); $i++):
+				$a = $lastArtikel[$i]; ?>
+				<tr>
+					<td class="<?=($i%2==0)?'steel1':'steelgraulight'?>">
+					<?=$a ?>
+					</td>
+				</tr>
+				<? endfor; ?>
+			</table>
+		</td>
+		<td valign="top" width="50%">
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+				<? for ($i=ceil($last/2); $i<($last); $i++):
+				$a = $lastArtikel[$i]; ?>
+				<tr>
+					<td class="<?=($i%2==0)?'steel1':'steelgraulight'?>">
+					<?=$a ?>
+					</td>
+				</tr>
+				<? endfor; ?>
+			</table>
+		</td>
+	</tr>
+</table>
+<br/>
+<? endif; ?>
 <table border="0" cellpadding="2" cellspacing="0" width="100%">
 	<tr>
 		<td class="topic"><b>Themenübersicht:</b></td>
 	</tr>
 </table>
-
 <? if($keinethemen): ?>
 <div class="steel1" style="padding:5px;">
 	Zur Zeit sind keine Themengebiete vorhanden!
 </div>
-
 <? else: ?>
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
@@ -46,7 +80,7 @@
 		<? endif; ?>
 		</div>
 		<div style="clear:both; border-bottom: 1px solid #8e8e8e;"></div>
-		<div id="list_<?=$result['thema']->getThemaId() ?>">
+		<div id="list_<?=$result['thema']->getThemaId() ?>" style="display: none;">
 		<table border="0" cellpadding="5" cellspacing="0" width="100%">
 			<? foreach ($result['artikel'] as $index=>$a): ?>
 			<tr>

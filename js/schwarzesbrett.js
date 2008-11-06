@@ -1,14 +1,14 @@
-function showArtikel(id, link)
+function showArtikel(id, link, typ)
 {
-	$('content_'+id).show();
-	$('headline_'+id).hide();
+	$('content'+typ+'_'+id).show();
+	$('headline'+typ+'_'+id).hide();
 	new Ajax.Request(link, {method: 'post', parameters: {objid: id} });
 }
 
-function closeArtikel(id, url)
+function closeArtikel(id, typ)
 {
-	$('content_'+id).hide();
-	$('headline_'+id).show();
+	$('content'+typ+'_'+id).hide();
+	$('headline'+typ+'_'+id).show();
 	$('indikator_'+id).src = 'assets/images/forumgrau.gif';
 }
 

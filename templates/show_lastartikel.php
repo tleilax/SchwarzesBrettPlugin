@@ -1,6 +1,6 @@
-<div id="headline_<?=$a->getArtikelId()?>" style="display:block; font-size:12px;">
+<div id="headlinel_<?=$a->getArtikelId()?>" style="display:block; font-size:12px;">
 	<div style="float:left;">
-		<a href="javascript:showArtikel('<?=$a->getArtikelId()?>', '<?=$link_ajax?>');">
+		<a href="javascript:showArtikel('<?=$a->getArtikelId()?>', '<?=$link_ajax?>', 'l');">
 		<img id="indikator_<?=$a->getArtikelId()?>" src="assets/images/<?=$pfeil?>.gif" />
 		<?=htmlReady($a->getTitel())?></a> (<?=$a->getThemaTitel()?>)
 		<? if ($a->getVisible() == 0): ?>
@@ -10,9 +10,9 @@
 	<div style="float:right; font-size:smaller;"><?=date("d.m.Y",$a->getMkdate())?> | <?=$anzahl?> |</div>
 	<div style="clear:both;"></div>
 </div>
-<div id="content_<?=$a->getArtikelId()?>" style="display:none; font-size:12px;">
+<div id="contentl_<?=$a->getArtikelId()?>" style="display:none; font-size:12px;">
 	<div style="float:left;">
-		<a href="javascript:closeArtikel('<?=$a->getArtikelId()?>');">
+		<a href="javascript:closeArtikel('<?=$a->getArtikelId()?>', 'l');">
 		<img id="indikator_offen_<?=$a->getArtikelId()?>" src="assets/images/<?=$pfeil_runter?>.gif" />
 		<?=htmlReady($a->getTitel())?></a>
 		<? if ($a->getVisible() == 0): ?>

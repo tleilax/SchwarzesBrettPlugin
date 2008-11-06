@@ -1,16 +1,36 @@
 <!-- plugin: schwarzesbrett, template: show_themen -->
-<form name="search_form" method="post" action="<?=$link_search?>">
-<table border="0" cellpadding="2" cellspacing="0" width="100%">
+<table border="0" cellpadding="2" cellspacing="2" width="100%">
 	<tr>
-		<td class="topic"><b>Allgemeine Suche nach Anzeigen:</b></td>
+	<td>
+		<form name="search_form" method="post" action="<?=$link_search?>">
+		<table border="0" cellpadding="2" cellspacing="0" width="100%">
+			<tr>
+				<td class="topic"><b>Allgemeine Suche nach Anzeigen:</b></td>
+			</tr>
+			<tr>
+				<td class="steel1" style="padding:5px;">
+				Nach Anzeigen suchen:
+				<input type="text" style="width:200px;" name="search_text" value="<?=htmlready($_REQUEST['search_text'])?>" />
+				<?=makebutton("suchen","input", "nach Anzeigen suchen", "submit")?>
+				<a href="<?=$link_back?>"><?=makebutton("zuruecksetzen","img", "zurücksetzen")?></a>
+				</td>
+			</tr>
+		</table>
+		</form>
+	</td>
+	<td>
+		<table border="0" cellpadding="2" cellspacing="0" width="100%">
+			<tr>
+				<td class="topic"><b>Neue Anzeige erstellen</b></td>
+			</tr>
+			<tr>
+				<td class="steel1" align="center" style="padding:5px;">
+				<a href="<?=$link_artikel?>"><img class="button" src="<?=$pluginpfad ?>/images/anzeige-button.png" alt="Eine neue Anzeige erstellen" title="Eine neue Anzeige erstellen" /></a></td>
+			</tr>
+		</table>
+	</td>
 	</tr>
 </table>
-<div class="steel1" style="padding:5px;">Nach Anzeigen suchen:
-	<input type="text" style="width:200px;" name="search_text" value="<?=htmlready($_REQUEST['search_text'])?>" />
-	<?=makebutton("suchen","input", "nach Anzeigen suchen", "submit")?>
-	<a href="<?=$link_back?>"><?=makebutton("zuruecksetzen","img", "zurücksetzen")?></a>
-</div>
-</form>
 <br/>
 <? if(count($lastArtikel) > 0): $last=count($lastArtikel); ?>
 <table border="0" cellpadding="2" cellspacing="0" width="100%">
@@ -66,7 +86,7 @@
 	<? endif; $tindex++; ?>
 	<div class="steel1" style="padding:2px; margin:3px">
 		<div style="float:left">
-			<b><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b><br/>
+			<a href="javascript:toogleThema('<?=$result['thema']->getThemaId() ?>');"><b><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
 			<span style="font-size: smaller"><?=htmlReady($result['thema']->getBeschreibung()) ?></span>
 		</div>
 		<div style="float:right">

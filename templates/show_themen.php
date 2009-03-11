@@ -1,7 +1,7 @@
 <!-- plugin: schwarzesbrett, template: show_themen -->
 <table border="0" cellpadding="2" cellspacing="2" width="100%">
 	<tr>
-	<td>
+	<td valign="top">
 		<form name="search_form" method="post" action="<?=$link_search?>">
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
@@ -18,7 +18,7 @@
 		</table>
 		</form>
 	</td>
-	<td>
+	<td valign="top">
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
 				<td class="topic"><b>Neue Anzeige erstellen</b></td>

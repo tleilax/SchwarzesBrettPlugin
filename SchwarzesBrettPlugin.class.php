@@ -1,34 +1,26 @@
 <?php
 /**
- * SchwarzesBrettPlugin.class.php (SystemPlugin)
+ * StudiFormularPlugin.class.php
  *
  * Plugin zum Verwalten von Schwarzen Brettern (Angebote und Gesuche)
+ * 
  * Diese Datei enthält die Hauptklasse des Plugins
- * Dieses Plugin basiert auf PHP5 und steht unter der GPL.
- * @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
+ *
+ * PHP version 5
+ *
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
- * @package 	ZMML_SchwarzesBrettPlugin
- * @copyright	2008 IBIT und ZMML
- * @version 	1.2.6
+ * @package 	IBIT_SchwarzesBrettPlugin
+ * @copyright 	2008-2009 IBIT
+ * @license 	http://www.gnu.org/licenses/gpl.html GPL Licence 3
+ * @version 	1.4
  */
 
-// +---------------------------------------------------------------------------+
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or any later version.
-// +---------------------------------------------------------------------------+
-
 // Imports
-require_once("lib/functions.php");
-require_once("lib/messaging.inc.php");
-require_once("classes/Artikel.class.php");
-require_once("classes/Thema.class.php");
-require_once('vendor/flexi/flexi.php');
-
-//debug
-//error_reporting( E_ALL );
-
+require_once 'lib/functions.php';
+require_once 'lib/messaging.inc.php';
+require_once 'classes/Artikel.class.php';
+require_once 'classes/Thema.class.php';
+require_once 'vendor/flexi/flexi.php';
 
 /**
  * SchwarzesBrettPlugin Hauptklasse

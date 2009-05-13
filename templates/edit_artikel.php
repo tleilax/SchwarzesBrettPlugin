@@ -22,7 +22,7 @@
 		</tr>
 		<tr class="steelgraulight">
 			<td>Titel:</td>
-			<td><input type="text" name="titel" value="<?=htmlready($a->gettitel())?>" style="width:500px;" /></td>
+			<td><input type="text" name="titel" value="<?=htmlready($a->gettitel())?>" style="width:500px;" maxlength="80" /></td>
 		</tr>
 		<tr class="steel1">
 			<td valign="top">Beschreibung:</td>
@@ -57,6 +57,7 @@
 		<li>Sobald eine Anzeige nicht mehr aktuell ist (z.b. in dem Fall, dass ein Buch verkauft oder eine Mitfahrgelegenheit gefunden wurde), sollte die Anzeige durch den Autor entfernt werden.</li>
 		<li>Unter der Beschreibung wird automatisch ein Link zu Ihrer Benutzerhomepage eingebunden. <br />Außerdem können andere Nutzer direkt über einen Button antworten. Diese Nachrichten erhalten Sie als Stud.IP interne Post!</li>
 		<li>Bitte die Anzeigen in die dafür vorgesehenen Themen einstellen, damit dieses schwarze Brett so übersichtlich wie möglich bleibt.</li>
+		<li><b>Bitte Artikel nur in <em>eine</em> Kategorie einstellen!</b></li>
 		<li>Wird ein Gegenstand oder eine Dienstleistung gegen Bezahlung angeboten, sollte der Betrag genannt werden, um unnötige Nachfragen zu vermeiden.</li>
 		<li>Jede Anzeige, die gegen diese Nutzungsordnung verstößt, wird umgehend entfernt.</li>
 	</ul>

@@ -2,11 +2,9 @@
 <table border="0" cellpadding="2" cellspacing="2" width="100%">
 	<tr>
 	<td valign="top">
-		<form name="search_form" method="post" action="<?=$link_search?>">
+		<form name="search_form" method="post" action="<?=$link_search?>">		
+		<div class="topic"><b>Allgemeine Suche nach Anzeigen:</b></div>
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
-			<tr>
-				<td class="topic"><b>Allgemeine Suche nach Anzeigen:</b></td>
-			</tr>
 			<tr>
 				<td class="steel1" style="padding:5px;">
 				Nach Anzeigen suchen:
@@ -18,11 +16,9 @@
 		</table>
 		</form>
 	</td>
-	<td valign="top">
+	<td valign="top">		
+		<div class="topic"><b>Neue Anzeige erstellen</b></div>
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
-			<tr>
-				<td class="topic"><b>Neue Anzeige erstellen</b></td>
-			</tr>
 			<tr>
 				<td class="steel1" align="center" style="padding:5px;">
 				<a href="<?=$link_artikel?>"><img class="button" src="<?=$pluginpfad ?>/images/anzeige-button.png" alt="Eine neue Anzeige erstellen" title="Eine neue Anzeige erstellen" /></a></td>
@@ -33,11 +29,7 @@
 </table>
 <br/>
 <? if(count($lastArtikel) > 0): $last=count($lastArtikel); ?>
-<table border="0" cellpadding="2" cellspacing="0" width="100%">
-	<tr>
-		<td class="topic"><b>Die <?=$last<10? $last:'10'; ?> neusten Anzeigen:</b></td>
-	</tr>
-</table>
+<div class="topic"><b>Die <?=$last<10? $last:'20'; ?> neusten Anzeigen:</b></div>
 <table border="0" cellpadding="2" cellspacing="0" width="100%">
 	<tr class="steel1">
 		<td valign="top" width="50%">
@@ -68,11 +60,7 @@
 </table>
 <br/>
 <? endif; ?>
-<table border="0" cellpadding="2" cellspacing="0" width="100%">
-	<tr>
-		<td class="topic"><b>Themenübersicht:</b></td>
-	</tr>
-</table>
+<div class="topic"><b>Themenübersicht:</b></div>
 <? if($keinethemen): ?>
 <div class="steel1" style="padding:5px;">
 	Zur Zeit sind keine Themengebiete vorhanden!
@@ -86,7 +74,7 @@
 	<? endif; $tindex++; ?>
 	<div class="steel1" style="padding:2px; margin:3px">
 		<div style="float:left">
-			<a href="javascript:toogleThema('<?=$result['thema']->getThemaId() ?>');"><b><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
+			<a title="Klicken, um die Kategorie aufzuklappen" href="javascript:toogleThema('<?=$result['thema']->getThemaId() ?>');"><b><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
 			<span style="font-size: smaller"><?=htmlReady($result['thema']->getBeschreibung()) ?></span>
 		</div>
 		<div style="float:right">
@@ -154,6 +142,7 @@
 		<li>Mit der Suche werden sowohl Titel, als auch Beschreibung aller Anzeigen durchsucht.</li>
 		<li>Sie können Ihre eigenen Anzeigen jederzeit nachträglich <em>bearbeiten</em> oder <em>löschen</em>. Die Buttons befinden sich unter dem Text.</li>
 		<li>Bitte stellen Sie Ihre Anzeigen in die richtigen Kategorien ein. Damit das Schwarze Brett übersichtlich bleibt, <em>löschen</em> Sie bitte Ihre Anzeigen umgehend nach Abschluss/Verkauf.</li>
+		<li><b>Bitte Artikel nur in <em>eine</em> Kategorie einstellen!</b></li>
 	</ul>
 </div>
 <br/>

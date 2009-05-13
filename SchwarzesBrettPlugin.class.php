@@ -1,6 +1,6 @@
 <?php
 /**
- * StudiFormularPlugin.class.php
+ * SchwarzesBrettPlugin.class.php
  *
  * Plugin zum Verwalten von Schwarzen Brettern (Angebote und Gesuche)
  * 
@@ -8,19 +8,16 @@
  *
  * PHP version 5
  *
+ * @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	IBIT_SchwarzesBrettPlugin
- * @copyright 	2008-2009 IBIT
+ * @copyright 	2008-2009 IBIT und ZMML
  * @license 	http://www.gnu.org/licenses/gpl.html GPL Licence 3
- * @version 	1.4
+ * @version 	1.6
  */
 
-// Imports
-require_once 'lib/functions.php';
-require_once 'lib/messaging.inc.php';
-require_once 'classes/Artikel.class.php';
-require_once 'classes/Thema.class.php';
-require_once 'vendor/flexi/flexi.php';
+// IMPORTS
+require_once 'bootstrap.inc.php';
 
 /**
  * SchwarzesBrettPlugin Hauptklasse
@@ -63,33 +60,21 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	function __construct()
 	{
 		parent::AbstractStudIPSystemPlugin();
+		$this->setPluginiconname('images/paste_plain.png');
+		//$this->setPluginiconname('images/header_pinn1.gif'); //für safiredesign
+		
+		$this->buildMenu();
 		$this->template_factory = new Flexi_TemplateFactory(dirname(__FILE__).'/templates');
 		$this->user = $this->getUser();
 		$this->permission = $this->user->getPermission();
 
-		//plugin-icon
-		$this->setPluginiconname('images/paste_plain.png');
-		//$this->setPluginiconname('images/header_pinn1.gif'); //für safiredesign
-
-		// Navigationsreiter erzeugen
-		$nav = new PluginNavigation();
-		$nav->setDisplayname(_('Schwarzes Brett'));
-		$this->setNavigation($nav);
-
 		// Holt die Laufzeit aus der Config. Default: 30Tage
 		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
-	}
-
-	/**
-	 * lädt beim aufrufen zusätzliche infos in den html-header...
-	 *
-	 */
-	public function initialize()
-	{
+		
 		$path = str_replace($GLOBALS['ABSOLUTE_PATH_STUDIP'], '', dirname(__FILE__));
 		$GLOBALS['_include_additional_header'] .= '<script src="'.$path.'/js/schwarzesbrett.js" type="text/javascript"></script>'."\n";
+		
 	}
-
 
 	/**
 	 * Setzt den Pfad zum Plugin.
@@ -98,7 +83,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	public function setPluginpath($path)
 	{
 		parent::setPluginpath($path);
-		$this->buildMenu();
 	}
 
 	/**
@@ -107,13 +91,9 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	public function buildMenu()
 	{
-		/*$new_postings = $this->new_items_since_last_visit();
-		$all = $this->num_all_postings();
-		$p = sprintf(dgettext('sb',"%d"),$all);
-		if ($new_postings) $p .= sprintf(dgettext('sb',"/%d"),$new_postings);*/
 		$tab = new PluginNavigation();
 		$tab->setDisplayname(_('Schwarzes Brett'));
-		$this->setNavigation( $tab );
+		$this->setNavigation($tab);
 	}
 
 	/**
@@ -133,6 +113,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function getArtikel($thema_id)
 	{
+		//TODO: pdo
 		$ret = array();
 		$db = new DB_Seminar();
 		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s' AND UNIX_TIMESTAMP() < (mkdate + %d) AND (visible=1 OR (visible=0 AND (user_id='%s' OR 'root'='%s'))) ORDER BY mkdate DESC",$thema_id,$this->zeit,$this->user->getUserid(),$this->permission->perm->get_perm($this->user->getUserid()));
@@ -153,6 +134,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function getArtikelLookups($artikel_id)
 	{
+		//TODO: pdo
 		$db = new DB_Seminar();
 		$db->queryf("SELECT COUNT(*) AS count FROM sb_visits WHERE type='artikel' AND object_id='%s'",$artikel_id);
 		$db->next_record();
@@ -167,6 +149,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function getThemen()
 	{
+		//TODO: pdo
 		$ret = array();
 		$db = new DB_Seminar();
 		$db->queryf("SELECT t.*, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR t.user_id='%s' OR 'perm'='%s' GROUP BY t.thema_id ORDER BY t.titel",$this->user->getUserid(),$this->permission->perm->get_perm($this->user->getUserid()));
@@ -188,6 +171,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function getThemaPermission($thema_id)
 	{
+		//TODO: pdo
 		$db = new DB_Seminar();
 		$db->queryf("SELECT perm FROM sb_themen WHERE thema_id='%s'",$thema_id);
 		$db->next_record();
@@ -203,6 +187,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function isDuplicate($titel)
 	{
+		//TODO: pdo
 		$db = new DB_Seminar();
 		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE user_id='%s' AND titel='%s' AND mkdate>(UNIX_TIMESTAMP()-(60*60*24))",$this->user->getUserid(),$titel);
 		if ($db->num_rows()>0)
@@ -374,8 +359,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			}
 			$template->set_attribute('results', $results);
 
-			//zusätzlich die letzten 10 Artikel
-			$newOnes = $this->getLastArtikel('10');
+			//zusätzlich die letzten 20 Artikel
+			$newOnes = $this->getLastArtikel('20');
 			foreach($newOnes as $a)
 			{
 				$lastArtikel[] = $this->showArtikel($a, 'show_lastartikel');
@@ -423,6 +408,22 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$template->set_attribute('link_ajax', $GLOBALS['ABSOLUTE_URI_STUDIP'].$this->getPluginpath().'/ajaxDispatcher.php');
 		return $template->render();
 	}
+	
+	/**
+	 * Holt die 10 aktuellsten Artikel aus der Datenbank
+	 *
+	 * @param int $last
+	 * @return array() Artikel
+	 */
+	private function getLastArtikel($last = '20')
+	{
+		$result = DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() < (mkdate + {$this->zeit}) AND visible=1 ORDER BY mkdate DESC LIMIT {$last}")->fetchAll(PDO::FETCH_COLUMN);
+		foreach ($result as $artikel_id)
+		{
+			$ret[] = new Artikel($artikel_id);
+		}
+		return $ret;
+	}
 
 	/**
 	 * Hauptfunktion, dient in diesem Plugin als Frontcontroller und steuert die Ausgaben
@@ -430,13 +431,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	public function actionshow()
 	{
-		// Login prüfen
-		if (!isset($_SESSION['auth']) or !is_object($_SESSION['auth']) or !isset($_SESSION['auth']->auth) or !isset($_SESSION['auth']->auth['uid']) or ($_SESSION['auth']->auth['uid']=='nobody'))
-		{
-			StudIPTemplateEngine::showErrorMessage('Sie müssen eingeloggt sein, um dieses Plugin aufrufen zu dürfen');
-			return;
-		}
-
 		$modus = trim($_REQUEST['modus']);
 		if ($modus)
 		{
@@ -495,9 +489,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 					$a->save();
 					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gespeichert.");
 				}
+				elseif($this->isDuplicate($_REQUEST['titel']))
+				{
+					StudIPTemplateEngine::showErrorMessage("Sie haben bereits einen Artikel mit diesem Titel erstellt. Bitte beachten Sie die Nutzungshinweise!");
+					
+				}
 				else
 				{
-					StudIPTemplateEngine::showErrorMessage("Sie haben nicht die erforderlichen Rechte eine Anzeige zu erstellen bzw. Sie haben bereits einen Artikel mit diesem Titel erstellt.");
+					StudIPTemplateEngine::showErrorMessage("Sie haben nicht die erforderlichen Rechte eine Anzeige zu erstellen.");
 				}
 				unset($modus);
 			}
@@ -570,6 +569,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	public function actiondeleteOldArtikel()
 	{
+		//TODO: pdo
 		if ($this->permission->hasRootPermission())
 		{
 			$ret = array();
@@ -589,25 +589,5 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			StudIPTemplateEngine::showErrorMessage("Sie haben nicht die Berechtigung Artikel zu löschen.");
 		}
 		$this->showThemen();
-	}
-
-	/**
-	 * Holt die 10 aktuellsten Artikel aus der Datenbank
-	 *
-	 * @param int $last
-	 * @return array()
-	 */
-	private function getLastArtikel($last = '10')
-	{
-		$ret = array();
-		$db = new DB_Seminar();
-		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() < (mkdate + %s) AND visible=1 ORDER BY mkdate DESC LIMIT %s;", $this->zeit, $last);
-		$ret = array();
-		while ($db->next_record())
-		{
-			$a = new Artikel($db->f("artikel_id"));
-			array_push($ret, $a);
-		}
-		return $ret;
 	}
 }

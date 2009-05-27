@@ -20,7 +20,7 @@
 		<tr class="steel1">
 			<td>Berechtigung:</td>
 			<td>
-			<select name="perm" size="1">
+			<select name="thema_perm" size="1">
 			<?
 			$pe = array('autor','tutor','dozent','admin','root');
 			foreach ($pe as $p): ?>

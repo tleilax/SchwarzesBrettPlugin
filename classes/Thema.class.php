@@ -3,15 +3,14 @@
 /**
  * Thema.class.php
  *
- * In dieser Datei sind 2 Klassen: Thema und ThemaExt.
- * Eine Klasse für die Kategorien des schwarzen Brettes. In diesem Plugin Thema genannt.
- * Dazu noch eine Erweiterungsklasse
+ * Eine Klasse für die Kategorien des schwarzen Brettes. 
+ * In diesem Plugin Thema genannt.
  *
  * @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	IBIT_SchwarzesBrettPlugin
- * @copyright	2008 IBIT und ZMML
- * @version 	1.5
+ * @copyright	2009 IBIT und ZMML
+ * @version 	1.6.2
  */
 
 /**
@@ -19,56 +18,57 @@
  *
  */
 class Thema
-{
-	
+{	
 	/**
 	 * Titel des Themas
 	 *
 	 * @var string
 	 */
-	var $titel;
+	private $titel;
 	
 	/**
 	 * Beschreibung des Themas
 	 *
 	 * @var string
 	 */
-	var $beschreibung;
+	private $beschreibung;
 	
 	/**
 	 * Die ID des Erstellers
 	 *
 	 * @var string
 	 */
-	var $user_id;
+	private $user_id;
 	
 	/**
 	 * Sichtbarkeitsstatus für andere Benutzer
 	 *
 	 * @var boolean
 	 */
-	var $visible;
+	private $visible;
 	
 	/**
 	 * Die ID des Themas
 	 *
 	 * @var unknown_type
 	 */
-	var $thema_id;
+	private $thema_id;
 	
 	/**
 	 * Benutzerrechte für dieses Thema
 	 *
 	 * @var string
 	 */
-	var $perm;
+	private $perm;
 	
 	/**
 	 * Erstellungsdatum
 	 *
 	 * @var unknown_type
 	 */
-	var $mkdatum;
+	private $mkdatum;
+	
+	private $artikel_count;
 
 	/**
 	 * Konstruktor, erstellt ein Objekt der Klasse Thema
@@ -76,9 +76,9 @@ class Thema
 	 * @param string $id
 	 * @return Thema
 	 */
-	public function __construct($id = FALSE)
+	public function __construct($id = false)
 	{
-		if(! $id)
+		if(!$id)
 		{
 			$this->titel = "";
 			$this->beschreibung = "";
@@ -87,40 +87,40 @@ class Thema
 			$this->thema_id = "";
 			$this->perm = "autor";
 			$this->mkdatum = 0;
-		} else
+		} 
+		else
 		{
-			$db = new DB_Seminar();
-			$db->queryf("SELECT * FROM sb_themen WHERE thema_id='%s'", $id);
-			if($db->next_record())
+			$thema = DBManager::get()->query("SELECT * FROM sb_themen WHERE thema_id='{$id}'")->fetch(PDO::FETCH_ASSOC);
+			if(!empty($thema))
 			{
-				$this->titel = $db->f("titel");
-				$this->beschreibung = $db->f("beschreibung");
-				$this->user_id = $db->f("user_id");
-				$this->visible = $db->f("visible");
-				$this->perm = $db->f("perm");
-				$this->thema_id = $db->f("thema_id");
-				$this->mkdatum = $db->f("mkdate");
+				$this->titel = $thema['titel'];
+				$this->beschreibung = $thema['beschreibung'];
+				$this->user_id = $thema['user_id'];
+				$this->visible = $thema['visible'];
+				$this->perm = $thema['perm'];
+				$this->thema_id = $thema['thema_id'];
+				$this->mkdatum = $thema['mkdate'];
 			}
 		}
+		$this->artikel_count = 0;
 	}
 
 	/**
 	 * Speichert ein Thema in die Datenbank. Entweder neu angelegt oder bearbeitet.
 	 *
 	 */
-	function save()
+	public function save()
 	{
-		$db = new DB_Seminar();
 		if($this->titel != "")
 		{
 			if($this->thema_id != "")
 			{
-				$db->queryf("UPDATE sb_themen SET titel='%s', beschreibung='%s', visible='%s', perm='%s' WHERE thema_id='%s'", $this->titel, $this->beschreibung, $this->visible, $this->perm, $this->thema_id);
+				DBManager::get()->exec("UPDATE sb_themen SET titel='{$this->titel}', beschreibung='{$this->beschreibung}', visible='{$this->visible}', perm='{$this->perm}' WHERE thema_id='{$this->thema_id}'");
 			
 			} else
 			{
 				$id = md5(uniqid(time()));
-				$db->queryf("INSERT INTO sb_themen (thema_id, titel, user_id, mkdate, beschreibung, visible, perm) VALUES ('%s','%s','%s',UNIX_TIMESTAMP(),'%s', %d, '%s')", $id, $this->titel, $GLOBALS['auth']->auth['uid'], $this->beschreibung, $this->visible, $this->perm);
+				DBManager::get()->exec("INSERT INTO sb_themen (thema_id, titel, user_id, mkdate, beschreibung, visible, perm) VALUES ('{$id}','{$this->titel}','{$GLOBALS['auth']->auth['uid']}',UNIX_TIMESTAMP(),'{$this->beschreibung}', {$this->visible}, '{$this->perm}')");
 			}
 		}
 	}
@@ -129,53 +129,52 @@ class Thema
 	 * Löscht ein thema aus der Datenbank
 	 *
 	 */
-	function delete()
+	public function delete()
 	{
 		if($this->thema_id)
 		{
-			$db = new DB_Seminar();
-			$db->queryf("DELETE FROM sb_visits WHERE object_id='%s'", $this->thema_id);
-			$db->queryf("DELETE FROM sb_artikel WHERE thema_id='%s'", $this->thema_id);
-			$db->queryf("DELETE FROM sb_themen WHERE thema_id='%s'", $this->thema_id);
+			DBManager::get()->exec("DELETE FROM sb_visits WHERE object_id='{$this->thema_id}'");
+			DBManager::get()->exec("DELETE FROM sb_artikel WHERE thema_id='{$this->thema_id}'");
+			DBManager::get()->exec("DELETE FROM sb_themen WHERE thema_id='{$this->thema_id}'");
 		}
 	}
 
-	function setTitel($s)
+	public function setTitel($s)
 	{
 		$this->titel = trim($s);
 	}
 
-	function setBeschreibung($s)
+	public function setBeschreibung($s)
 	{
 		$this->beschreibung = trim($s);
 	}
 
-	function setUserId($s)
+	public function setUserId($s)
 	{
 		$this->user_id = $s;
 	}
 
-	function setVisible($s)
+	public function setVisible($s)
 	{
 		$this->visible = $s;
 	}
 
-	function setThemaId($s)
+	public function setThemaId($s)
 	{
 		$this->thema_id = $s;
 	}
 
-	function setPerm($s)
+	public function setPerm($s)
 	{
 		$this->perm = $s;
 	}
 
-	function getTitel()
+	public function getTitel()
 	{
 		return $this->titel;
 	}
 
-	function getBeschreibung()
+	public function getBeschreibung()
 	{
 		return $this->beschreibung;
 	}
@@ -185,7 +184,7 @@ class Thema
 		return $this->user_id;
 	}
 
-	function getVisible()
+	public function getVisible()
 	{
 		return $this->visible;
 	}
@@ -195,20 +194,29 @@ class Thema
 	 *
 	 * @return string
 	 */
-	function getThemaId()
+	public function getThemaId()
 	{
 		return $this->thema_id;
 	}
 
-	function getPerm()
+	public function getPerm()
 	{
 		return $this->perm;
 	}
 
-	function getMkdate()
+	public function getMkdate()
 	{
 		return $this->mkdatum;
 	}
+	
+	public function setArtikelCount($c)
+	{
+		$this->artikel_count = $c;
+	}
 
+	public function getArtikelCount()
+	{
+		return $this->artikel_count;
+	}
 }
 ?>

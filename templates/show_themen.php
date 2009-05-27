@@ -29,7 +29,7 @@
 </table>
 <br/>
 <? if(count($lastArtikel) > 0): $last=count($lastArtikel); ?>
-<div class="topic"><b>Die <?=$last<10? $last:'20'; ?> neusten Anzeigen:</b></div>
+<div class="topic"><b>Die <?=$last; ?> neusten Anzeigen:</b></div>
 <table border="0" cellpadding="2" cellspacing="0" width="100%">
 	<tr class="steel1">
 		<td valign="top" width="50%">

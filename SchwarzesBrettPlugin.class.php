@@ -13,7 +13,7 @@
  * @package 	IBIT_SchwarzesBrettPlugin
  * @copyright 	2008-2009 IBIT und ZMML
  * @license 	http://www.gnu.org/licenses/gpl.html GPL Licence 3
- * @version 	1.6
+ * @version 	1.6.1
  */
 
 // IMPORTS
@@ -31,6 +31,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @var int
 	 */
 	public $zeit;
+	
+	public $announcements;
 
 	/**
 	 * Objekt der Templateklasse
@@ -60,8 +62,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	function __construct()
 	{
 		parent::AbstractStudIPSystemPlugin();
-		$this->setPluginiconname('images/paste_plain.png');
-		//$this->setPluginiconname('images/header_pinn1.gif'); //für safiredesign
+		$this->setPluginIcon();
 		
 		$this->buildMenu();
 		$this->template_factory = new Flexi_TemplateFactory(dirname(__FILE__).'/templates');
@@ -69,9 +70,11 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$this->permission = $this->user->getPermission();
 
 		// Holt die Laufzeit aus der Config. Default: 30Tage
-		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
+		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;	
+		// Holt Anzahl anzuzeigende neuste Anzeigen. Default: 20	
+		$this->announcements = get_config('BULLETIN_BOARD_ANNOUNCEMENTS');
 		
-		$path = str_replace($GLOBALS['ABSOLUTE_PATH_STUDIP'], '', dirname(__FILE__));
+		$path = $GLOBALS['ABSOLUTE_URI_STUDIP'].str_replace($GLOBALS['ABSOLUTE_PATH_STUDIP'], '', dirname(__FILE__));
 		$GLOBALS['_include_additional_header'] .= '<script src="'.$path.'/js/schwarzesbrett.js" type="text/javascript"></script>'."\n";
 		
 	}
@@ -104,6 +107,27 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	{
 		return _('SchwarzesBrettPlugin');
 	}
+	
+	/**
+	 * Zeigt das Icon im header an (rot, wenn es neue gibt.
+	 *
+	 */
+	private function setPluginIcon()
+	{
+		$this->setPluginiconname('images/paste_plain.png');
+		
+		/*$last_visitdate = DBManager::get()->query("SELECT MAX(last_visitdate) FROM sb_visits WHERE user_id='{$GLOBALS['auth']->auth['uid']}'")->fetch(PDO::FETCH_COLUMN);
+		$last_artikel = DBManager::get()->query("SELECT count(*) FROM sb_artikel WHERE mkdate > '{$last_visitdate}' AND visible = 1")->fetch(PDO::FETCH_COLUMN);
+		if ($last_artikel > 0)
+		{
+			
+			$this->setPluginiconname('images/header_pinn2.gif');			
+		}
+		else
+		{
+			$this->setPluginiconname('images/header_pinn1.gif');
+		}*/	
+	}
 
 	/**
 	 * Gibt alle Anzeigen zu einem Thema zurück
@@ -113,16 +137,12 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function getArtikel($thema_id)
 	{
-		//TODO: pdo
 		$ret = array();
-		$db = new DB_Seminar();
-		$db->queryf("SELECT * FROM sb_artikel WHERE thema_id='%s' AND UNIX_TIMESTAMP() < (mkdate + %d) AND (visible=1 OR (visible=0 AND (user_id='%s' OR 'root'='%s'))) ORDER BY mkdate DESC",$thema_id,$this->zeit,$this->user->getUserid(),$this->permission->perm->get_perm($this->user->getUserid()));
-		$ret = array();
-		while ($db->next_record())
+		$artikel_ids = DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE thema_id='{$thema_id}' AND UNIX_TIMESTAMP() < (mkdate + {$this->zeit}) AND (visible=1 OR (visible=0 AND (user_id='{$this->user->getUserid()}' OR 'root'='{$this->permission->perm->get_perm($this->user->getUserid())}'))) ORDER BY mkdate DESC")->fetchAll(PDO::FETCH_COLUMN);
+		foreach ($artikel_ids as $artikel_id)
 		{
-			$a = new Artikel($db->f("artikel_id"));
-			array_push($ret, $a);
-		}
+			$ret[] = new Artikel($artikel_id);	
+		}		
 		return $ret;
 	}
 
@@ -134,11 +154,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function getArtikelLookups($artikel_id)
 	{
-		//TODO: pdo
-		$db = new DB_Seminar();
-		$db->queryf("SELECT COUNT(*) AS count FROM sb_visits WHERE type='artikel' AND object_id='%s'",$artikel_id);
-		$db->next_record();
-		return $db->f('count');
+		return DBManager::get()->query("SELECT COUNT(*) FROM sb_visits WHERE type='artikel' AND object_id='{$artikel_id}'")->fetch(PDO::FETCH_COLUMN);
 	}
 
 	/**
@@ -149,18 +165,15 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function getThemen()
 	{
-		//TODO: pdo
 		$ret = array();
-		$db = new DB_Seminar();
-		$db->queryf("SELECT t.*, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR t.user_id='%s' OR 'perm'='%s' GROUP BY t.thema_id ORDER BY t.titel",$this->user->getUserid(),$this->permission->perm->get_perm($this->user->getUserid()));
-		$ret = array();
-		while ($db->next_record())
+		$themen = DBManager::get()->query("SELECT t.thema_id, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR t.user_id='{$this->user->getUserid()}' OR 'perm'='{$this->permission->perm->get_perm($this->user->getUserid())}' GROUP BY t.thema_id ORDER BY t.titel")->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($themen as $thema)
 		{
-			$t = new ThemaExt($db->f("thema_id"));
-			$t->setArtikelCount($db->f("count_artikel"));
+			$t = new Thema($thema['thema_id']);
+			$t->setArtikelCount($thema['count_artikel']);
 			array_push($ret, $t);
-		}
-		return $ret;
+		}		
+		return $ret;		
 	}
 
 	/**
@@ -171,11 +184,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function getThemaPermission($thema_id)
 	{
-		//TODO: pdo
-		$db = new DB_Seminar();
-		$db->queryf("SELECT perm FROM sb_themen WHERE thema_id='%s'",$thema_id);
-		$db->next_record();
-		return $db->f("perm");
+		return DBManager::get()->query("SELECT perm FROM sb_themen WHERE thema_id='{$thema_id}'")->fetch(PDO::FETCH_COLUMN);
 	}
 
 	/**
@@ -186,18 +195,15 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @return boolean
 	 */
 	private function isDuplicate($titel)
-	{
-		//TODO: pdo
-		$db = new DB_Seminar();
-		$db->queryf("SELECT artikel_id FROM sb_artikel WHERE user_id='%s' AND titel='%s' AND mkdate>(UNIX_TIMESTAMP()-(60*60*24))",$this->user->getUserid(),$titel);
-		if ($db->num_rows()>0)
+	{		
+		if (count(DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE user_id='{$this->user->getUserid()}' AND titel='{$titel}' AND mkdate>(UNIX_TIMESTAMP()-(60*60*24))")->fetchAll(PDO::FETCH_ASSOC)) > 0)
 		{
 			return true;
 		}
 		else
 		{
 			return false;
-		}
+		}		
 	}
 
 	/**
@@ -208,15 +214,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function hasVisited($obj_id)
 	{
-		$db = new DB_Seminar();
-		$db->queryf("SELECT last_visitdate FROM sb_visits WHERE object_id='%s' AND user_id='%s'",$obj_id,$this->user->getUserid());
-		if ($db->next_record())
+		$last_visitdate = DBManager::get()->query("SELECT last_visitdate FROM sb_visits WHERE object_id='{$obj_id}' AND user_id='{$this->user->getUserid()}'")->fetch(PDO::FETCH_COLUMN);
+		if (!empty($last_visitdate))
 		{
-			return $db->f("last_visitdate");
+			return $last_visitdate;
 		}
 		else
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -236,15 +241,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		}
 
 		//Datenbankabfrage
-		$db = new DB_Seminar();
 		$sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel AS a, sb_themen AS t WHERE
 				t.thema_id=a.thema_id AND (UPPER(a.titel) LIKE '%s' OR UPPER(a.beschreibung) LIKE '%s') AND UNIX_TIMESTAMP() < (a.mkdate + %d)
 				AND (a.visible=1 OR (a.visible=0 AND (a.user_id='%s' OR 'root'='%s'))) ORDER BY t.titel, a.titel
 			","%".strtoupper($search_text)."%","%".strtoupper($search_text)."%",$this->zeit,$this->user->getUserid(),$this->permission->perm->get_perm($this->user->getUserid()));
-		$db->query($sql);
+		$results = DBManager::get()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
 		// keine Ergebnisse vorhanden
-		if($db->num_rows()==0)
+		if(count($results) == 0)
 		{
 			StudIPTemplateEngine::showErrorMessage("Es wurden keine Ergebnisse gefunden. Bitte versuchen Sie es mit einem anderen Wort erneut.");
 			$this->showThemen();
@@ -254,22 +258,22 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		{
 			$results = array();
 			$thema = array();
-			while ($db->next_record())
+			foreach ($results as $result)
 			{
-				$a = new Artikel($db->f("artikel_id"));
+				$a = new Artikel($result['artikel_id']);
 				if(empty($thema['thema_id']))
 				{
-					$thema['thema_id'] = $db->f("thema_id");
-					$thema['thema_titel'] = htmlReady($db->f("t_titel"));
+					$thema['thema_id'] = $result['thema_id'];
+					$thema['thema_titel'] = htmlReady($result['t_titel']);
 					$thema['artikel'] = array();
 
 				}
-				elseif($db->f("thema_id") != $thema['thema_id'])
+				elseif($result['thema_id'] != $thema['thema_id'])
 				{
 					array_push($results, $thema);
 					unset($thema);
-					$thema['thema_id'] = $db->f("thema_id");
-					$thema['thema_titel'] = htmlReady($db->f("t_titel"));
+					$thema['thema_id'] = $result['thema_id'];
+					$thema['thema_titel'] = htmlReady($result['t_titel']);
 					$thema['artikel'] = array();
 				}
 				else
@@ -291,7 +295,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			}
 
 			$template->set_attribute('zeit', $this->zeit);
-			$template->set_attribute('pluginpfad', $this->getPluginpath());
+			$template->set_attribute('pluginpfad', $this->getPluginURL());
 			$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
 			$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
 			$template->set_attribute('results', $results);
@@ -309,7 +313,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 
 		$template = $this->template_factory->open('show_themen');
 		$template->set_attribute('zeit', $this->zeit);
-		$template->set_attribute('pluginpfad', $this->getPluginpath());
+		$template->set_attribute('pluginpfad', $this->getPluginURL());
 		$template->set_attribute('link_edit', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
 		$template->set_attribute('link_artikel', PluginEngine::getLink($this,array("modus"=>"show_add_artikel_form")));
 		$template->set_attribute('link_delete', PluginEngine::getLink($this,array("modus"=>"delete_thema")));
@@ -359,8 +363,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			}
 			$template->set_attribute('results', $results);
 
-			//zusätzlich die letzten 20 Artikel
-			$newOnes = $this->getLastArtikel('20');
+			$newOnes = $this->getLastArtikel();
 			foreach($newOnes as $a)
 			{
 				$lastArtikel[] = $this->showArtikel($a, 'show_lastartikel');
@@ -372,7 +375,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		{
 			$template->set_attribute('rootlinknew', PluginEngine::getLink($this,array("modus"=>"show_add_thema_form")));
 			$template->set_attribute('rootlinkdelete', PluginEngine::getLink($this,array(), 'deleteOldArtikel'));
-			$template->set_attribute('rootaccess', TRUE);
+			$template->set_attribute('rootaccess', true);
 		}
 		echo $template->render();
 	}
@@ -388,7 +391,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$template->set_attribute('zeit', $this->zeit);
 		$template->set_attribute('a', $a);
 		$template->set_attribute('anzahl', $this->getArtikelLookups($a->getArtikelId()));
-		$template->set_attribute('pluginpfad', $this->getPluginpath());
+		$template->set_attribute('pluginpfad', $this->getPluginURL());
 		$template->set_attribute('pfeil', ($this->hasVisited($a->getArtikelId()) ? "forumgrau" : "forumrot"));
 		$template->set_attribute('pfeil_runter', "forumgraurunt");
 		//benutzer und root extrafunktionen anzeigen
@@ -405,19 +408,19 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		}
 		$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
 		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
-		$template->set_attribute('link_ajax', $GLOBALS['ABSOLUTE_URI_STUDIP'].$this->getPluginpath().'/ajaxDispatcher.php');
+		$template->set_attribute('link_ajax', $this->getPluginURL().'/ajaxDispatcher.php');
 		return $template->render();
 	}
 	
 	/**
-	 * Holt die 10 aktuellsten Artikel aus der Datenbank
+	 * Holt die 20 (default) aktuellsten Artikel aus der Datenbank
+	 * Die Anzahl der Artikel wird in der globalen Konfiguration festgelegt
 	 *
-	 * @param int $last
 	 * @return array() Artikel
 	 */
-	private function getLastArtikel($last = '20')
+	private function getLastArtikel()
 	{
-		$result = DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() < (mkdate + {$this->zeit}) AND visible=1 ORDER BY mkdate DESC LIMIT {$last}")->fetchAll(PDO::FETCH_COLUMN);
+		$result = DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() < (mkdate + {$this->zeit}) AND visible=1 ORDER BY mkdate DESC LIMIT {$this->announcements}")->fetchAll(PDO::FETCH_COLUMN);
 		foreach ($result as $artikel_id)
 		{
 			$ret[] = new Artikel($artikel_id);
@@ -443,7 +446,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 					$t = new Thema($_REQUEST['thema_id']);
 					$t->setTitel($_REQUEST['titel']);
 					$t->setBeschreibung($_REQUEST['beschreibung']);
-					$t->setPerm($_REQUEST['perm']);
+					$t->setPerm($_REQUEST['thema_perm']);
 					$t->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
 					$t->save();
 					StudIPTemplateEngine::showSuccessMessage("Das Thema wurde erfolgreich gespeichert.");
@@ -572,17 +575,13 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		//TODO: pdo
 		if ($this->permission->hasRootPermission())
 		{
-			$ret = array();
-			$db = new DB_Seminar();
-			$db->queryf("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() > (mkdate + %d)", $this->zeit);
-			$count = 0;
-			while ($db->next_record())
+			$artikel = DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() > (mkdate + {$this->zeit})")->fetchAll(PDO::FETCH_COLUMN);
+			foreach ($artikel as $id)
 			{
-				$a = new Artikel($db->f("artikel_id"));
+				$a = new Artikel($id);
 				$a->delete();
-				$count++;
 			}
-			StudIPTemplateEngine::showSuccessMessage("Es wurden erfolgreich <b>".$count."</b> Artikel aus der Datenbank gelöscht.");
+			StudIPTemplateEngine::showSuccessMessage("Es wurden erfolgreich <b>".count($artikel)."</b> Artikel aus der Datenbank gelöscht.");
 		}
 		else
 		{

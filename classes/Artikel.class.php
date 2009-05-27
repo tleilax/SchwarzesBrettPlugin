@@ -6,25 +6,10 @@
 *
 * @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
 * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
-* @package 		ZMML_SchwarzesBrettPlugin
-* @copyright	2008 IBIT und ZMML
-* @version 		1.2.4
+* @package 		IBIT_SchwarzesBrettPlugin
+* @copyright	2008-2009 IBIT und ZMML
+* @version 		1.6.2
 */
-
-// +---------------------------------------------------------------------------+
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or any later version.
-// +---------------------------------------------------------------------------+
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-// +---------------------------------------------------------------------------+
 
 /**
  * Klasse für Anzeigen-Objekte
@@ -46,7 +31,7 @@ class Artikel
 	 * Konstruktor, erstellt Artikel-Objekte
 	 *
 	 */
-	function __construct($id=FALSE)
+	public function __construct($id=false)
 	{
 		if (!$id)
 		{
@@ -60,23 +45,18 @@ class Artikel
 		}
 		else
 		{
-			$db = new DB_Seminar();
-			$db->queryf("SELECT * FROM sb_artikel WHERE artikel_id='%s'",$id);
-			if ($db->next_record())
+			$artikel = DBManager::get()->query("SELECT * FROM sb_artikel WHERE artikel_id='{$id}'")->fetch(PDO::FETCH_ASSOC);
+			if (!empty($artikel))
 			{
-				$this->titel = $db->f("titel");
-                $this->beschreibung = $db->f("beschreibung");
-                $this->user_id = $db->f("user_id");
-    	        $this->visible = $db->f("visible");
-                $this->thema_id = $db->f("thema_id");
-                $this->artikel_id = $db->f("artikel_id");
-				$this->mkdatum = $db->f("mkdate");
+				$this->titel = $artikel['titel'];
+                $this->beschreibung = $artikel['beschreibung'];
+                $this->user_id = $artikel['user_id'];
+    	        $this->visible = $artikel['visible'];
+                $this->thema_id = $artikel['thema_id'];
+                $this->artikel_id = $artikel['artikel_id'];
+				$this->mkdatum = $artikel['mkdate'];
 			}
-			$db->queryf("SELECT titel FROM sb_themen WHERE thema_id='%s'", $this->thema_id);
-			if ($db->next_record())
-			{
-                $this->thema_titel = $db->f("titel");
-			}
+			$this->thema_titel = DBManager::get()->query("SELECT titel FROM sb_themen WHERE thema_id='{$this->thema_id}'")->fetch(PDO::FETCH_COLUMN);
 		}
 	}
 
@@ -84,22 +64,21 @@ class Artikel
 	 * Speichert neue und/oder bearbeite Artikel in die Datenbank
 	 *
 	 */
-	function save()
+	public function save()
 	{
-		$db = new DB_Seminar();
 		if ($this->thema_id != "" && $this->titel != "")
 		{
 			//vorhanden Artikel updaten
 			if ($this->artikel_id != "")
 			{
 
-				$db->queryf("UPDATE sb_artikel SET titel='%s', beschreibung='%s', visible='%s', thema_id='%s' WHERE artikel_id='%s'",$this->titel, $this->beschreibung, $this->visible, $this->thema_id, $this->artikel_id);
+				DBManager::get()->exec("UPDATE sb_artikel SET titel='{$this->titel}', beschreibung='{$this->beschreibung}', visible='{$this->visible}', thema_id='{$this->thema_id}' WHERE artikel_id='{$this->artikel_id}'");
 			}
 			//Neuen Artikel speichern
 			else
 			{
 				$id = md5(uniqid(time()));
-				$db->queryf("INSERT INTO sb_artikel (artikel_id, thema_id, titel, user_id, mkdate, beschreibung, visible) VALUES ('%s','%s','%s','%s',UNIX_TIMESTAMP(),'%s', %d)",$id,$this->thema_id,$this->titel,$GLOBALS['auth']->auth['uid'],$this->beschreibung,$this->visible);
+				DBManager::get()->exec("INSERT INTO sb_artikel (artikel_id, thema_id, titel, user_id, mkdate, beschreibung, visible) VALUES ('{$id}','{$this->thema_id}','{$this->titel}','{$GLOBALS['auth']->auth['uid']}',UNIX_TIMESTAMP(),'{$this->beschreibung}', {$this->visible})");
 			}
 		}
 	}
@@ -108,13 +87,12 @@ class Artikel
 	 * Löscht einen Artikel aus der Datenbank
 	 *
 	 */
-	function delete()
+	public function delete()
 	{
 		if (!empty($this->artikel_id))
 		{
-			$db = new DB_Seminar();
-			$db->queryf("DELETE FROM sb_artikel WHERE artikel_id='%s'",$this->artikel_id);
-			$db->queryf("DELETE FROM sb_visits WHERE object_id='%s'",$this->artikel_id);
+			DBManager::get()->exec("DELETE FROM sb_artikel WHERE artikel_id='{$this->artikel_id}'");
+			DBManager::get()->exec("DELETE FROM sb_visits WHERE object_id='{$this->artikel_id}'");
 		}
 	}
 

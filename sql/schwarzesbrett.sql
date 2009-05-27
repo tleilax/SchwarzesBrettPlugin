@@ -31,6 +31,10 @@ CREATE TABLE IF NOT EXISTS `sb_visits` (
 
 INSERT IGNORE INTO `config` ( `config_id` , `parent_id` , `field` , `value` , `is_default` , `type` , `range` , `section` , `position` , `mkdate` , `chdate` , `description` , `comment` , `message_template` )
 VALUES (
-'edfb16e3830a7e9e1a3ad6e1ef2c71dg', '', 'BULLETIN_BOARD_DURATION', '30', '1', 'integer', 'global', '', '0', '0', '1100709567', 'Wie lange dürfen Anzeigen auf dem schwarzen Brett erscheinen (in Tagen)', '', ''
+'edfb16e3830a7e9e1a3ad6e1ef2c71dg', '', 'BULLETIN_BOARD_DURATION', '30', '1', 'integer', 'global', 'SchwarzesBrettPlugin', '0', '0', '1100709567', 'Wie lange dürfen Anzeigen auf dem schwarzen Brett erscheinen (in Tagen)', 'Default: 30', ''
 );
 
+INSERT IGNORE INTO `config` ( `config_id` , `parent_id` , `field` , `value` , `is_default` , `type` , `range` , `section` , `position` , `mkdate` , `chdate` , `description` , `comment` , `message_template` )
+VALUES (
+'edfb16e3830a7e9e1a3ad6e1ef2c71de', '', 'BULLETIN_BOARD_ANNOUNCEMENTS', '20', '1', 'integer', 'global', 'SchwarzesBrettPlugin', '0', '0', '1100709567', 'Wieviele Anzeigen sollen in der Übersicht angezeigt werden?', 'Default: 20', ''
+);

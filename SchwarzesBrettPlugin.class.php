@@ -3,7 +3,7 @@
  * SchwarzesBrettPlugin.class.php
  *
  * Plugin zum Verwalten von Schwarzen Brettern (Angebote und Gesuche)
- * 
+ *
  * Diese Datei enthält die Hauptklasse des Plugins
  *
  * PHP version 5
@@ -31,7 +31,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @var int
 	 */
 	public $zeit;
-	
+
 	public $announcements;
 
 	/**
@@ -63,20 +63,20 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	{
 		parent::AbstractStudIPSystemPlugin();
 		$this->setPluginIcon();
-		
+
 		$this->buildMenu();
 		$this->template_factory = new Flexi_TemplateFactory(dirname(__FILE__).'/templates');
 		$this->user = $this->getUser();
 		$this->permission = $this->user->getPermission();
 
 		// Holt die Laufzeit aus der Config. Default: 30Tage
-		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;	
-		// Holt Anzahl anzuzeigende neuste Anzeigen. Default: 20	
+		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
+		// Holt Anzahl anzuzeigende neuste Anzeigen. Default: 20
 		$this->announcements = get_config('BULLETIN_BOARD_ANNOUNCEMENTS');
-		
+
 		$path = $GLOBALS['ABSOLUTE_URI_STUDIP'].str_replace($GLOBALS['ABSOLUTE_PATH_STUDIP'], '', dirname(__FILE__));
 		$GLOBALS['_include_additional_header'] .= '<script src="'.$path.'/js/schwarzesbrett.js" type="text/javascript"></script>'."\n";
-		
+
 	}
 
 	/**
@@ -107,7 +107,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	{
 		return _('SchwarzesBrettPlugin');
 	}
-	
+
 	/**
 	 * Zeigt das Icon im header an (rot, wenn es neue gibt.
 	 *
@@ -120,13 +120,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$last_artikel = DBManager::get()->query("SELECT count(*) FROM sb_artikel WHERE mkdate > '{$last_visitdate}' AND visible = 1")->fetch(PDO::FETCH_COLUMN);
 		if ($last_artikel > 0)
 		{
-			
-			$this->setPluginiconname('images/header_pinn2.gif');			
+			$this->setPluginiconname('images/paste_plain.png');
+			#$this->setPluginiconname('images/header_pinn2.gif');
 		}
 		else
 		{
-			$this->setPluginiconname('images/header_pinn1.gif');
-		}*/	
+			$this->setPluginiconname('images/paste_plain.png');
+			#$this->setPluginiconname('images/header_pinn1.gif');
+		}*/
 	}
 
 	/**
@@ -141,8 +142,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$artikel_ids = DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE thema_id='{$thema_id}' AND UNIX_TIMESTAMP() < (mkdate + {$this->zeit}) AND (visible=1 OR (visible=0 AND (user_id='{$this->user->getUserid()}' OR 'root'='{$this->permission->perm->get_perm($this->user->getUserid())}'))) ORDER BY mkdate DESC")->fetchAll(PDO::FETCH_COLUMN);
 		foreach ($artikel_ids as $artikel_id)
 		{
-			$ret[] = new Artikel($artikel_id);	
-		}		
+			$ret[] = new Artikel($artikel_id);
+		}
 		return $ret;
 	}
 
@@ -172,8 +173,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			$t = new Thema($thema['thema_id']);
 			$t->setArtikelCount($thema['count_artikel']);
 			array_push($ret, $t);
-		}		
-		return $ret;		
+		}
+		return $ret;
 	}
 
 	/**
@@ -195,7 +196,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @return boolean
 	 */
 	private function isDuplicate($titel)
-	{		
+	{
 		if (count(DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE user_id='{$this->user->getUserid()}' AND titel='{$titel}' AND mkdate>(UNIX_TIMESTAMP()-(60*60*24))")->fetchAll(PDO::FETCH_ASSOC)) > 0)
 		{
 			return true;
@@ -203,7 +204,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		else
 		{
 			return false;
-		}		
+		}
 	}
 
 	/**
@@ -250,7 +251,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		// keine Ergebnisse vorhanden
 		if(count($results) == 0)
 		{
-			StudIPTemplateEngine::showErrorMessage("Es wurden keine Ergebnisse gefunden. Bitte versuchen Sie es mit einem anderen Wort erneut.");
+			StudIPTemplateEngine::showErrorMessage("Es wurden für <em>{$search_text}</em> keine Ergebnisse gefunden.");
 			$this->showThemen();
 		}
 		//Ergebnisse anzeigen
@@ -364,11 +365,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			$template->set_attribute('results', $results);
 
 			$newOnes = $this->getLastArtikel();
-			foreach($newOnes as $a)
+			if (count($newOnes) > 0)
 			{
-				$lastArtikel[] = $this->showArtikel($a, 'show_lastartikel');
+				foreach($newOnes as $a)
+				{
+					$lastArtikel[] = $this->showArtikel($a, 'show_lastartikel');
+				}
+				$template->set_attribute('lastArtikel', $lastArtikel);
 			}
-			$template->set_attribute('lastArtikel', $lastArtikel);
 		}
 		//Adminfunktionen anzeigen
 		if ($this->permission->hasRootPermission())
@@ -411,7 +415,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$template->set_attribute('link_ajax', $this->getPluginURL().'/ajaxDispatcher.php');
 		return $template->render();
 	}
-	
+
 	/**
 	 * Holt die 20 (default) aktuellsten Artikel aus der Datenbank
 	 * Die Anzahl der Artikel wird in der globalen Konfiguration festgelegt
@@ -426,6 +430,32 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			$ret[] = new Artikel($artikel_id);
 		}
 		return $ret;
+	}
+
+	private function editArtikel()
+	{
+		$a = new Artikel($_REQUEST['artikel_id']);
+		if (!$_REQUEST['artikel_id'])
+		{
+			$a->setThemaId($_REQUEST['thema_id']);
+		}
+		$template = $this->template_factory->open('edit_artikel');
+		$template->set_attribute('thema_id', $_REQUEST['thema_id']);
+		$template->set_attribute('themen', $this->getThemen());
+		$template->set_attribute('a', $a);
+		$template->set_attribute('zeit', $this->zeit);
+		$template->set_attribute('link', PluginEngine::getLink($this,array()));
+		$template->set_attribute('link_thema', PluginEngine::getLink($this,array("open"=>$_REQUEST['thema_id'])));
+		echo $template->render();
+	}
+
+	private function editThema()
+	{
+		$t = new Thema($_REQUEST['thema_id']);
+		$template = $this->template_factory->open('edit_thema');
+		$template->set_attribute('t', $t);
+		$template->set_attribute('link', PluginEngine::getLink($this,array()));
+		echo $template->render();
 	}
 
 	/**
@@ -443,31 +473,35 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				// Thema speichern
 				if ($modus == "save_thema")
 				{
-					$t = new Thema($_REQUEST['thema_id']);
-					$t->setTitel($_REQUEST['titel']);
-					$t->setBeschreibung($_REQUEST['beschreibung']);
-					$t->setPerm($_REQUEST['thema_perm']);
-					$t->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
-					$t->save();
-					StudIPTemplateEngine::showSuccessMessage("Das Thema wurde erfolgreich gespeichert.");
-					unset($modus);
+					if (!empty($_REQUEST['titel']))
+					{
+						$t = new Thema($_REQUEST['thema_id']);
+						$t->setTitel($_REQUEST['titel']);
+						$t->setBeschreibung($_REQUEST['beschreibung']);
+						$t->setPerm($_REQUEST['thema_perm']);
+						$t->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
+						$t->save();
+						StudIPTemplateEngine::showSuccessMessage("Das Thema wurde erfolgreich gespeichert.");
+						unset($modus);
+					}
+					else
+					{
+						StudIPTemplateEngine::showErrorMessage("Fehler! Bitte geben Sie einen Titel ein.");
+						$this->editThema();
+						exit;
+					}
 				}
 				// Thema anlegen oder bearbeiten
 				if ($modus == "show_add_thema_form")
 				{
-					$t = new Thema($_REQUEST['thema_id']);
-					$template = $this->template_factory->open('edit_thema');
-					$template->set_attribute('t', $t);
-					$template->set_attribute('link', PluginEngine::getLink($this,array()));
-					echo $template->render();
+					$this->editThema();
 				}
 				// Thema löschen Sicherheitsabfrage
 				if ($modus == "delete_thema")
 				{
 					$t = new Thema($_REQUEST['thema_id']);
-					$yes = '<a href="'.PluginEngine::getLink($this,array("modus"=>"delete_thema_really", "thema_id"=>$t->getThemaId())).'">'.makeButton("ja","img").'</a>';
-					$no = '<a href="'.PluginEngine::getLink($this,array()).'">'.makeButton("nein","img").'</a>';
-					StudIPTemplateEngine::showInfoMessage(sprintf("Soll das Thema <b>\"%s\"</b> wirklich gelöscht werden?<br/>%s %s",$t->getTitel(), $yes, $no));
+
+					echo createQuestion('Soll das Thema **'.$t->getTitel().'** wirklich gelöscht werden?', array("modus"=>"delete_thema_really", "thema_id"=>$t->getThemaId()));
 					unset($modus);
 				}
 				//Thema löschen
@@ -484,18 +518,27 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			{
 				if ((!$this->isDuplicate($_REQUEST['titel']) && empty($_REQUEST['artikel_id'])) || !empty($_REQUEST['artikel_id']))
 				{
-					$a = new Artikel($_REQUEST['artikel_id']);
-					$a->setTitel($_REQUEST['titel']);
-					$a->setBeschreibung($_REQUEST['beschreibung']);
-					$a->setThemaId($_REQUEST['thema_id']);
-					$a->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
-					$a->save();
-					StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gespeichert.");
+					if (!empty($_REQUEST['titel']) && !empty($_REQUEST['beschreibung']))
+					{
+						$a = new Artikel($_REQUEST['artikel_id']);
+						$a->setTitel($_REQUEST['titel']);
+						$a->setBeschreibung($_REQUEST['beschreibung']);
+						$a->setThemaId($_REQUEST['thema_id']);
+						$a->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
+						$a->save();
+						StudIPTemplateEngine::showSuccessMessage("Die Anzeige wurde erfolgreich gespeichert.");
+					}
+					else
+					{
+						StudIPTemplateEngine::showErrorMessage("Fehler! Bitte geben Sie einen Titel und eine Beschreibung an.");
+						$this->editArtikel();
+						exit;
+					}
 				}
 				elseif($this->isDuplicate($_REQUEST['titel']))
 				{
 					StudIPTemplateEngine::showErrorMessage("Sie haben bereits einen Artikel mit diesem Titel erstellt. Bitte beachten Sie die Nutzungshinweise!");
-					
+
 				}
 				else
 				{
@@ -506,20 +549,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			//Anzeige erstellen/bearbeiten
 			if ($modus == "show_add_artikel_form")
 			{
-				$a = new Artikel($_REQUEST['artikel_id']);
-				if (!$_REQUEST['artikel_id'])
-				{
-					$a->setThemaId($_REQUEST['thema_id']);
-				}
-				$template = $this->template_factory->open('edit_artikel');
-				$template->set_attribute('thema_id', $_REQUEST['thema_id']);
-				$template->set_attribute('themen', $this->getThemen());
-				$template->set_attribute('a', $a);
-				$template->set_attribute('zeit', $this->zeit);
-				$template->set_attribute('link', PluginEngine::getLink($this,array()));
-				$template->set_attribute('link_thema', PluginEngine::getLink($this,array("open"=>$_REQUEST['thema_id'])));
-				echo $template->render();
-
+				$this->editArtikel();
 			}
 			//Anzeige löschen Sicherheitsabfrage
 			if ($modus == "delete_artikel")
@@ -527,10 +557,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				$a = new Artikel($_REQUEST['artikel_id']);
 				if ($a->getUserId() == $this->user->getUserid() || $this->permission->hasRootPermission())
 				{
-					$autor_name = '<a href="about.php?username='.get_username($a->getUserId()).'">'.get_fullname($a->getUserId()).'</a>';
-					$yes = '<a href="'.PluginEngine::getLink($this,array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId())).'">'.makeButton("ja","img").'</a>';
-					$no = '<a href="'.PluginEngine::getLink($this,array()).'">'.makeButton("nein","img").'</a>';
-					StudIPTemplateEngine::showInfoMessage(sprintf("Soll die Anzeige <b>\"%s\"</b> von %s wirklich gelöscht werden?<br/>%s %s",$a->getTitel(), $autor_name, $yes, $no));
+					echo createQuestion('Soll die Anzeige **'.$a->getTitel().'** von %%'.get_fullname($a->getUserId()).'%% wirklich gelöscht werden?', array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId()));
 				}
 				else
 				{

@@ -9,7 +9,7 @@ function closeArtikel(id, typ)
 {
 	$('content'+typ+'_'+id).hide();
 	$('headline'+typ+'_'+id).show();
-	$('indikator_'+id).src = 'assets/images/forumgrau.gif';
+	$('indikator_'+id).src = STUDIP.ABSOLUTE_URI_STUDIP+'assets/images/forumgrau.gif';
 }
 
 function toogleThema(id)

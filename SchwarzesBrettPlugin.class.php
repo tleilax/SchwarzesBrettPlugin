@@ -115,18 +115,17 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	private function setPluginIcon()
 	{
 		$this->setPluginiconname('images/paste_plain.png');
-		
 		/*$last_visitdate = DBManager::get()->query("SELECT MAX(last_visitdate) FROM sb_visits WHERE user_id='{$GLOBALS['auth']->auth['uid']}'")->fetch(PDO::FETCH_COLUMN);
 		$last_artikel = DBManager::get()->query("SELECT count(*) FROM sb_artikel WHERE mkdate > '{$last_visitdate}' AND visible = 1")->fetch(PDO::FETCH_COLUMN);
 		if ($last_artikel > 0)
 		{
-			$this->setPluginiconname('images/paste_plain.png');
-			#$this->setPluginiconname('images/header_pinn2.gif');
+			#$this->setPluginiconname('images/paste_plain.png');
+			$this->setPluginiconname('images/header_pinn2.gif');
 		}
 		else
 		{
-			$this->setPluginiconname('images/paste_plain.png');
-			#$this->setPluginiconname('images/header_pinn1.gif');
+			#$this->setPluginiconname('images/paste_plain.png');
+			$this->setPluginiconname('images/header_pinn1.gif');
 		}*/
 	}
 

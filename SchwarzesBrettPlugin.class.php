@@ -54,6 +54,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 * @var permission Objekt
 	 */
 	public $permission;
+	
+	const THEMEN_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/themen';
 
 	/**
 	 * Konstruktor, erzeugt das Plugin.
@@ -115,6 +117,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	private function setPluginIcon()
 	{
 		$this->setPluginiconname('images/paste_plain.png');
+		
 		/*$last_visitdate = DBManager::get()->query("SELECT MAX(last_visitdate) FROM sb_visits WHERE user_id='{$GLOBALS['auth']->auth['uid']}'")->fetch(PDO::FETCH_COLUMN);
 		$last_artikel = DBManager::get()->query("SELECT count(*) FROM sb_artikel WHERE mkdate > '{$last_visitdate}' AND visible = 1")->fetch(PDO::FETCH_COLUMN);
 		if ($last_artikel > 0)
@@ -160,18 +163,27 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	/**
 	 * Gibt eine Liste aller Themen aus der Datenbank zurück, die sichtbar sind
 	 * oder in denen der Benutzer bereits einen Artikel erstellt hat.
+	 * Themen werden gechached
 	 *
+	 * @uses StudipCacheFactory
 	 * @return array Liste aller Themen
 	 */
 	private function getThemen()
 	{
-		$ret = array();
-		$themen = DBManager::get()->query("SELECT t.thema_id, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR t.user_id='{$this->user->getUserid()}' OR 'perm'='{$this->permission->perm->get_perm($this->user->getUserid())}' GROUP BY t.thema_id ORDER BY t.titel")->fetchAll(PDO::FETCH_ASSOC);
-		foreach ($themen as $thema)
+		$cache = StudipCacheFactory::getCache();  	
+		$ret = unserialize($cache->read(self::THEMEN_CACHE_KEY));
+		
+		if(empty($ret))
 		{
-			$t = new Thema($thema['thema_id']);
-			$t->setArtikelCount($thema['count_artikel']);
-			array_push($ret, $t);
+			$themen = DBManager::get()->query("SELECT t.thema_id, COUNT(a.artikel_id) count_artikel FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) WHERE t.visible=1 OR t.user_id='{$this->user->getUserid()}' OR 'perm'='{$this->permission->perm->get_perm($this->user->getUserid())}' GROUP BY t.thema_id ORDER BY t.titel")->fetchAll(PDO::FETCH_ASSOC);
+			$ret = array();
+			foreach ($themen as $thema)
+			{
+				$t = new Thema($thema['thema_id']);
+				$t->setArtikelCount($thema['count_artikel']);
+				array_push($ret, $t);
+			}			
+			$cache->write(self::THEMEN_CACHE_KEY, serialize($ret));
 		}
 		return $ret;
 	}
@@ -499,8 +511,12 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				if ($modus == "delete_thema")
 				{
 					$t = new Thema($_REQUEST['thema_id']);
+					#echo createQuestion('Soll das Thema **'.$t->getTitel().'** wirklich gelöscht werden?', array("modus"=>"delete_thema_really", "thema_id"=>$t->getThemaId()));
 
-					echo createQuestion('Soll das Thema **'.$t->getTitel().'** wirklich gelöscht werden?', array("modus"=>"delete_thema_really", "thema_id"=>$t->getThemaId()));
+					$yes = '<a href="'.PluginEngine::getLink($this,array("modus"=>"delete_thema_really", "thema_id"=>$t->getThemaId())).'">'.makeButton("ja","img").'</a>';
+					$no = '<a href="'.PluginEngine::getLink($this,array()).'">'.makeButton("nein","img").'</a>';
+					StudIPTemplateEngine::showInfoMessage(sprintf("Soll das Thema <b>\"%s\"</b> wirklich gelöscht werden?<br/>%s %s",$t->getTitel(), $yes, $no));
+
 					unset($modus);
 				}
 				//Thema löschen
@@ -556,7 +572,13 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				$a = new Artikel($_REQUEST['artikel_id']);
 				if ($a->getUserId() == $this->user->getUserid() || $this->permission->hasRootPermission())
 				{
-					echo createQuestion('Soll die Anzeige **'.$a->getTitel().'** von %%'.get_fullname($a->getUserId()).'%% wirklich gelöscht werden?', array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId()));
+					#echo createQuestion('Soll die Anzeige **'.$a->getTitel().'** von %%'.get_fullname($a->getUserId()).'%% wirklich gelöscht werden?', array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId()));
+										
+					$autor_name = '<a href="about.php?username='.get_username($a->getUserId()).'">'.get_fullname($a->getUserId()).'</a>';
+					$yes = '<a href="'.PluginEngine::getLink($this,array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId())).'">'.makeButton("ja","img").'</a>';
+					$no = '<a href="'.PluginEngine::getLink($this,array()).'">'.makeButton("nein","img").'</a>';
+					StudIPTemplateEngine::showInfoMessage(sprintf("Soll die Anzeige <b>\"%s\"</b> von %s wirklich gelöscht werden?<br/>%s %s",$a->getTitel(), $autor_name, $yes, $no));
+			
 				}
 				else
 				{

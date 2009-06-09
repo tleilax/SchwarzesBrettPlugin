@@ -1,7 +1,6 @@
 pluginclassname=SchwarzesBrettPlugin
 pluginname=SchwarzesBrettPlugin
 origin=IBIT
-version=1.6.6
+version=1.6.7
 dbscheme=sql/schwarzesbrett.sql
-updateURL=http://plugins.studip.de/svn/plugins/plugins.xml
 studipMinVersion=1.8.0

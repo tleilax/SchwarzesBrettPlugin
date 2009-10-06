@@ -1,10 +1,5 @@
-<!-- plugin: schwarzesbrett, template: edit_thema -->
 <br/>
-<table border="0" cellpadding="2" cellspacing="0" width="100%">
-	<tr>
-		<td class="topic"><b>Thema anlegen/bearbeiten:</b></td>
-	</tr>
-</table>
+<div class="topic"><b>Thema anlegen/bearbeiten:</b></div>
 <form name="add" method="post" action="<?=$link?>">
 	<input type="hidden" name="modus" value="save_thema">
 	<input type="hidden" name="thema_id" value="<?=$t->getthemaid()?>">
@@ -34,7 +29,7 @@
 			<td>sichtbar:</td>
 			<td><input type="checkbox" name="visible" value="1" <? if($t->getvisible()) echo'checked="checked"';?>"></td>
 		</tr>
-		<tr class="steel1">
+		<tr class="steel2">
 			<td colspan="2" align="center">
 				<?=makebutton("speichern","input", "Das Thema speichern", "submit")?>
 				<a href="<?=$link?>"><?=makebutton("abbrechen","img", "Die Änderungen verwerfen")?></a>

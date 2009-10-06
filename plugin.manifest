@@ -1,6 +1,6 @@
 pluginclassname=SchwarzesBrettPlugin
 pluginname=SchwarzesBrettPlugin
 origin=IBIT
-version=1.6.7
+version=1.6.8
 dbscheme=sql/schwarzesbrett.sql
 studipMinVersion=1.8.0

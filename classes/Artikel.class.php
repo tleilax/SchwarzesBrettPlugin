@@ -45,7 +45,7 @@ class Artikel
 		}
 		else
 		{
-			$artikel = DBManager::get()->query("SELECT * FROM sb_artikel WHERE artikel_id='{$id}'")->fetch(PDO::FETCH_ASSOC);
+			$artikel = DBManager::get()->query("SELECT sb_artikel.*,sb_themen.titel as themen_titel FROM sb_artikel LEFT JOIN sb_themen USING(thema_id) WHERE artikel_id='{$id}'")->fetch(PDO::FETCH_ASSOC);
 			if (!empty($artikel))
 			{
 				$this->titel = $artikel['titel'];
@@ -55,8 +55,8 @@ class Artikel
                 $this->thema_id = $artikel['thema_id'];
                 $this->artikel_id = $artikel['artikel_id'];
 				$this->mkdatum = $artikel['mkdate'];
+				$this->thema_titel = $artikel['themen_titel'];
 			}
-			$this->thema_titel = DBManager::get()->query("SELECT titel FROM sb_themen WHERE thema_id='{$this->thema_id}'")->fetch(PDO::FETCH_COLUMN);
 		}
 	}
 

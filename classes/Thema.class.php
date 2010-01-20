@@ -3,7 +3,7 @@
 /**
  * Thema.class.php
  *
- * Eine Klasse für die Kategorien des schwarzen Brettes. 
+ * Eine Klasse für die Kategorien des schwarzen Brettes.
  * In diesem Plugin Thema genannt.
  *
  * @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
@@ -18,56 +18,56 @@
  *
  */
 class Thema
-{	
+{
 	/**
 	 * Titel des Themas
 	 *
 	 * @var string
 	 */
 	private $titel;
-	
+
 	/**
 	 * Beschreibung des Themas
 	 *
 	 * @var string
 	 */
 	private $beschreibung;
-	
+
 	/**
 	 * Die ID des Erstellers
 	 *
 	 * @var string
 	 */
 	private $user_id;
-	
+
 	/**
 	 * Sichtbarkeitsstatus für andere Benutzer
 	 *
 	 * @var boolean
 	 */
 	private $visible;
-	
+
 	/**
 	 * Die ID des Themas
 	 *
 	 * @var unknown_type
 	 */
 	private $thema_id;
-	
+
 	/**
 	 * Benutzerrechte für dieses Thema
 	 *
 	 * @var string
 	 */
 	private $perm;
-	
+
 	/**
 	 * Erstellungsdatum
 	 *
 	 * @var unknown_type
 	 */
 	private $mkdatum;
-	
+
 	private $artikel_count;
 
 	/**
@@ -87,7 +87,7 @@ class Thema
 			$this->thema_id = "";
 			$this->perm = "autor";
 			$this->mkdatum = 0;
-		} 
+		}
 		else
 		{
 			$thema = DBManager::get()->query("SELECT * FROM sb_themen WHERE thema_id='{$id}'")->fetch(PDO::FETCH_ASSOC);
@@ -116,7 +116,7 @@ class Thema
 			if($this->thema_id != "")
 			{
 				DBManager::get()->exec("UPDATE sb_themen SET titel='{$this->titel}', beschreibung='{$this->beschreibung}', visible='{$this->visible}', perm='{$this->perm}' WHERE thema_id='{$this->thema_id}'");
-			
+
 			} else
 			{
 				$id = md5(uniqid(time()));
@@ -208,7 +208,7 @@ class Thema
 	{
 		return $this->mkdatum;
 	}
-	
+
 	public function setArtikelCount($c)
 	{
 		$this->artikel_count = $c;

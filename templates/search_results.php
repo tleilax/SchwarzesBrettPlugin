@@ -41,8 +41,8 @@
 			</tr>
 			<? endforeach; ?>
 		</table>
-		</div>		
-		</td> 
+		</div>
+		</td>
 	</tr>
 </table>
 

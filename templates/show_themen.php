@@ -1,5 +1,5 @@
 <!-- plugin: schwarzesbrett, template: show_themen -->
-<table border="0" cellpadding="2" cellspacing="2" width="100%">
+<table border="0" cellpadding="2" cellspacing="0" width="100%" >
 	<tr>
 	<td valign="top">
 		<form name="search_form" method="post" action="<?=$link_search?>">		
@@ -66,7 +66,7 @@
 	Zur Zeit sind keine Themengebiete vorhanden!
 </div>
 <? else: ?>
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<table class="blank" border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
 <? 	$tindex = 0; foreach ($results as $result): ?>
 	<? if($tindex%$themen_rows == 0): ?>
@@ -89,25 +89,6 @@
 		</div>
 		<div style="clear:both; border-bottom: 1px solid #8e8e8e;"></div>
 		<div id="list_<?=$result['thema']->getThemaId() ?>" style="display: none;">
-		<table border="0" cellpadding="5" cellspacing="0" width="100%">
-			<? foreach ($result['artikel'] as $index=>$a): ?>
-			<tr>
-				<td class="<?=($index%2==0)?'steel1':'steelgraulight'?>">
-				<?=$a ?>
-				</td>
-			</tr>
-			<? endforeach; ?>
-			<? if($result['thema']->getArtikelCount() == 0): ?>
-			<tr>
-				<td><span style="font-size: smaller;">keine Anzeigen vorhanden</span></td>
-			</tr>
-			<? endif; ?>
-		</table>
-		<? if($result['permission'] === true): ?>
-		<div align="center" style="padding: 3px;">
-		<a href="<?=$link_artikel?>&thema_id=<?=$result['thema']->getThemaId()?>"><img class="button" src="<?=$pluginpfad ?>/images/anzeige-button.png" alt="Eine neue Anzeige erstellen" title="Eine neue Anzeige erstellen" /></a>
-		</div>
-		<? endif; ?>
 		</div>
 	</div>
 	<? if($tindex%$themen_rows == 0): ?>

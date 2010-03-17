@@ -6,14 +6,12 @@
  *
  * Diese Datei enthält die Hauptklasse des Plugins
  *
- * PHP version 5
- *
  * @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
  * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package 	IBIT_SchwarzesBrettPlugin
- * @copyright 	2008-2009 IBIT und ZMML
+ * @copyright 	2008-2010 IBIT und ZMML
  * @license 	http://www.gnu.org/licenses/gpl.html GPL Licence 3
- * @version 	1.6.8
+ * @version 	1.8.1
  */
 
 // IMPORTS
@@ -652,15 +650,18 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	}
 
 	/**
-	 *
+	 * Überschreibt die Ausgabe
+	 * @todo überschreiben ist unschön, vor allem, wenn sich diese funktion ändert
 	 * @param $action
 	 */
 	function display_action($action)
 	{
+	    //Ajax-Anfrage
 		if ($action == 'actionajaxdispatch') {
 			$this->$action();
 			page_close();
 		} else {
+		    //normale ansicht
 		    $GLOBALS['CURRENT_PAGE'] = $this->getDisplayTitle();
 		    list($plugin_url,) = explode('?', PluginEngine::getLink($this));
 			include 'lib/include/html_head.inc.php';
@@ -669,7 +670,9 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			echo 'STUDIP.PLUGIN_URL = "'.$plugin_url.'";' ."\n";
 			include 'js/schwarzesbrett.js';
 			echo '</script>';
+            StudIPTemplateEngine::startContentTable();
 			$this->$action();
+            StudIPTemplateEngine::endContentTable();
 			include 'lib/include/html_end.inc.php';
 			page_close();
 		}

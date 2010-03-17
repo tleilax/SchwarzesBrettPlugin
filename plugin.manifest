@@ -1,6 +1,5 @@
 pluginclassname=SchwarzesBrettPlugin
 pluginname=SchwarzesBrettPlugin
 origin=IBIT
-version=1.7
-updateURL=http://plugins.studip.de/svn/plugins/plugins.xml
+version=1.8
 studipMinVersion=1.10

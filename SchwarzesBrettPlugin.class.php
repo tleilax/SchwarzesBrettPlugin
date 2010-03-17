@@ -25,34 +25,12 @@ require_once 'bootstrap.inc.php';
  */
 class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 {
-	/**
-	 * Laufzeit der Einträge in Sekunden
-	 *
-	 * @var int
-	 */
 	public $zeit;
-
 	public $announcements;
 
-	/**
-	 * Objekt der Templateklasse
-	 *
-	 * @var unknown_type
-	 */
 	private $template_factory;
 
-	/**
-	 * aktueller Benutzer
-	 *
-	 * @var user Objekt
-	 */
 	public $user;
-
-	/**
-	 * aktuelle Benutzerrechte
-	 *
-	 * @var permission Objekt
-	 */
 	public $permission;
 
 
@@ -77,7 +55,6 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
 		// Holt Anzahl anzuzeigende neuste Anzeigen. Default: 20
 		$this->announcements = (int)get_config('BULLETIN_BOARD_ANNOUNCEMENTS');
-
 	}
 
 	/**
@@ -106,20 +83,28 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	 */
 	private function setPluginIcon()
 	{
-		#$last_visitdate = DBManager::get()->query("SELECT MAX(last_visitdate) FROM sb_visits WHERE user_id='{$GLOBALS['auth']->auth['uid']}'")->fetch(PDO::FETCH_COLUMN);
-		#$last_artikel = DBManager::get()->query("SELECT count(*) FROM sb_artikel WHERE mkdate > '{$last_visitdate}' AND visible = 1")->fetch(PDO::FETCH_COLUMN);
-		#if ($last_artikel > 0)
-		#{
-		#	$this->setPluginiconname('images/header_pinn2.gif');
-		#}
-		#else
-		#{
-			$this->setPluginiconname('images/paste_plain.png');
-		#}
+        $last_visitdate = DBManager::get()->query("SELECT MAX(last_visitdate) FROM sb_visits WHERE user_id='{$this->user->userid}'")->fetch(PDO::FETCH_COLUMN);
+	    $last_artikel = DBManager::get()->query("SELECT count(*) FROM sb_artikel WHERE mkdate > '{$last_visitdate}' AND visible = 1")->fetchColumn();
+		if ($last_artikel > 0) {
+		    echo "geladen...";
+		    if ($GLOBALS['STUDIP_INSTALLATION_ID'] =="uol") {
+		        $this->setPluginiconname('images/paste_plain2.png');
+		    } else {
+		        $this->setPluginiconname('images/header_pinn2.gif');
+		    }
+		} else {
+            if ($GLOBALS['STUDIP_INSTALLATION_ID'] =="uol") {
+                $this->setPluginiconname('images/paste_plain.png');
+            } else {
+                $this->setPluginiconname('images/header_pinn1.gif');
+            }
+		}
 	}
 
 	/**
 	 * Gibt alle Anzeigen zu einem Thema zurück
+	 *
+	 * @uses StudipCache
 	 *
 	 * @param string $thema_id
 	 * @return array Anzeigen
@@ -160,6 +145,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 	/**
 	 * Gibt eine Liste aller Themen aus der Datenbank zurück, die sichtbar sind
 	 * oder in denen der Benutzer bereits einen Artikel erstellt hat.
+	 *
+	 * @uses StudipCache
 	 *
 	 * @return array Liste aller Themen
 	 */
@@ -242,7 +229,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		//Benutzereingaben abfangen (Wörter kürzer als 3 Zeichen)
 		if(empty($search_text) || strlen($search_text) < 3)
 		{
-			echo Messagebox::error("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
+			echo MessageBox::error("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
 			$this->showThemen();
 			die;
 		}
@@ -257,7 +244,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		// keine Ergebnisse vorhanden
 		if(count($dbresults) == 0)
 		{
-			echo Messagebox::error("Es wurden für <em>{$search_text}</em> keine Ergebnisse gefunden.");
+			echo MessageBox::error("Es wurden für <em>{$search_text}</em> keine Ergebnisse gefunden.");
 			$this->showThemen();
 		}
 		//Ergebnisse anzeigen
@@ -322,6 +309,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		$template->set_attribute('link_delete', PluginEngine::getLink($this,array("modus"=>"delete_thema")));
 		$template->set_attribute('link_search', PluginEngine::getLink($this,array("modus"=>"show_search_results")));
 		$template->set_attribute('link_back', PluginEngine::getLink($this,array()));
+		$template->set_attribute('last_visit_date', $this->last_visitdate);
 
 		//Keine themen vorhanden
 		if (count($themen) == 0)
@@ -355,13 +343,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 					$thema['permission'] = true;
 				}
 				$thema['artikel'] = array();
-				/*
-				$artikel = $this->getArtikel($tt->getThemaId());
-				foreach($artikel as $a)
-				{
-					array_push($thema['artikel'], $this->showArtikel($a));
-				}
-				*/
+				$thema['last_thema_user_date'] = DBManager::get()->query("SELECT MAX(sv.last_visitdate) FROM sb_visits AS sv LEFT JOIN sb_artikel AS sa ON sv.object_id = sa.artikel_id WHERE sv.user_id='{$this->user->userid}' AND sa.thema_id = '{$tt->getThemaId()}'")->fetchColumn();
 				$thema['countArtikel'] = $tt->getArtikelCount();
 				array_push($results, $thema);
 			}
@@ -485,14 +467,14 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 						$t->setPerm($_REQUEST['thema_perm']);
 						$t->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
 						$t->save();
-						echo Messagebox::success("Das Thema wurde erfolgreich gespeichert.");
+						echo MessageBox::success("Das Thema wurde erfolgreich gespeichert.");
                         //nach dem verändern der themen, muss auch der cache geleert werden
                         StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
 						unset($modus);
 					}
 					else
 					{
-						echo Messagebox::error("Fehler! Bitte geben Sie einen Titel ein.");
+						echo MessageBox::error("Fehler! Bitte geben Sie einen Titel ein.");
 						$this->editThema();
 						exit;
 					}
@@ -514,7 +496,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				{
 				    $t = new Thema($_REQUEST['thema_id']);
 					$t->delete();
-					echo Messagebox::success("Das Thema wurde erfolgreich gelöscht.");
+					echo MessageBox::success("Das Thema wurde erfolgreich gelöscht.");
 					//nach dem verändern der themen, muss auch der cache geleert werden
                     StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
 					unset($modus);
@@ -534,25 +516,25 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 						$a->setThemaId($_REQUEST['thema_id']);
 						$a->setVisible(($_REQUEST['visible'] ? $_REQUEST['visible'] : 0));
 						$a->save();
-						echo Messagebox::success("Die Anzeige wurde erfolgreich gespeichert.");
+						echo MessageBox::success("Die Anzeige wurde erfolgreich gespeichert.");
                         //nach dem verändern der themen, muss auch der cache geleert werden
                         StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
                         StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
 					}
 					else
 					{
-						echo Messagebox::error("Fehler! Bitte geben Sie einen Titel und eine Beschreibung an.");
+						echo MessageBox::error("Fehler! Bitte geben Sie einen Titel und eine Beschreibung an.");
 						$this->editArtikel();
 						exit;
 					}
 				}
 				elseif($this->isDuplicate($_REQUEST['titel']))
 				{
-					echo Messagebox::error("Sie haben bereits einen Artikel mit diesem Titel erstellt. Bitte beachten Sie die Nutzungshinweise!");
+					echo MessageBox::error("Sie haben bereits einen Artikel mit diesem Titel erstellt. Bitte beachten Sie die Nutzungshinweise!");
 				}
 				else
 				{
-					echo Messagebox::error("Sie haben nicht die erforderlichen Rechte eine Anzeige zu erstellen.");
+					echo MessageBox::error("Sie haben nicht die erforderlichen Rechte eine Anzeige zu erstellen.");
 				}
 				unset($modus);
 			}
@@ -571,7 +553,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				}
 				else
 				{
-					echo Messagebox::error("Sie haben nicht die erforderlichen Rechte diese Anzeige zu löschen.");
+					echo MessageBox::error("Sie haben nicht die erforderlichen Rechte diese Anzeige zu löschen.");
 				}
 				unset($modus);
 			}
@@ -587,7 +569,7 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 					$messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, "Anzeige gelöscht!");
 				}
 				$a->delete();
-				echo Messagebox::success("Die Anzeige wurde erfolgreich gelöscht.");
+				echo MessageBox::success("Die Anzeige wurde erfolgreich gelöscht.");
                 //nach dem verändern der themen, muss auch der cache geleert werden
                 StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
                 StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
@@ -621,15 +603,18 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 				$a = new Artikel($id);
 				$a->delete();
 			}
-			echo Messagebox::success("Es wurden erfolgreich <b>".count($artikel)."</b> Artikel aus der Datenbank gelöscht.");
+			echo MessageBox::success("Es wurden erfolgreich <b>".count($artikel)."</b> Artikel aus der Datenbank gelöscht.");
 		}
 		else
 		{
-			echo Messagebox::error("Sie haben nicht die Berechtigung Artikel zu löschen.");
+			echo MessageBox::error("Sie haben nicht die Berechtigung Artikel zu löschen.");
 		}
 		$this->showThemen();
 	}
 
+	/**
+	 *
+	 */
 	function actionAjaxDispatch()
 	{
 		$obj_id = $_REQUEST['objid'];
@@ -641,6 +626,8 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 			$a = new Artikel($obj_id);
 			Header('Content-Type: text/html; charset=windows-1252');
 			echo $this->showArtikel($a, 'artikel_content');
+            //nach dem verändern der themen, muss auch der cache geleert werden
+            StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
 		}
 		if($thema_id){
 			$tt = $thema['thema'] = new Thema($thema_id);
@@ -664,6 +651,10 @@ class SchwarzesBrettPlugin extends AbstractStudIPSystemPlugin
 		}
 	}
 
+	/**
+	 *
+	 * @param $action
+	 */
 	function display_action($action)
 	{
 		if ($action == 'actionajaxdispatch') {

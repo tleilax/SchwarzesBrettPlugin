@@ -2,7 +2,7 @@
 <table border="0" cellpadding="2" cellspacing="0" width="100%" >
 	<tr>
 	<td valign="top">
-		<form name="search_form" method="post" action="<?=$link_search?>">		
+		<form name="search_form" method="post" action="<?=$link_search?>">
 		<div class="topic"><b>Allgemeine Suche nach Anzeigen:</b></div>
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
@@ -16,7 +16,7 @@
 		</table>
 		</form>
 	</td>
-	<td valign="top">		
+	<td valign="top">
 		<div class="topic"><b>Neue Anzeige erstellen</b></div>
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
@@ -74,7 +74,7 @@
 	<? endif; $tindex++; ?>
 	<div class="steel1" style="padding:2px; margin:3px">
 		<div style="float:left">
-			<a title="Klicken, um die Kategorie aufzuklappen" href="javascript:toogleThema('<?=$result['thema']->getThemaId() ?>');"><b><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
+			<a title="Klicken, um die Kategorie aufzuklappen" href="javascript:toogleThema('<?=$result['thema']->getThemaId() ?>');" <? if($result['thema']->getLastArtikelDate() > $result['last_thema_user_date']): ?> style="color: red !important;"<? endif ?>><b<? if($result['thema']->getLastArtikelDate() > $result['last_thema_user_date']): ?> style="color: red !important;"<? endif ?>><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
 			<span style="font-size: smaller"><?=htmlReady($result['thema']->getBeschreibung()) ?></span>
 		</div>
 		<div style="float:right">

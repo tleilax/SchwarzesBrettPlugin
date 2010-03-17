@@ -70,6 +70,8 @@ class Thema
 
 	private $artikel_count;
 
+	private $last_artikel_date;
+
 	/**
 	 * Konstruktor, erstellt ein Objekt der Klasse Thema
 	 *
@@ -87,6 +89,8 @@ class Thema
 			$this->thema_id = "";
 			$this->perm = "autor";
 			$this->mkdatum = 0;
+			$this->last_artikel_date = 0;
+
 		}
 		else
 		{
@@ -100,9 +104,11 @@ class Thema
 				$this->perm = $thema['perm'];
 				$this->thema_id = $thema['thema_id'];
 				$this->mkdatum = $thema['mkdate'];
+				$this->last_artikel_date = DBManager::get()->query("SELECT MAX(mkdate) FROM sb_artikel WHERE thema_id = '{$id}' AND visible = 1")->fetchColumn();
 			}
 		}
 		$this->artikel_count = 0;
+		$this->last_thema_user_date = 0;
 	}
 
 	/**
@@ -217,6 +223,11 @@ class Thema
 	public function getArtikelCount()
 	{
 		return $this->artikel_count;
+	}
+
+	public function getLastArtikelDate()
+	{
+	    return $this->last_artikel_date;
 	}
 }
 ?>

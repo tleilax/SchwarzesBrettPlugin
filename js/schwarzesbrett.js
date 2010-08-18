@@ -2,7 +2,7 @@ function showArtikel(id, typ)
 {
 	if(!typ) typ = '';
 	if($('content'+typ+'_'+id).down() === null){
-		new Ajax.Request(STUDIP.PLUGIN_URL + 'ajaxdispatch?objid='+id, {
+		new Ajax.Request(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/schwarzesbrettplugin/ajaxdispatch?objid='+id, {
 	    	method: 'post',
 	    	onSuccess: function(transport) {
 				$('content'+typ+'_'+id).update(transport.responseText);
@@ -25,13 +25,13 @@ function closeArtikel(e)
 	var id = content.id.split('_')[1];
 	content.hide();
 	headline.show();
-	$('indikator_'+id).src = STUDIP.ABSOLUTE_URI_STUDIP+'assets/images/forumgrau.gif';
+	$('indikator_'+id).src = STUDIP.ASSETS_URL + 'images/forumgrau.gif';
 }
 
 function toogleThema(id)
 {
 	if($('list_'+id).down() === null){
-		new Ajax.Request(STUDIP.PLUGIN_URL + 'ajaxdispatch?thema_id='+id, {
+		new Ajax.Request(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/schwarzesbrettplugin/ajaxdispatch?thema_id='+id, {
 	    	method: 'post',
 	    	onSuccess: function(transport) {
 				$('list_'+id).update(transport.responseText);

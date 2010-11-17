@@ -84,8 +84,8 @@
             <? if($result['thema']->getVisible() == 0): ?>
                 <img src="<?=$pluginpfad ?>/images/exclamation.png" alt="nicht sichtbar" title="Dieses Thema ist für Benutzer nicht sichtbar" />
             <? endif; ?>
-                <a href="<?=$link_edit ?>?thema_id=<?=$result['thema']->getThemaId() ?>"><img src="<?=$pluginpfad ?>/images/table_edit.png" alt="Thema bearbeiten" title="Thema bearbeiten" /></a>
-                <a href="<?=$link_delete ?>?thema_id=<?=$result['thema']->getThemaId() ?>"><img src="<?=$pluginpfad ?>/images/cross.png" alt="Thema löschen" title="Thema inkl. aller Anzeigen löschen" /></a>
+                <a href="<?= URLHelper::getLink($link_edit, array('thema_id' => $result['thema']->getThemaId())) ?>"><img src="<?=$pluginpfad ?>/images/table_edit.png" alt="Thema bearbeiten" title="Thema bearbeiten" /></a>
+                <a href="<?= URLHelper::getLink($link_delete, array('thema_id' => $result['thema']->getThemaId())) ?>"><img src="<?=$pluginpfad ?>/images/cross.png" alt="Thema löschen" title="Thema inkl. aller Anzeigen löschen" /></a>
         <? endif; ?>
         </div>
         <div style="clear:both; border-bottom: 1px solid #8e8e8e;"></div>

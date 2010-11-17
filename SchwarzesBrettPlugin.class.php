@@ -6,12 +6,12 @@
  *
  * Diese Datei enthält die Hauptklasse des Plugins
  *
- * @author		Jan Kulmann <jankul@zmml.uni-bremen.de>
- * @author		Michael Riehemann <michael.riehemann@uni-oldenburg.de>
- * @package 	IBIT_SchwarzesBrettPlugin
- * @copyright 	2008-2010 IBIT und ZMML
- * @license 	http://www.gnu.org/licenses/gpl.html GPL Licence 3
- * @version 	2.0a
+ * @author      Jan Kulmann <jankul@zmml.uni-bremen.de>
+ * @author      Michael Riehemann <michael.riehemann@uni-oldenburg.de>
+ * @package     IBIT_SchwarzesBrettPlugin
+ * @copyright   2008-2010 IBIT und ZMML
+ * @license     http://www.gnu.org/licenses/gpl.html GPL Licence 3
+ * @version     2.0.2
  */
 
 // IMPORTS
@@ -23,11 +23,11 @@ require_once 'bootstrap.inc.php';
  */
 class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 {
-	public $zeit, $announcements, $user, $perm;
-	private $template_factory, $layout, $layout_infobox;
+    public $zeit, $announcements, $user, $perm;
+    private $template_factory, $layout, $layout_infobox;
 
-	const THEMEN_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/themen';
-	const ARTIKEL_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/artikel/';
+    const THEMEN_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/themen';
+    const ARTIKEL_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/artikel/';
 
     /**
      *
@@ -44,7 +44,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $this->layout_infobox =  $GLOBALS['template_factory']->open('layouts/base');
 
         // Holt die Laufzeit aus der Config. Default: 30Tage
-        $this->zeit = get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
+        $this->zeit = (int)get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
         // Holt Anzahl anzuzeigende neuste Anzeigen. Default: 20
         $this->announcements = (int)get_config('BULLETIN_BOARD_ANNOUNCEMENTS');
 
@@ -58,7 +58,8 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
     }
 
     /**
-     * @return Grafik, die in der Hauptnavigation angezeigt wird
+     * @todo    Icons an 2.0 anpassen
+     * @return  Grafik, die in der Hauptnavigation angezeigt wird
      */
     private function getPluginIcon()
     {
@@ -101,35 +102,37 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
     public function editArtikel_action()
     {
         //Daten holen
-        $a = new Artikel(Request::get('artikel_id'));
-        if (!Request::get('artikel_id')) {
-            $a->setThemaId(Request::get('thema_id'));
-        }
+        $a = new Artikel(Request::get('artikel_id', false));
 
         //Speichern
-        if (Request::get('modus') == "add_artikel" && $this->perm->have_perm($this->getThemaPermission(Request::get('thema_id')))) {
-            if ((!$this->isDuplicate(Request::get('titel')) && Request::get('artikel_id')) || !Request::get('artikel_id')) {
-                if (Request::get('titel') && Request::get('beschreibung')) {
-                    $a = new Artikel(Request::get('artikel_id'));
-                    $a->setTitel(Request::get('titel'));
-                    $a->setBeschreibung(Request::get('beschreibung'));
-                    $a->setThemaId(Request::get('thema_id'));
-                    $a->setVisible(Request::get('visible', 0));
-                    $a->save();
-                    $this->message =  MessageBox::success("Die Anzeige wurde erfolgreich gespeichert.");
-                    //nach dem verändern der themen, muss auch der cache geleert werden
-                    StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
-                    StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
-                    $this->show_action();
-                    return;
-                } else {
-                    $this->message = MessageBox::error("Bitte geben Sie einen Titel und eine Beschreibung an.");
-                }
-            } elseif($this->isDuplicate(Request::get('titel'))) {
+        if (Request::submitted('speichern') && $this->getThemaPermission(Request::get('thema_id'))) {
+            $a->setTitel(Request::get('titel'));
+            $a->setBeschreibung(Request::get('beschreibung'));
+            $a->setThemaId(Request::get('thema_id'));
+            $a->setVisible(Request::get('visible', 0));
+
+            //keine thema
+            if(Request::get('thema_id') == 'nix') {
+                $this->message = MessageBox::error("Bitte wählen Sie ein Thema aus, in dem die Anzeige angezeigt werden soll.");
+            //doppelter eintrag
+            } elseif($this->isDuplicate(Request::get('titel')) && !Request::get('artikel_id')) {
                 $this->message = MessageBox::error("Sie haben bereits einen Artikel mit diesem Titel erstellt. Bitte beachten Sie die Nutzungshinweise!");
+            //speichern
+            } elseif (Request::get('titel') && Request::get('beschreibung')) {
+                $a->save();
+                $this->message =  MessageBox::success("Die Anzeige wurde erfolgreich gespeichert.");
+                //nach dem verändern der themen, muss auch der cache geleert werden
+                StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
+                StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
+                $this->show_action();
+                return;
+            //kein titel und beschreibung
             } else {
-                $this->message = MessageBox::error("Sie haben nicht die erforderlichen Rechte eine Anzeige zu erstellen.");
+                $this->message = MessageBox::error("Bitte geben Sie einen Titel und eine Beschreibung an.");
             }
+        //keine rechte
+        } elseif(Request::submitted('speichern') && !$this->getThemaPermission(Request::get('thema_id'))) {
+            $this->message = MessageBox::error("Sie haben nicht die erforderlichen Rechte eine Anzeige zu erstellen.");
         }
 
         //Ausgabe
@@ -141,7 +144,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $template->set_attribute('a', $a);
         $template->set_attribute('zeit', $this->zeit);
         $template->set_attribute('link', PluginEngine::getURL($this, array(), 'show'));
-        $template->set_attribute('link_thema', PluginEngine::getURL($this, array("open" => Request::get('thema_id')), 'editArtikel'));
+        $template->set_attribute('link_thema', PluginEngine::getURL($this, array(), 'editArtikel'));
 
         //Infobox
         $template->infobox = array(
@@ -371,7 +374,12 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function getThemaPermission($thema_id)
     {
-        return DBManager::get()->query("SELECT perm FROM sb_themen WHERE thema_id='{$thema_id}'")->fetch(PDO::FETCH_COLUMN);
+        if ($thema_id != 'nix') {
+            $perm = DBManager::get()->query("SELECT perm FROM sb_themen WHERE thema_id='{$thema_id}'")->fetch(PDO::FETCH_COLUMN);
+            return $this->perm->have_perm($perm);
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -383,9 +391,11 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function isDuplicate($titel)
     {
-        if (count(DBManager::get()->query("SELECT artikel_id FROM sb_artikel "
-              ."WHERE user_id='{$this->user->id}' AND titel='{$titel}' "
-              ."AND mkdate>(UNIX_TIMESTAMP()-(60*60*24))")->fetchAll(PDO::FETCH_ASSOC)) > 0) {
+        $db = DBManager::get()->prepare("SELECT count(artikel_id) FROM sb_artikel WHERE user_id=? AND titel=? AND mkdate > (UNIX_TIMESTAMP()-(60*60*24))");
+        $db->execute(array($this->user->id, $titel));
+        $check = $db->fetch(PDO::FETCH_COLUMN);
+
+        if ($check > 0) {
             return true;
         } else {
             return false;
@@ -586,46 +596,46 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         return $ret;
     }
 
-	/**
-	 *
-	 */
-	function ajaxDispatch_action()
-	{
-		$obj_id = Request::get('objid');
-		$thema_id = Request::get('thema_id');
-		//Artikel
-		if ($obj_id){
-			$oid = DBManager::get()->quote($obj_id );
-			$uid = DBManager::get()->quote($GLOBALS['user']->id);
-			DBManager::get()->exec("REPLACE INTO sb_visits SET object_id=$oid, user_id=$uid, type='artikel', last_visitdate=UNIX_TIMESTAMP()");
-			$a = new Artikel($obj_id);
-			Header('Content-Type: text/html; charset=windows-1252');
-			echo $this->showArtikel($a, 'artikel_content');
+    /**
+     *
+     */
+    function ajaxDispatch_action()
+    {
+        $obj_id = Request::get('objid');
+        $thema_id = Request::get('thema_id');
+        //Artikel
+        if ($obj_id){
+            $oid = DBManager::get()->quote($obj_id );
+            $uid = DBManager::get()->quote($GLOBALS['user']->id);
+            DBManager::get()->exec("REPLACE INTO sb_visits SET object_id=$oid, user_id=$uid, type='artikel', last_visitdate=UNIX_TIMESTAMP()");
+            $a = new Artikel($obj_id);
+            Header('Content-Type: text/html; charset=windows-1252');
+            echo $this->showArtikel($a, 'artikel_content');
             //nach dem verändern der themen, muss auch der cache geleert werden
             StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
-		}
-		//thema
-		if($thema_id){
-			$tt = $thema['thema'] = new Thema($thema_id);
-			if($this->perm->have_perm($tt->getPerm(), $this->user->id) ||  $this->perm->have_perm('root'))
-			{
-				$thema['permission'] = true;
-			}
-			$thema['artikel'] = array();
-			$artikel = $this->getArtikel($tt->getThemaId());
-			foreach($artikel as $a)
-			{
-				array_push($thema['artikel'], $this->showArtikel($a));
-			}
-			$tt->setArtikelCount(count($artikel));
-			$template = $this->template_factory->open('themen_artikel');
-			$template->set_attribute('pluginpfad', $this->getPluginURL());
-			$template->set_attribute('link_artikel', PluginEngine::getURL($this, array(), 'editArtikel'));
-			$template->set_attribute('result', $thema);
-			Header('Content-Type: text/html; charset=windows-1252');
-			echo $template->render();
-		}
-	}
+        }
+        //thema
+        if($thema_id){
+            $tt = $thema['thema'] = new Thema($thema_id);
+            if($this->perm->have_perm($tt->getPerm(), $this->user->id) ||  $this->perm->have_perm('root'))
+            {
+                $thema['permission'] = true;
+            }
+            $thema['artikel'] = array();
+            $artikel = $this->getArtikel($tt->getThemaId());
+            foreach($artikel as $a)
+            {
+                array_push($thema['artikel'], $this->showArtikel($a));
+            }
+            $tt->setArtikelCount(count($artikel));
+            $template = $this->template_factory->open('themen_artikel');
+            $template->set_attribute('pluginpfad', $this->getPluginURL());
+            $template->set_attribute('link_artikel', PluginEngine::getURL($this, array(), 'editArtikel'));
+            $template->set_attribute('result', $thema);
+            Header('Content-Type: text/html; charset=windows-1252');
+            echo $template->render();
+        }
+    }
 
     /**
      * unschön aber erstmal duplikation der createQuestion mit anpassung für plugins.

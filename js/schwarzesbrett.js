@@ -1,46 +1,34 @@
 function showArtikel(id, typ)
 {
-	if(!typ) typ = '';
-	if($('content'+typ+'_'+id).down() === null){
-		new Ajax.Request(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/schwarzesbrettplugin/ajaxdispatch?objid='+id, {
-	    	method: 'post',
-	    	onSuccess: function(transport) {
-				$('content'+typ+'_'+id).update(transport.responseText);
-				$('content'+typ+'_'+id).show();
-				$('headline'+typ+'_'+id).hide();
-			},
-	       	onFailure: function(t) {alert('Error ' + t.status + ' -- ' + t.statusText); },
-	   		on404: function(t) {alert('Error 404: location "' + t.statusText + '" was not found.'); }
-		});
-	} else {
-		$('content'+typ+'_'+id).show();
-		$('headline'+typ+'_'+id).hide();
-	}
+    if(!typ) typ = '';
+	jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/schwarzesbrettplugin/ajaxdispatch?objid='+id, function(transport) {
+		jQuery('#content'+typ+'_'+id).html(transport);
+		jQuery('#content'+typ+'_'+id).slideDown();
+		jQuery('#headline'+typ+'_'+id).hide();
+		if(typ != '') {
+		    jQuery('#close_'+id).attr('href','closeArtikel("'+id+'","l");');
+		}
+	});
 }
 
-function closeArtikel(e)
+function closeArtikel(id, typ)
 {
-	var content = e.up();
-	var headline = content.up().down();
-	var id = content.id.split('_')[1];
-	content.hide();
-	headline.show();
-	$('indikator_'+id).src = STUDIP.ASSETS_URL + 'images/forumgrau.gif';
+    if(!typ) typ = '';
+    jQuery('#content'+typ+'_'+id).hide();
+	jQuery('#headline'+typ+'_'+id).show();
+	jQuery('#indikator_'+id).src = STUDIP.ASSETS_URL + 'images/icons/16/gray/arr_1right.png';
 }
 
 function toogleThema(id)
 {
-	if($('list_'+id).down() === null){
-		new Ajax.Request(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/schwarzesbrettplugin/ajaxdispatch?thema_id='+id, {
-	    	method: 'post',
-	    	onSuccess: function(transport) {
-				$('list_'+id).update(transport.responseText);
-				$('list_'+id).toggle();
-			},
-	       	onFailure: function(t) {alert('Error ' + t.status + ' -- ' + t.statusText); },
-	   		on404: function(t) {alert('Error 404: location "' + t.statusText + '" was not found.'); }
-		});
+	if(jQuery('#list_'+id).css('display') == 'none') {
+	    jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + 'plugins.php/schwarzesbrettplugin/ajaxdispatch?thema_id='+id, function(transport) {
+		    jQuery('#list_'+id).html(transport);
+		    jQuery('#list_'+id).slideToggle();
+	    });
 	} else {
-		$('list_'+id).toggle();
+	    jQuery('#list_'+id).slideToggle();
 	}
+	jQuery('#show_'+id).toggle();
+	jQuery('#hide_'+id).toggle();
 }

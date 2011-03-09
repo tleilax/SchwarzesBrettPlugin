@@ -3,12 +3,12 @@
         <?= date("d.m.Y",$a->getMkdate())?> | <?=$anzahl?> |
     </div>
     <div style="padding-right: 85px;">
-        <a href="javascript:showArtikel('<?=$a->getArtikelId()?>');">
-            <img id="indikator_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/<?=$pfeil?>.gif" />
+        <a href="showArtikel('<?=$a->getArtikelId()?>');">
+            <img id="indikator_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/icons/16/blue/arr_1right.png" class="text-top">
             <?= htmlReady($a->getTitel())?>
         </a>
         <? if ($a->getVisible() == 0): ?>
-            <img src="<?=$pluginpfad?>/images/exclamation.png" alt="nicht sichtbar" title="Diese Anzeige ist nicht für andere sichtbar" class="middle" />
+            <?= Assets::img('icons/16/red/exclaim-circle.png', array('class' => 'text-top', 'title' => _('Diese Anzeige ist nicht für andere sichtbar'))) ?>
         <? endif; ?>
     </div>
 </div>

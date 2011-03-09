@@ -86,8 +86,7 @@ class Artikel
      */
     public function delete()
     {
-        if (!empty($this->artikel_id))
-        {
+        if (!empty($this->artikel_id)) {
             DBManager::get()->exec("DELETE FROM sb_artikel WHERE artikel_id='{$this->artikel_id}'");
             DBManager::get()->exec("DELETE FROM sb_visits WHERE object_id='{$this->artikel_id}'");
         }

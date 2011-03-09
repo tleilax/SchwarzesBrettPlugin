@@ -1,10 +1,10 @@
-<a href="#" onClick="closeArtikel(this);return false;">
-    <img id="indikator_offen_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/<?=$pfeil_runter?>.gif" />
+<a id="close_<?=$a->getArtikelId()?>" href="closeArtikel('<?=$a->getArtikelId()?>');">
+    <img id="indikator_offen_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/icons/16/blue/arr_1down.png" class="text-top">
     <?= htmlReady($a->getTitel()) ?>
 </a>
-<? if ($a->getVisible() == 0) : ?>
-    <img src="<?=$pluginpfad?>/images/exclamation.png" alt="nicht sichtbar" title="Diese Anzeige ist nicht für andere sichtbar"  class="middle" />
-<? endif ?>
+<? if ($a->getVisible() == 0): ?>
+    <?= Assets::img('icons/16/red/exclaim-circle.png', array('class' => 'text-top', 'title' => _('Diese Anzeige ist nicht für andere sichtbar'))) ?>
+<? endif; ?>
 <div style="border-bottom: 1px solid #8e8e8e; padding-bottom: 3px;">
     <?= formatReady($a->getBeschreibung())?>
 </div>

@@ -13,9 +13,9 @@
     <? endif; ?>
 </table>
 
-<? if($result['permission'] === true): ?>
+<? if($result['permission'] === true && !$blacklisted): ?>
 <div align="center" style="padding: 3px;">
-<a href="<?=$link_artikel?>?thema_id=<?=$result['thema']->getThemaId()?>">
+<a href="<?= URLHelper::getLink($link_artikel, array('thema_id' => $result['thema']->getThemaId())) ?>">
     <img class="button" src="<?=$pluginpfad ?>/images/anzeige-button.png" alt="Eine neue Anzeige erstellen" title="Eine neue Anzeige erstellen" />
 </a>
 </div>

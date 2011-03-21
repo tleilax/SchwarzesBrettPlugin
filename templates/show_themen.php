@@ -60,11 +60,11 @@
     <? endif; $tindex++; ?>
     <div class="steel1" style="padding:2px; margin:3px">
         <div style="float:left">
-            <a title="Klicken, um die Kategorie aufzuklappen" href="toogleThema('<?=$result['thema']->getThemaId() ?>');" <? if($result['thema']->getLastArtikelDate() > $result['last_thema_user_date']): ?> style="color: red !important;"<? endif ?>><b<? if($result['thema']->getLastArtikelDate() > $result['last_thema_user_date']): ?> style="color: red !important;"<? endif ?>><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
+            <a title="Klicken, um die Kategorie aufzuklappen" href="javascript: toogleThema('<?=$result['thema']->getThemaId() ?>');" <? if($result['thema']->getLastArtikelDate() > $result['last_thema_user_date']): ?> style="color: red !important;"<? endif ?>><b<? if($result['thema']->getLastArtikelDate() > $result['last_thema_user_date']): ?> style="color: red !important;"<? endif ?>><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
             <span style="font-size: smaller"><?=htmlReady($result['thema']->getBeschreibung()) ?></span>
         </div>
         <div style="float:right">
-                <a href="toogleThema('<?=$result['thema']->getThemaId() ?>');">
+                <a href="javascript: toogleThema('<?=$result['thema']->getThemaId() ?>');">
                     <?= Assets::img('icons/16/blue/arr_eol-down.png', array('id' => 'show_'.$result['thema']->getThemaId(), 'class' => 'text-top', 'title' => _('Alle Artikel anzeigen'))) ?>
                     <?= Assets::img('icons/16/blue/arr_eol-up.png', array('id' => 'hide_'.$result['thema']->getThemaId(), 'class' => 'text-top', 'title' => _('Alle Artikel verstecken'), 'style' => 'display:none;')) ?>
                 </a>

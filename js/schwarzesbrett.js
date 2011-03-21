@@ -6,7 +6,7 @@ function showArtikel(id, typ)
 		jQuery('#content'+typ+'_'+id).slideDown();
 		jQuery('#headline'+typ+'_'+id).hide();
 		if(typ != '') {
-		    jQuery('#close_'+id).attr('href','closeArtikel("'+id+'","l");');
+		    jQuery('#close_'+id).attr('href','javascript: closeArtikel("'+id+'","l");');
 		}
 	});
 }
@@ -16,7 +16,7 @@ function closeArtikel(id, typ)
     if(!typ) typ = '';
     jQuery('#content'+typ+'_'+id).hide();
 	jQuery('#headline'+typ+'_'+id).show();
-	jQuery('#indikator_'+id).src = STUDIP.ASSETS_URL + 'images/icons/16/gray/arr_1right.png';
+	jQuery('#indikator_'+id).attr('src', STUDIP.ASSETS_URL + 'images/icons/16/blue/arr_1right.png');
 }
 
 function toogleThema(id)

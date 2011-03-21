@@ -16,7 +16,7 @@
             <b><?=$result['thema_titel']?></b><br/>
         </div>
         <div style="float:right">
-                <a href="toogleThema('<?=$result['thema_id']?>');">
+                <a href="javascript: toogleThema('<?=$result['thema_id']?>');">
                     <?= Assets::img('icons/16/blue/arr_eol-down.png', array('id' => 'show_'.$result['thema_id'], 'class' => 'text-top', 'title' => _('Alle Artikel anzeigen'), 'style' => 'display:none;')) ?>
                     <?= Assets::img('icons/16/blue/arr_eol-up.png', array('id' => 'hide_'.$result['thema_id'], 'class' => 'text-top', 'title' => _('Alle Artikel verstecken'))) ?>
                 </a>

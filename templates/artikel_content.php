@@ -1,4 +1,4 @@
-<a id="close_<?=$a->getArtikelId()?>" href="closeArtikel('<?=$a->getArtikelId()?>');">
+<a id="close_<?=$a->getArtikelId()?>" href="javascript: closeArtikel('<?=$a->getArtikelId()?>');">
     <img id="indikator_offen_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/icons/16/blue/arr_1down.png" class="text-top">
     <?= htmlReady($a->getTitel()) ?>
 </a>

@@ -3,7 +3,7 @@
         <?= date("d.m.Y",$a->getMkdate())?> | <?=$anzahl?> |
     </div>
     <div style="padding-right: 85px;">
-        <a href="showArtikel('<?=$a->getArtikelId()?>');">
+        <a href="javascript: showArtikel('<?=$a->getArtikelId()?>');">
             <img id="indikator_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/icons/16/blue/arr_1right.png" class="text-top">
             <?= htmlReady($a->getTitel())?>
         </a>

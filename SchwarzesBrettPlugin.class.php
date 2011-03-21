@@ -247,6 +247,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     public function deleteOldArtikel_action()
     {
+        Navigation::removeItem('/schwarzesbrettplugin/root/delete');
         Navigation::activateItem('/schwarzesbrettplugin/show');
         if ($this->perm->have_perm('root')) {
             $artikel = DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() > (mkdate + {$this->zeit})")->fetchAll(PDO::FETCH_COLUMN);
@@ -633,7 +634,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $template->set_attribute('a', $a);
         $template->set_attribute('anzahl', $this->getArtikelLookups($a->getArtikelId()));
         $template->set_attribute('pluginpfad', $this->getPluginURL());
-        $template->set_attribute('pfeil', ($this->hasVisited($a->getArtikelId()) ? "forumgrau" : "forumrot"));
+        $template->set_attribute('pfeil', ($this->hasVisited($a->getArtikelId()) ? "blue" : "red"));
         $template->set_attribute('pfeil_runter', "forumgraurunt");
         //benutzer und root extrafunktionen anzeigen
         if($a->getUserId() == $this->user->id || $this->perm->have_perm('root'))

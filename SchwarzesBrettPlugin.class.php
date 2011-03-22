@@ -79,12 +79,12 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $this->root = true;
                 $root_nav = new AutoNavigation(_('Administration'), PluginEngine::getURL($this, array(), 'editThema'));
                 $root_nav->addSubNavigation('addBlock', new AutoNavigation(_('Neues Thema anlegen'), PluginEngine::getURL($this, array(), 'editThema')));
+                $root_nav->addSubNavigation('blacklist', new AutoNavigation(_('Benutzer-Blacklist'), PluginEngine::getURL($this, array(), 'blacklist')));
+                $root_nav->addSubNavigation('duplicates', new AutoNavigation(_('Doppelte Einträge suchen'), PluginEngine::getURL($this, array(), 'searchDuplicates')));
                 $olds = DBManager::get()->query("SELECT count(artikel_id) FROM sb_artikel WHERE UNIX_TIMESTAMP() > (mkdate + {$this->zeit})")->fetchColumn();
                 if ($olds > 0) {
                     $root_nav->addSubNavigation('delete', new AutoNavigation(_('Datenbank bereinigen ('.$olds.' alte Einträge)'), PluginEngine::getURL($this, array(), 'deleteOldArtikel')));
                 }
-                $root_nav->addSubNavigation('blacklist', new AutoNavigation(_('Benutzer-Blacklist'), PluginEngine::getURL($this, array(), 'blacklist')));
-                $root_nav->addSubNavigation('duplicates', new AutoNavigation(_('Doppelte Einträge suchen'), PluginEngine::getURL($this, array(), 'searchDuplicates')));
                 $nav->addSubNavigation('root', $root_nav);
             }
             Navigation::addItem('/schwarzesbrettplugin', $nav);
@@ -300,7 +300,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             //Root löscht Artikel eines Benutzers, also diesen benachrichtigen.
             if ($a->getUserId() != $this->user->id && $this->perm->have_perm('root')) {
                 $messaging = new messaging();
-                $msg = sprintf(_("Die Anzeige \"%s\" wurde von der Administration gelöscht.\n\n Bitte beachten Sie die Nutzungsordnung zum Erstellen von Anzeigen. Bei Wiederholung können Sie gesperrt werden.", $a->getTitel()));
+                $msg = sprintf(_("Die Anzeige \"%s\" wurde von der Administration gelöscht.\n\n Bitte beachten Sie die Nutzungsordnung zum Erstellen von Anzeigen (Mehrfaches Einstellen ist nicht erlaubt). Bei wiederholtem Verstoß können Sie gesperrt werden.", $a->getTitel()));
                 $messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, "Schwarzes Brett: Anzeige gelöscht!");
             }
             $a->delete();
@@ -311,7 +311,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         } elseif ($a->getUserId() == $this->user->id || $this->perm->have_perm('root')) {
             echo $this->createQuestion('Soll die Anzeige **'.$a->getTitel().'** von %%'.get_fullname($a->getUserId()).'%% wirklich gelöscht werden?', array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId()), 'deleteArtikel');
         } else {
-            $this->message = MessageBox::error("Sie haben nicht die Berechtigung diese anzeige zu löschen.");
+            $this->message = MessageBox::error("Sie haben nicht die Berechtigung diese Anzeige zu löschen.");
         }
         $this->showThemen();
     }
@@ -332,7 +332,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $db->execute(array(Request::option('user_id')));
                 //nachricht an den benutzer
                 $messaging = new messaging();
-                $msg = _("Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde Ihr Zugang zum Schwarzen Brett gesperrt. Sie können keine weiteren Anzeigen erstellen.\n\n Bei weiteren Fragen wenden Sie sich bitte an die Systemadministratoren.");
+                $msg = _("Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde Ihr Zugang zum Schwarzen Brett gesperrt. Sie können keine weiteren Anzeigen erstellen.\n\n Bei Fragen wenden Sie sich bitte an die Systemadministratoren.");
                 $messaging->insert_message($msg, get_username(Request::option('user_id')), "____%system%____", FALSE, FALSE, 1, FALSE, "Schwarzes Brett: Sie wurden gesperrt.");
 
                 $template->message = MessageBox::success(_('Der Benutzer wurde erfolgreich auf die Blacklist gesetzt.'));
@@ -351,7 +351,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
         $results = DBManager::get()->query("SELECT user_id, count(user_id) FROM sb_artikel s GROUP BY user_id HAVING count(user_id) > 1")->fetchAll(PDO::FETCH_ASSOC);
         foreach ($results as $i => $result) {
-            $results[$i]['artikel'] = DBManager::get()->query("SELECT * FROM sb_artikel WHERE user_id = '{$result['user_id']}'")->fetchAll(PDO::FETCH_ASSOC);
+            $results[$i]['artikel'] = DBManager::get()->query("SELECT a.*, t.titel AS thema FROM sb_artikel AS a LEFT JOIN sb_themen AS t ON a.thema_id = t.thema_id WHERE a.user_id = '{$result['user_id']}' ORDER BY a.mkdate DESC")->fetchAll(PDO::FETCH_ASSOC);
         }
         $template->set_attribute('results', $results);
         $template->set_attribute('link', PluginEngine::getURL($this, array(), 'show'));

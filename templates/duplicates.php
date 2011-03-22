@@ -20,7 +20,7 @@
         <tr>
             <td><?= date("d.m.Y", $artikel['mkdate']) ?>:
             <a href="<?= URLHelper::getLink($link, array('modus' => 'show_search_results', 'search_text' => htmlReady($artikel['titel']))) ?>">
-                <?= htmlReady($artikel['titel']) ?>
+                <?= htmlReady($artikel['titel']) ?> (<?= htmlReady($artikel['thema']) ?>)
             </a>
             </td>
             <td align="right">

@@ -66,6 +66,11 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
         //menu nur anzeigen, wenn eingeloggt
         if($this->perm->have_perm('user')) {
+
+            // Sachen in den Header laden (bis 1.11)
+            PageLayout::addScript($this->getPluginURL().'/js/schwarzesbrett.js');
+
+            //navigation
             $user_nav =new AutoNavigation(_('Schwarzes Brett'), PluginEngine::getURL($this, array(), 'show'));
             $user_nav->addSubNavigation('show', new AutoNavigation(_('Übersicht'), PluginEngine::getURL($this, array(), 'show')));
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
@@ -89,9 +94,6 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             }
             Navigation::addItem('/schwarzesbrettplugin', $nav);
         }
-
-        // Sachen in den Header laden (bis 1.11)
-        PageLayout::addScript($this->getPluginURL().'/js/schwarzesbrett.js');
     }
 
     /**
@@ -300,14 +302,15 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             //Root löscht Artikel eines Benutzers, also diesen benachrichtigen.
             if ($a->getUserId() != $this->user->id && $this->perm->have_perm('root')) {
                 $messaging = new messaging();
-                $msg = sprintf(_("Die Anzeige \"%s\" wurde von der Administration gelöscht.\n\n Bitte beachten Sie die Nutzungsordnung zum Erstellen von Anzeigen (Mehrfaches Einstellen ist nicht erlaubt). Bei wiederholtem Verstoß können Sie gesperrt werden.", $a->getTitel()));
+                $msg = sprintf(_("Die Anzeige \"%s\" wurde von der Administration gelöscht.\n\n Bitte beachten Sie die Nutzungsordnung zum Erstellen von Anzeigen (Mehrfaches Einstellen ist nicht erlaubt). Bei wiederholtem Verstoß können Sie gesperrt werden."), $a->getTitel());
                 $messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, "Schwarzes Brett: Anzeige gelöscht!");
             }
             $a->delete();
             $this->message = MessageBox::success("Die Anzeige wurde erfolgreich gelöscht.");
             //nach dem verändern der themen, muss auch der cache geleert werden
-            StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
-            StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
+            $cache = StudipCacheFactory::getCache();
+            $cache->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
+            $cache->expire(self::THEMEN_CACHE_KEY);
         } elseif ($a->getUserId() == $this->user->id || $this->perm->have_perm('root')) {
             echo $this->createQuestion('Soll die Anzeige **'.$a->getTitel().'** von %%'.get_fullname($a->getUserId()).'%% wirklich gelöscht werden?', array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId()), 'deleteArtikel');
         } else {
@@ -438,7 +441,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $t->setArtikelCount($this->getArtikelCount($thema['thema_id']));
                 array_push($ret, $t);
             }
-            $cache->write(self::THEMEN_CACHE_KEY, serialize($ret));
+            $cache->write(self::THEMEN_CACHE_KEY, serialize($ret), 3600);
         }
         return $ret;
     }

@@ -119,7 +119,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         if($this->perm->have_perm('user')) {
             //Suchergebnisse abfragen und anzeigen, falls vorhanden
             if (Request::get('modus') == "show_search_results") {
-                $this->search(Request::get('search_text'));
+                $this->search();
                 return;
             }
             $this->showThemen();
@@ -302,7 +302,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             //Root löscht Artikel eines Benutzers, also diesen benachrichtigen.
             if ($a->getUserId() != $this->user->id && $this->perm->have_perm('root')) {
                 $messaging = new messaging();
-                $msg = sprintf(_("Die Anzeige \"%s\" wurde von der Administration gelöscht.\n\n Bitte beachten Sie die Nutzungsordnung zum Erstellen von Anzeigen (Mehrfaches Einstellen ist nicht erlaubt). Bei wiederholtem Verstoß können Sie gesperrt werden."), $a->getTitel());
+                $msg = sprintf(_("Die Anzeige \"%s\" wurde von den System-Administratoren gelöscht.\n\n Bitte beachten Sie die Nutzungsordnung zum Erstellen von Anzeigen (Mehrfaches Einstellen ist nicht erlaubt). Bei wiederholtem Verstoß können Sie gesperrt werden."), $a->getTitel());
                 $messaging->insert_message($msg, get_username($a->getUserId()), "____%system%____", FALSE, FALSE, 1, FALSE, "Schwarzes Brett: Anzeige gelöscht!");
             }
             $a->delete();
@@ -503,21 +503,30 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      *
      * @param String $search_text Suchwort
      */
-    private function search($search_text)
+    private function search()
     {
-        //Benutzereingaben abfangen (Wörter kürzer als 3 Zeichen)
-        if(empty($search_text) || strlen($search_text) < 3)
-        {
-            $this->message = MessageBox::error("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
-            $this->showThemen();
-            return;
+        if(Request::get('search_user') && $this->perm->get_perm($this->user->id) == 'root') {
+            //Datenbankabfrage
+            $sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel AS a, sb_themen AS t WHERE
+                    t.thema_id=a.thema_id AND a.user_id='%s' ORDER BY t.titel, a.titel",
+                    Request::get('search_user'));
+        } else {
+            $search_text = Request::get('search_text');
+            //Benutzereingaben abfangen (Wörter kürzer als 3 Zeichen)
+            if((empty($search_text) || strlen($search_text) < 3) && !Request::get('search_user'))
+            {
+                $this->message = MessageBox::error("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
+                $this->showThemen();
+                return;
+            }
+
+            //Datenbankabfrage
+            $sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel AS a, sb_themen AS t WHERE
+                    t.thema_id=a.thema_id AND (UPPER(a.titel) LIKE '%s' OR UPPER(a.beschreibung) LIKE '%s') AND UNIX_TIMESTAMP() < (a.mkdate + %d)
+                    AND (a.visible=1 OR (a.visible=0 AND (a.user_id='%s' OR 'root'='%s'))) ORDER BY t.titel, a.titel
+                    ","%".strtoupper($search_text)."%","%".strtoupper($search_text)."%", $this->zeit, $this->user->id, $this->perm->get_perm($this->user->id));
         }
 
-        //Datenbankabfrage
-        $sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel AS a, sb_themen AS t WHERE
-                t.thema_id=a.thema_id AND (UPPER(a.titel) LIKE '%s' OR UPPER(a.beschreibung) LIKE '%s') AND UNIX_TIMESTAMP() < (a.mkdate + %d)
-                AND (a.visible=1 OR (a.visible=0 AND (a.user_id='%s' OR 'root'='%s'))) ORDER BY t.titel, a.titel
-            ","%".strtoupper($search_text)."%","%".strtoupper($search_text)."%", $this->zeit, $this->user->id, $this->perm->get_perm($this->user->id));
         $dbresults = DBManager::get()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         // keine Ergebnisse vorhanden

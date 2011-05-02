@@ -19,7 +19,7 @@
         <? foreach ($result['artikel'] as $artikel) : ?>
         <tr>
             <td><?= date("d.m.Y", $artikel['mkdate']) ?>:
-            <a href="<?= URLHelper::getLink($link, array('modus' => 'show_search_results', 'search_text' => htmlReady($artikel['titel']))) ?>">
+            <a href="<?= URLHelper::getLink($link, array('modus' => 'show_search_results', 'search_user' => $result['user_id'])) ?>">
                 <?= htmlReady($artikel['titel']) ?> (<?= htmlReady($artikel['thema']) ?>)
             </a>
             </td>

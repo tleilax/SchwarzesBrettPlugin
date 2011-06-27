@@ -4,7 +4,7 @@
     </div>
     <div style="padding-right: 85px;">
         <a href="javascript: showArtikel('<?=$a->getArtikelId()?>');">
-            <img id="indikator_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/icons/16/blue/arr_1right.png" class="text-top">
+            <img id="indikator_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/icons/16/<?=$pfeil?>/arr_1right.png" class="text-top">
             <?= htmlReady($a->getTitel())?>
         </a>
         <? if ($a->getVisible() == 0): ?>

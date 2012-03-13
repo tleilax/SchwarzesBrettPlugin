@@ -1,5 +1,9 @@
-<?= $message ?>
 
+<!-- <p align="right">
+	<a href="http://www.itdienste.uni-oldenburg.de/aoc" target="_blank"><img src="<?=$pluginpfad ?>/images/AppleOnCampus01.png" alt="Apple on Campus" title="Apple for education" /></a>
+</p>
+-->
+<?= $message ?>
 <form name="search_form" method="post" action="<?=$link_search?>">
 <div class="topic"><b>Allgemeine Suche nach Anzeigen:</b></div>
 <table class="default">
@@ -101,6 +105,6 @@
     <li>Sie können Ihre eigenen Anzeigen jederzeit nachträglich <em>bearbeiten</em> oder <em>löschen</em>. Die Buttons befinden sich unter dem Text.</li>
     <li>Bitte stellen Sie Ihre Anzeigen in die richtigen Kategorien ein. Damit das Schwarze Brett übersichtlich bleibt, <em>löschen</em> Sie bitte Ihre Anzeigen umgehend nach Abschluss/Verkauf.</li>
     <li><b>Bitte Artikel nur in <em>eine</em> Kategorie einstellen!</b></li>
-    <li><b>Bitte keine kommerzielle Angebote einstellen!</b></li>
+    <li><b>Bitte keine kommerzielle Angebote einstellen. Sie werden gelöscht!</b></li>
 </ul>
 <br/>

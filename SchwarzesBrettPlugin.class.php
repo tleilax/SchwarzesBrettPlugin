@@ -6,12 +6,13 @@
  *
  * Diese Datei enthält die Hauptklasse des Plugins
  *
+ * @author      Jan-Hendrik Willms <tleilax+studip@gmail.com>
  * @author      Jan Kulmann <jankul@zmml.uni-bremen.de>
  * @author      Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @package     IBIT_SchwarzesBrettPlugin
  * @copyright   2008-2010 IBIT und ZMML
  * @license     http://www.gnu.org/licenses/gpl.html GPL Licence 3
- * @version     2.0.2
+ * @version     2.2
  */
 
 // IMPORTS
@@ -86,7 +87,8 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $root_nav->addSubNavigation('addBlock', new AutoNavigation(_('Neues Thema anlegen'), PluginEngine::getURL($this, array(), 'editThema')));
                 $root_nav->addSubNavigation('blacklist', new AutoNavigation(_('Benutzer-Blacklist'), PluginEngine::getURL($this, array(), 'blacklist')));
                 $root_nav->addSubNavigation('duplicates', new AutoNavigation(_('Doppelte Einträge suchen'), PluginEngine::getURL($this, array(), 'searchDuplicates')));
-                $olds = DBManager::get()->query("SELECT count(artikel_id) FROM sb_artikel WHERE UNIX_TIMESTAMP() > (mkdate + {$this->zeit})")->fetchColumn();
+
+                $olds = Artikel::countExpired($this->zeit);
                 if ($olds > 0) {
                     $root_nav->addSubNavigation('delete', new AutoNavigation(_('Datenbank bereinigen ('.$olds.' alte Einträge)'), PluginEngine::getURL($this, array(), 'deleteOldArtikel')));
                 }
@@ -101,13 +103,17 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function hasNewArticles()
     {
-        $last_visitdate = DBManager::get()->query("SELECT MAX(last_visitdate) FROM sb_visits WHERE user_id='{$this->user->id}'")->fetchColumn();
-        $last_artikel = DBManager::get()->query("SELECT count(*) FROM sb_artikel WHERE mkdate > '{$last_visitdate}' AND visible = 1")->fetchColumn();
-        if ($last_artikel > 0) {
-            return 'new';
-        } else {
-            return '';
-        }
+        $query = "SELECT MAX(last_visitdate) FROM sb_visits WHERE user_id = ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($this->user->id));
+        $last_visitdate = $statement->fetchColumn();
+
+        $query = "SELECT COUNT(*) FROM sb_artikel WHERE mkdate > ? AND visible = 1";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($last_visitdate));
+        $last_artikel = $statement->fetchColumn();
+
+        return $last_artikel > 0 ? 'new' : '';
     }
 
     /**
@@ -116,7 +122,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     public function show_action()
     {
-        if($this->perm->have_perm('user')) {
+        if ($this->perm->have_perm('user')) {
             //Suchergebnisse abfragen und anzeigen, falls vorhanden
             if (Request::get('modus') == "show_search_results") {
                 $this->search();
@@ -252,12 +258,14 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         Navigation::removeItem('/schwarzesbrettplugin/root/delete');
         Navigation::activateItem('/schwarzesbrettplugin/show');
         if ($this->perm->have_perm('root')) {
-            $artikel = DBManager::get()->query("SELECT artikel_id FROM sb_artikel WHERE UNIX_TIMESTAMP() > (mkdate + {$this->zeit})")->fetchAll(PDO::FETCH_COLUMN);
-            foreach ($artikel as $id) {
-                $a = new Artikel($id);
-                $a->delete();
-            }
+            $artikel = Artikel::getExpired($this->zeit);
+
             if (count($artikel) > 0) {
+                foreach ($artikel as $id) {
+                    $a = new Artikel($id);
+                    $a->delete();
+                }
+
                 $this->message = MessageBox::success("Es wurden erfolgreich <em>".count($artikel)."</em> Artikel aus der Datenbank gelöscht.");
             } else {
                 $this->message = MessageBox::info("Es gibt keine Artikel in der Datenbank, die gelöscht werden können.");
@@ -328,12 +336,14 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             if (Request::get('action') == 'delete'){
                 $db = DBManager::get()->prepare("DELETE FROM sb_blacklist WHERE user_id = ?");
                 $db->execute(array(Request::option('user_id')));
+
                 $template->message = MessageBox::success(_('Der Benutzer wurde erfolgreich von der Blacklist entfernt und kann nun wieder Anzeigen erstellen.'));
             } elseif (Request::get('action') == 'add' && Request::option('user_id')) {
                 //datenbank
-                $db = DBManager::get()->prepare("REPLACE INTO sb_blacklist SET user_id =?, mkdate=UNIX_TIMESTAMP()");
+                $db = DBManager::get()->prepare("REPLACE INTO sb_blacklist SET user_id = ?, mkdate = UNIX_TIMESTAMP()");
                 $db->execute(array(Request::option('user_id')));
-                //nachricht an den benutzer
+
+                                //nachricht an den benutzer
                 $messaging = new messaging();
                 $msg = _("Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde Ihr Zugang zum Schwarzen Brett gesperrt. Sie können keine weiteren Anzeigen erstellen.\n\n Bei Fragen wenden Sie sich bitte an die Systemadministratoren.");
                 $messaging->insert_message($msg, get_username(Request::option('user_id')), "____%system%____", FALSE, FALSE, 1, FALSE, "Schwarzes Brett: Sie wurden gesperrt.");
@@ -341,7 +351,11 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $template->message = MessageBox::success(_('Der Benutzer wurde erfolgreich auf die Blacklist gesetzt.'));
             }
 
-            $template->set_attribute('users', DBManager::get()->query("SELECT * FROM sb_blacklist")->fetchAll(PDO::FETCH_ASSOC));
+            $users = DBManager::get()
+                   ->query("SELECT * FROM sb_blacklist")
+                   ->fetchAll(PDO::FETCH_ASSOC);
+
+            $template->set_attribute('users', $users);
             $template->set_attribute('link', PluginEngine::getURL($this, array(), 'blacklist'));
             echo $template->render();
         }
@@ -352,9 +366,19 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $template = $this->template_factory->open('duplicates');
         $template->set_layout($this->layout);
 
-        $results = DBManager::get()->query("SELECT user_id, count(user_id) FROM sb_artikel s GROUP BY user_id HAVING count(user_id) > 1")->fetchAll(PDO::FETCH_ASSOC);
+        $results = DBManager::get()
+                 ->query("SELECT user_id, count(user_id) FROM sb_artikel s GROUP BY user_id HAVING count(user_id) > 1")
+                 ->fetchAll(PDO::FETCH_ASSOC);
+
         foreach ($results as $i => $result) {
-            $results[$i]['artikel'] = DBManager::get()->query("SELECT a.*, t.titel AS thema FROM sb_artikel AS a LEFT JOIN sb_themen AS t ON a.thema_id = t.thema_id WHERE a.user_id = '{$result['user_id']}' ORDER BY a.mkdate DESC")->fetchAll(PDO::FETCH_ASSOC);
+            $query = "SELECT a.*, t.titel AS thema "
+                   . "FROM sb_artikel AS a "
+                   . "LEFT JOIN sb_themen AS t USING(thema_id) "
+                   . "WHERE a.user_id = ? "
+                   . "ORDER BY a.mkdate DESC";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute(array($result['user_id']));
+            $results[$i]['artikel'] = $statement->fetchAll(PDO::FETCH_ASSOC);
         }
         $template->set_attribute('results', $results);
         $template->set_attribute('link', PluginEngine::getURL($this, array(), 'show'));
@@ -376,18 +400,30 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $cache = StudipCacheFactory::getCache();
         $ret = unserialize($cache->read(self::ARTIKEL_CACHE_KEY.$thema_id));
 
-        if (empty($ret)) {
-            $ret = array();
-            $artikel_ids = DBManager::get()->query("SELECT artikel_id FROM sb_artikel "
-                ."WHERE thema_id='{$thema_id}' AND UNIX_TIMESTAMP() < (mkdate + {$this->zeit}) "
-                ."AND (visible=1 OR (visible=0 AND (user_id='{$this->user->id}' "
-                ."OR 'root'='{$this->perm->get_perm($this->user->id)}'))) "
-                ."ORDER BY mkdate DESC")->fetchAll(PDO::FETCH_COLUMN);
-            foreach ($artikel_ids as $artikel_id) {
-                $ret[] = new Artikel($artikel_id);
-            }
-            $cache->write(self::ARTIKEL_CACHE_KEY.$thema_id, serialize($ret));
+        if (!empty($ret)) {
+            return $ret;
         }
+
+        $ret = array();
+
+        $query = "SELECT artikel_id "
+               . "FROM sb_artikel "
+               . "WHERE thema_id = ? AND UNIX_TIMESTAMP() < mkdate + ? "
+               .   "AND (visible = 1 OR (user_id = ? OR 'root' = ?)) "
+               . "ORDER BY mkdate DESC";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(
+            $thema_id, $this->zeit, $this->user->id,
+            $this->perm->get_perm($this->user->id),
+        ));
+        $artikel_ids = $statement->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($artikel_ids as $artikel_id) {
+            $ret[] = new Artikel($artikel_id);
+        }
+
+        $cache->write(self::ARTIKEL_CACHE_KEY.$thema_id, serialize($ret));
+
         return $ret;
     }
 
@@ -399,10 +435,16 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function getArtikelCount($thema_id)
     {
-        return DBManager::get()->query("SELECT count(*) FROM sb_artikel "
-            ."WHERE thema_id='{$thema_id}' AND UNIX_TIMESTAMP() < (mkdate + {$this->zeit}) "
-            ."AND (visible=1 OR (visible=0 AND (user_id='{$this->user->id}' "
-            ."OR 'root'='{$this->perm->get_perm($this->user-userid)}'))) ")->fetchColumn();
+        $query = "SELECT COUNT(*) "
+               . "FROM sb_artikel "
+               . "WHERE thema_id = ? AND UNIX_TIMESTAMP() < mkdate + ? "
+               .   "AND (visible = 1 OR (user_id = ? OR 'root' = ?))";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array(
+            $thema_id, $this->zeit, $this->user->id,
+            $this->perm->get_perm($this->user->userid),
+        ));
+        return $statement->fetchColumn();
     }
 
     /**
@@ -413,7 +455,10 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function getArtikelLookups($artikel_id)
     {
-        return DBManager::get()->query("SELECT COUNT(*) FROM sb_visits WHERE type='artikel' AND object_id='{$artikel_id}'")->fetch(PDO::FETCH_COLUMN);
+        $query = "SELECT COUNT(*) FROM sb_visits WHERE type = 'artikel' AND object_id = ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($artikel_id));
+        return $statement->fetchColumn();
     }
 
     /**
@@ -454,12 +499,16 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function getThemaPermission($thema_id)
     {
-        if ($thema_id != 'nix') {
-            $perm = DBManager::get()->query("SELECT perm FROM sb_themen WHERE thema_id='{$thema_id}'")->fetch(PDO::FETCH_COLUMN);
-            return $this->perm->have_perm($perm);
-        } else {
+        if ($thema_id == 'nix') {
             return true;
         }
+
+        $query = "SELECT perm FROM sb_themen WHERE thema_id = ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($thema_id));
+        $perm = $statement->fetchColumn();
+
+        return $this->perm->have_perm($perm);
     }
 
     /**
@@ -471,15 +520,14 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function isDuplicate($titel)
     {
-        $db = DBManager::get()->prepare("SELECT count(artikel_id) FROM sb_artikel WHERE user_id=? AND titel=? AND mkdate > (UNIX_TIMESTAMP()-(60*60*24))");
-        $db->execute(array($this->user->id, $titel));
-        $check = $db->fetch(PDO::FETCH_COLUMN);
+        $query = "SELECT count(artikel_id) "
+               . "FROM sb_artikel "
+               . "WHERE user_id = ? AND titel = ? AND mkdate > UNIX_TIMESTAMP() - 60 * 60 * 24";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($this->user->id, $titel));
+        $check = $statement->fetch(PDO::FETCH_COLUMN);
 
-        if ($check > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return $check > 1;
     }
 
     /**
@@ -490,12 +538,14 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function hasVisited($obj_id)
     {
-        $last_visitdate = DBManager::get()->query("SELECT last_visitdate FROM sb_visits WHERE object_id='{$obj_id}' AND user_id='{$this->user->id}'")->fetch(PDO::FETCH_COLUMN);
-        if (!empty($last_visitdate)) {
-            return $last_visitdate;
-        } else {
-            return false;
-        }
+        $query = "SELECT last_visitdate "
+               . "FROM sb_visits "
+               . "WHERE object_id = ? AND user_id = ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($obj_id, $this->user_id));
+        $last_visitdate = $statement->fetchColumn();
+
+        return !empty($last_visitdate) ? $last_visitdate : false;
     }
 
     /**
@@ -505,29 +555,43 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function search()
     {
-        if(Request::get('search_user') && $this->perm->get_perm($this->user->id) == 'root') {
+        if (Request::get('search_user') && $this->perm->get_perm($this->user->id) == 'root') {
             //Datenbankabfrage
-            $sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel AS a, sb_themen AS t WHERE
-                    t.thema_id=a.thema_id AND a.user_id='%s' ORDER BY t.titel, a.titel",
-                    Request::get('search_user'));
+            $user = Request::get('search_user');
+            $query = "SELECT a.thema_id, a.artikel_id, a.titel, t.titel AS t_titel "
+                   . "FROM sb_artikel AS a, sb_themen AS t "
+                   . "WHERE t.thema_id = a.thema_id AND a.user_id = ? "
+                   . "ORDER BY t.titel, a.titel";
+            $statment = DBManager::get()->prepare($query);
+            $statement->execute(array($user));
         } else {
             $search_text = Request::get('search_text');
             //Benutzereingaben abfangen (Wörter kürzer als 3 Zeichen)
-            if((empty($search_text) || strlen($search_text) < 3) && !Request::get('search_user'))
+            if ((empty($search_text) || strlen($search_text) < 3) && !Request::get('search_user'))
             {
                 $this->message = MessageBox::error("Ihr Suchwort ist zu kurz, bitte versuchen Sie es erneut!");
                 $this->showThemen();
                 return;
             }
 
-            //Datenbankabfrage
-            $sql = sprintf("SELECT a.thema_id, a.artikel_id, a.titel, t.titel t_titel FROM sb_artikel AS a, sb_themen AS t WHERE
-                    t.thema_id=a.thema_id AND (UPPER(a.titel) LIKE '%s' OR UPPER(a.beschreibung) LIKE '%s') AND UNIX_TIMESTAMP() < (a.mkdate + %d)
-                    AND (a.visible=1 OR (a.visible=0 AND (a.user_id='%s' OR 'root'='%s'))) ORDER BY t.titel, a.titel
-                    ","%".strtoupper($search_text)."%","%".strtoupper($search_text)."%", $this->zeit, $this->user->id, $this->perm->get_perm($this->user->id));
+            $query = "SELECT a.thema_id, a.artikel_id, a.titel, t.titel AS t_titel "
+                   . "FROM sb_artikel AS a, sb_themen AS t "
+                   . "WHERE t.thema_id = a.thema_id "
+                   .   "AND (UPPER(a.titel) LIKE CONCAT('%', UPPER(?), '%') "
+                   .     "OR UPPER(a.beschreibung) LIKE CONCAT('%', UPPER(?), '%')) "
+                   .   "AND UNIX_TIMESTAMP() < a.mkdate + ? "
+                   .   "AND (a.visible = 1 OR (a.user_id = ? OR 'root' = ?)) "
+                   . "ORDER BY t.titel, a.titel";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute(array(
+                $search_text, $search_text,
+                $this->zeit, $this->user->id,
+                $this->perm->get_perm($this->user->id),
+            ));
+
         }
 
-        $dbresults = DBManager::get()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $dbresults = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         // keine Ergebnisse vorhanden
         if(count($dbresults) == 0) {
@@ -545,15 +609,15 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $thema['thema_id'] = $result['thema_id'];
                 $thema['thema_titel'] = htmlReady($result['t_titel']);
                 $thema['artikel'] = array();
-
             } elseif($result['thema_id'] != $thema['thema_id']) {
-                array_push($results, $thema);
-                unset($thema);
+                $results[] = $thema;
+
+                $thema = array();
                 $thema['thema_id'] = $result['thema_id'];
                 $thema['thema_titel'] = htmlReady($result['t_titel']);
                 $thema['artikel'] = array();
             }
-            array_push($thema['artikel'], $this->showArtikel($a));
+            $thema['artikel'][] = $this->showArtikel($a);
         }
         array_push($results, $thema);
 
@@ -601,12 +665,19 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         else {
             //Anzahl Themen pro Spalte berechnen
             if(count($themen) > 6) { //3 Spalten
-                $template->set_attribute('themen_rows', (count($themen)%3==0)? count($themen)/3 : (count($themen)/3)+1);
+                $template->set_attribute('themen_rows', ceil(count($themen) / 3));
             } elseif(count($themen) > 2) { //2 Spalten
                 $template->set_attribute('themen_rows', 2);
             } else { //1 Spalte
                 $template->set_attribute('themen_rows', 1);
             }
+
+            //
+            $query = "SELECT MAX(sv.last_visitdate) "
+                   . "FROM sb_visits AS sv "
+                   . "LEFT JOIN sb_artikel AS sa ON (sv.object_id = sa.artikel_id) "
+                   . "WHERE sv.user_id = ? AND sa.thema_id = ?";
+            $statement = DBManager::get()->prepare($query);
 
             $results = array();
             $thema = array();
@@ -616,9 +687,13 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                     $thema['permission'] = true;
                 }
                 $thema['artikel'] = array();
-                $thema['last_thema_user_date'] = DBManager::get()->query("SELECT MAX(sv.last_visitdate) FROM sb_visits AS sv LEFT JOIN sb_artikel AS sa ON sv.object_id = sa.artikel_id WHERE sv.user_id='{$this->user->id}' AND sa.thema_id = '{$tt->getThemaId()}'")->fetchColumn();
                 $thema['countArtikel'] = $tt->getArtikelCount();
-                array_push($results, $thema);
+
+                $statement->execute(array($this->user->id, $tt->getThemaId()));
+                $thema['last_thema_user_date'] = $statement->fetchColumn();
+                $statement->closeCursor();
+
+                $results[] = $thema;
             }
             $template->set_attribute('results', $results);
 
@@ -673,10 +748,15 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function getLastArtikel()
     {
-        $result = DBManager::get()->query("SELECT artikel_id FROM sb_artikel "
-                      ."WHERE UNIX_TIMESTAMP() < (mkdate + {$this->zeit}) "
-                      ."AND visible=1 ORDER BY mkdate DESC "
-                      ."LIMIT {$this->announcements}")->fetchAll(PDO::FETCH_COLUMN);
+        $query = "SELECT artikel_id "
+               . "FROM sb_artikel "
+               . "WHERE UNIX_TIMESTAMP() < mkdate + ? AND visible = 1 "
+               . "ORDER BY mkdate DESC "
+               . "LIMIT " . (int) $this->announcements;
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($this->zeit));
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
         foreach ($result as $artikel_id) {
             $ret[] = new Artikel($artikel_id);
         }
@@ -689,7 +769,10 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function isBlacklisted($user_id)
     {
-        return DBManager::get()->query("SELECT 1 FROM sb_blacklist WHERE user_id = '{$user_id}'")->fetchColumn();
+        $query = "SELECT 1 FROM sb_blacklist WHERE user_id = ?";
+        $statement = DBManager::get()->prepare($query);
+        $statement->execute(array($user_id));
+        return $statement->fetchColumn();
     }
 
     /**
@@ -702,9 +785,13 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             $thema_id = Request::get('thema_id');
             //Artikel
             if ($obj_id){
-                $oid = DBManager::get()->quote($obj_id );
-                $uid = DBManager::get()->quote($GLOBALS['user']->id);
-                DBManager::get()->exec("REPLACE INTO sb_visits SET object_id=$oid, user_id=$uid, type='artikel', last_visitdate=UNIX_TIMESTAMP()");
+                $query = "REPLACE INTO sb_visits "
+                       . "SET object_id = ?, user_id = ?, type='artikel', "
+                       .     "last_visitdate = UNIX_TIMESTAMP()";
+                DBManager::get()
+                    ->prepare($query)
+                    ->execute(array($obj_id, $GLOBALS['user']->id));
+
                 $a = new Artikel($obj_id);
                 Header('Content-Type: text/html; charset=windows-1252');
                 echo $this->showArtikel($a, 'artikel_content');

@@ -96,6 +96,12 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             }
             Navigation::addItem('/schwarzesbrettplugin', $nav);
         }
+        PageLayout::setTitle(_('Schwarzes Brett')); // Somehow this doesn't work
+    }
+
+    public function getPluginname()
+    {
+        return _('Schwarzes Brett');
     }
 
     /**
@@ -542,7 +548,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                . "FROM sb_visits "
                . "WHERE object_id = ? AND user_id = ?";
         $statement = DBManager::get()->prepare($query);
-        $statement->execute(array($obj_id, $this->user_id));
+        $statement->execute(array($obj_id, $GLOBALS['auth']->auth['uid']));
         $last_visitdate = $statement->fetchColumn();
 
         return !empty($last_visitdate) ? $last_visitdate : false;
@@ -562,7 +568,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                    . "FROM sb_artikel AS a, sb_themen AS t "
                    . "WHERE t.thema_id = a.thema_id AND a.user_id = ? "
                    . "ORDER BY t.titel, a.titel";
-            $statment = DBManager::get()->prepare($query);
+            $statement = DBManager::get()->prepare($query);
             $statement->execute(array($user));
         } else {
             $search_text = Request::get('search_text');
@@ -595,7 +601,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
         // keine Ergebnisse vorhanden
         if(count($dbresults) == 0) {
-            $this->message = MessageBox::error("Es wurden für <em>{$search_text}</em> keine Ergebnisse gefunden.");
+            $this->message = MessageBox::error("Es wurden für <em>" . htmlReady($search_text) . "</em> keine Ergebnisse gefunden.");
             $this->showThemen();
             return;
         }
@@ -790,7 +796,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                        .     "last_visitdate = UNIX_TIMESTAMP()";
                 DBManager::get()
                     ->prepare($query)
-                    ->execute(array($obj_id, $GLOBALS['user']->id));
+                    ->execute(array($obj_id, $GLOBALS['auth']->auth['uid']));
 
                 $a = new Artikel($obj_id);
                 Header('Content-Type: text/html; charset=windows-1252');

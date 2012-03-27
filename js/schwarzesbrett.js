@@ -6,8 +6,6 @@
         };
     }());
 
-    console.log(GetURL({objid: 13}));
-
     window.showArtikel = function (id, typ) {
         var url = GetURL({objid: id});
 

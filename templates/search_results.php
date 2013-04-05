@@ -1,39 +1,51 @@
 <form name="search_form" method="post" action="<?=$link_search?>">
-<div class="topic"><b>Allgemeine Suche nach Anzeigen:</b></div>
-<div class="steel1" style="padding:5px;">Nach Anzeigen suchen:
-    <input type="text" style="width:200px;" name="search_text" value="<?=htmlready(Request::get('search_text'))?>" />
-    <?=makebutton("suchen","input", "nach Anzeigen suchen", "submit")?>
-    <a href="<?=$link_back?>"><?=makebutton("zuruecksetzen","img", "zurücksetzen")?></a>
-</div>
-</form>
-<br/>
-<div class="topic"><b>Ergebnisse alphabetisch sortiert, gruppiert nach Themen:</b></div>
-<? foreach ($results as $result): ?>
-<table border="0" cellpadding="2" cellspacing="0" width="100%" style="margin-bottom:3px;">
-    <tr class="steel1">
-        <td>
-        <div style="float:left">
-            <b><?=$result['thema_titel']?></b><br/>
-        </div>
-        <div style="float:right">
-                <a href="javascript: toggleThema('<?=$result['thema_id']?>');">
-                    <?= Assets::img('icons/16/blue/arr_eol-down.png', array('id' => 'show_'.$result['thema_id'], 'class' => 'text-top', 'title' => _('Alle Artikel anzeigen'), 'style' => 'display:none;')) ?>
-                    <?= Assets::img('icons/16/blue/arr_eol-up.png', array('id' => 'hide_'.$result['thema_id'], 'class' => 'text-top', 'title' => _('Alle Artikel verstecken'))) ?>
-                </a>
-        </div>
-        <div style="clear:both; border-bottom: 1px solid #8e8e8e;"></div>
-        <div id="list_<?=$result['thema_id']?>">
-        <table border="0" cellpadding="5" cellspacing="0" width="100%">
-            <? foreach ($result['artikel'] as $index => $a): ?>
+    <table class="default">
+        <thead>
             <tr>
-                <td class="<?=($index%2==0)?'steel1':'steelgraulight'?>">
-                <?=$a ?>
+                <th class="table_header_bold">
+                    <?= _('Allgemeine Suche nach Anzeigen:') ?>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <label>
+                        <?= _('Nach Anzeigen suchen:') ?>
+                        <input type="text" style="width: 200px;" name="search_text"
+                               value="<?= htmlready(Request::get('search_text')) ?>">
+                    </label>
+                    <?= Studip\Button::create('Nach Anzeigen suchen', 'submit') ?>
+                    <?= Studip\LinkButton::create(_('Zurücksetzen'), $link_back) ?>
                 </td>
             </tr>
-            <? endforeach; ?>
-        </table>
-        </div>
-        </td>
-    </tr>
-</table>
+        </tbody>
+    </table>
+
+</form>
+
+<br>
+
+<table class="default" style="margin-bottom:3px;">
+    <thead>
+        <tr>
+            <th class="table_header_bold">
+                <?= _('Ergebnisse alphabetisch sortiert, gruppiert nach Themen:') ?>
+            </th>
+        </tr>
+    </thead>
+<? foreach ($results as $result): ?>
+    <tbody>
+        <tr>
+            <td style="border-bottom: 1px solid #8e8e8e; font-weight: bold;">
+                <?= htmlReady($result['thema_titel']) ?>
+            </td>
+        </tr>
+    <? foreach (array_values($result['artikel']) as $index => $a): ?>
+        <tr class="<?= $index % 2 ? 'table_row_even' : 'table_row_odd' ?>">
+            <td><?= $a ?></td>
+        </tr>
+    <? endforeach; ?>
+    </tbody>
 <? endforeach ?>
+</table>

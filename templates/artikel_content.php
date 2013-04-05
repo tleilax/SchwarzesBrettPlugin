@@ -1,5 +1,6 @@
+<? $usr = User::find($a->getUserId()) ?>
 <a id="close_<?=$a->getArtikelId()?>" href="javascript: closeArtikel('<?=$a->getArtikelId()?>');">
-    <img id="indikator_offen_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/icons/16/blue/arr_1down.png" class="text-top">
+    <?= Assets::img('icons/16/blue/arr_1down.png', array('id' => 'indikator_offen_' . $a->getArtikelId(), 'class' => 'text-top')) ?>
     <?= htmlReady($a->getTitel()) ?>
 </a>
 <? if ($a->getVisible() == 0): ?>
@@ -10,21 +11,22 @@
 </div>
 <div align="right" style="font-size:smaller; padding:1px 0px 5px 0px;">
     erstellt von
-    <a href="<?=URLHelper::getLink('about.php', array('username' => get_username($a->getUserId()))) ?>">
-        <?=get_fullname($a->getUserId())?>
-    </a> | gültig bis bis <?=date("d.m.Y",$a->getMkdate()+$zeit)?>
+    <a href="<?=URLHelper::getLink('dispatch.php/profile', array('username' => $usr->username)) ?>">
+        <?= $usr->getFullName() ?>
+    </a>
+    | gültig bis bis <?= date('d.m.Y', $a->getMkdate() + $zeit) ?>
 </div>
 <div align="center" style="padding-bottom: 5px;">
-<? if($antwort === true): ?>
-    <a href="<?=URLHelper::getLink('sms_send.php', array('rec_uname' => get_username($a->getUserId()), 'messagesubject' => rawurlencode($a->getTitel()), 'message' => '[quote] '.$a->getBeschreibung().' [/quote]')) ?>">
-        <?=makeButton("antworten","img", "Dem Benutzer eine Email schreiben")?>
-    </a>
-<? endif; if($access === true): ?>
-    <a href="<?=$link_edit ?>">
-        <?=makeButton("bearbeiten","img", "Diese Anzeige bearbeiten")?>
-    </a>
-    <a href="<?=$link_delete ?>">
-        <?=makeButton("loeschen","img", "Diese Anzeige löschen")?>
-    </a>
+<? if ($antwort === true): ?>
+    <?= Studip\LinkButton::create(_('Antworten'),
+                                  URLHelper::getLink('sms_send.php',
+                                                     array('rec_uname' => $usr->username,
+                                                           'messagesubject' => rawurlencode($a->getTitel()),
+                                                           'message' => '[quote] '.$a->getBeschreibung().' [/quote]')),
+                                  array('title' => _('Dem Benutzer eine Email schreiben'))) ?>
+<? endif; ?>
+<? if ($access === true): ?>
+    <?= Studip\LinkButton::create(_('Bearbeiten'), $link_edit, array('title' => _('Diese Anzeige bearbeiten'))) ?>
+    <?= Studip\LinkButton::createCancel(_('Löschen'), $link_delete, array('title' => _('Diese Anzeige löschen'))) ?>
 <? endif; ?>
 </div>

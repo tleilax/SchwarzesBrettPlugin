@@ -96,7 +96,11 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             }
             Navigation::addItem('/schwarzesbrettplugin', $nav);
         }
-        PageLayout::setTitle(_('Schwarzes Brett')); // Somehow this doesn't work
+    }
+
+    public function initialize()
+    {
+        PageLayout::setTitle(_('Schwarzes Brett'));
     }
 
     public function getPluginname()

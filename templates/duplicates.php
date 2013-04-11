@@ -19,12 +19,14 @@
     </thead>
     <tbody style="vertical-align: top;">
     <? foreach ($results as $i => $result):
-         $usr = User::find($result['user_id']);
+         if (!$usr = User::find($result['user_id'])) {
+             continue;
+         }
     ?>
         <tr>
             <td style="text-align: right;"><?= $i + 1 ?>.</td>
             <td>
-                <a href="<?= URLHelper::getLink('dispatch.php/profile', array('username' => $user->username)) ?>">
+                <a href="<?= URLHelper::getLink('dispatch.php/profile', array('username' => $usr->username)) ?>">
                     <?= Avatar::getAvatar($usr->id)->getImageTag(Avatar::SMALL) ?>
                     <?= htmlReady($usr->getFullName()) ?>
                 </a>

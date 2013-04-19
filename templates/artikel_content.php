@@ -21,7 +21,7 @@
     <?= Studip\LinkButton::create(_('Antworten'),
                                   URLHelper::getLink('sms_send.php',
                                                      array('rec_uname' => $usr->username,
-                                                           'messagesubject' => rawurlencode($a->getTitel()),
+                                                           'messagesubject' => $a->getTitel(),
                                                            'message' => '[quote] '.$a->getBeschreibung().' [/quote]')),
                                   array('title' => _('Dem Benutzer eine Email schreiben'))) ?>
 <? endif; ?>

@@ -1,6 +1,7 @@
-<? $usr = User::find($a->getUserId()) ?>
+<? use Studip\LinkButton; ?>
+
 <a id="close_<?=$a->getArtikelId()?>" href="javascript: closeArtikel('<?=$a->getArtikelId()?>');">
-    <?= Assets::img('icons/16/blue/arr_1down.png', array('id' => 'indikator_offen_' . $a->getArtikelId(), 'class' => 'text-top')) ?>
+    <img id="indikator_offen_<?=$a->getArtikelId()?>" src="<?=$GLOBALS['ASSETS_URL']?>images/icons/16/blue/arr_1down.png" class="text-top">
     <?= htmlReady($a->getTitel()) ?>
 </a>
 <? if ($a->getVisible() == 0): ?>
@@ -11,22 +12,25 @@
 </div>
 <div align="right" style="font-size:smaller; padding:1px 0px 5px 0px;">
     erstellt von
-    <a href="<?=URLHelper::getLink('dispatch.php/profile', array('username' => $usr->username)) ?>">
-        <?= $usr->getFullName() ?>
-    </a>
-    | gültig bis bis <?= date('d.m.Y', $a->getMkdate() + $zeit) ?>
+    <a href="<?=URLHelper::getLink('about.php', array('username' => get_username($a->getUserId()))) ?>">
+        <?=get_fullname($a->getUserId())?>
+    </a> | gültig bis bis <?=date("d.m.Y",$a->getMkdate()+$zeit)?>
 </div>
 <div align="center" style="padding-bottom: 5px;">
-<? if ($antwort === true): ?>
-    <?= Studip\LinkButton::create(_('Antworten'),
-                                  URLHelper::getLink('sms_send.php',
-                                                     array('rec_uname' => $usr->username,
-                                                           'messagesubject' => $a->getTitel(),
-                                                           'message' => '[quote] '.$a->getBeschreibung().' [/quote]')),
-                                  array('title' => _('Dem Benutzer eine Email schreiben'))) ?>
-<? endif; ?>
-<? if ($access === true): ?>
-    <?= Studip\LinkButton::create(_('Bearbeiten'), $link_edit, array('title' => _('Diese Anzeige bearbeiten'))) ?>
-    <?= Studip\LinkButton::createCancel(_('Löschen'), $link_delete, array('title' => _('Diese Anzeige löschen'))) ?>
-<? endif; ?>
+    <div class="button-group">
+    <? if($antwort === true): ?>
+        <?= LinkButton::create(_('Antworten'),
+                               URLHelper::getLink('sms_send.php',
+                                                  array('rec_uname' => get_username($a->getUserId()),
+                                                        'messagesubject' => $a->getTitel(),
+                                                        'message' => rawurlencode('[quote] '.$a->getBeschreibung().' [/quote]')))) ?>
+    <? endif; ?>
+    <? if($enableBlame == 1): ?>
+        <?= LinkButton::create(_('Melden'), $link_blame) ?>
+    <? endif; ?>
+    <? if($access === true): ?>
+        <?= LinkButton::create(_('Bearbeiten'), $link_edit) ?>
+        <?= LinkButton::create(_('Löschen'), $link_delete) ?>
+    <? endif; ?>
+    </div>
 </div>

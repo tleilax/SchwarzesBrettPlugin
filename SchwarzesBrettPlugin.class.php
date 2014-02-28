@@ -7,12 +7,13 @@
  * Diese Datei enthält die Hauptklasse des Plugins
  *
  * @author      Jan-Hendrik Willms <tleilax+studip@gmail.com>
- * @author      Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  * @author      Jan Kulmann <jankul@zmml.uni-bremen.de>
+ * @author      Michael Riehemann <michael.riehemann@uni-oldenburg.de>
+ * @author      Daniel Kabel <daniel.kabel@me.com>
  * @package     IBIT_SchwarzesBrettPlugin
- * @copyright   2008-2013 IBIT und ZMML
+ * @copyright   2008-2014 IBIT und ZMML
  * @license     http://www.gnu.org/licenses/gpl.html GPL Licence 3
- * @version     2.3
+ * @version     2.5
  */
 
 // IMPORTS
@@ -29,6 +30,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
     const THEMEN_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/themen';
     const ARTIKEL_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/artikel/';
+    const ARTIKEL_PUBLISHABLE_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/artikel/publishable';
 
     /**
      *
@@ -37,9 +39,9 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
     {
         parent::__construct();
 
-        $this->template_factory = new Flexi_TemplateFactory(__DIR__ . '/templates');
-        $this->layout           = $GLOBALS['template_factory']->open('layouts/base_without_infobox');
-        $this->layout_infobox   = $GLOBALS['template_factory']->open('layouts/base');
+        $this->template_factory = new Flexi_TemplateFactory(dirname(__FILE__).'/templates');
+        $this->layout           =  $GLOBALS['template_factory']->open('layouts/base_without_infobox');
+        $this->layout_infobox   =  $GLOBALS['template_factory']->open('layouts/base');
 
         // Holt die Laufzeit aus der Config. Default: 30Tage
         $this->zeit = (int)get_config('BULLETIN_BOARD_DURATION') * 24 * 60 * 60;
@@ -58,12 +60,11 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
              $image = $this->getPluginURL().'/images/billboard.png';
         }
 
-        //Navigation
-        $nav = new AutoNavigation(_('Schwarzes Brett'), PluginEngine::getURL($this, array()));
-        $nav->setImage($image, array('title' => _('Schwarzes Brett'), 'class' => $this->hasNewArticles()));
-
         //menu nur anzeigen, wenn eingeloggt
         if($GLOBALS['perm']->have_perm('user')) {
+            //Navigation
+            $nav = new AutoNavigation(_('Schwarzes Brett'), PluginEngine::getURL($this, array()));
+            $nav->setImage($image, array('title' => _('Schwarzes Brett'), 'class' => $this->hasNewArticles()));
 
             // Sachen in den Header laden (bis 1.11)
             PageLayout::addScript($this->getPluginURL().'/js/schwarzesbrett.js');
@@ -73,6 +74,9 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             $user_nav->addSubNavigation('show', new AutoNavigation(_('Übersicht'), PluginEngine::getURL($this, array(), 'show')));
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
             if (!$this->isBlacklisted($GLOBALS['user']->id)) {
+                if (Artikel::hasOwn($GLOBALS['user']->id, $this->zeit)) {
+                    $user_nav->addSubNavigation('own', new AutoNavigation(_('Meine Anzeigen'), PLuginEngine::getURL($this, array(), 'ownArtikel')));
+                }
                 $user_nav->addSubNavigation('add', new AutoNavigation(_('Anzeige erstellen'), PluginEngine::getURL($this, array(), 'editArtikel')));
             }
             $nav->addSubNavigation('show', $user_nav);
@@ -80,7 +84,8 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             //zusatzpunkte für root
             if ($GLOBALS['perm']->have_perm('root')) {
                 $this->root = true;
-                $root_nav = new AutoNavigation(_('Administration'), PluginEngine::getURL($this, array(), 'editThema'));
+                $root_nav = new AutoNavigation(_('Administration'), PluginEngine::getURL($this, array(), 'settings'));
+                $root_nav->addSubNavigation('settings', new AutoNavigation(_('Grundeinstellungen'), PluginEngine::getURL($this, array(), 'settings')));
                 $root_nav->addSubNavigation('addBlock', new AutoNavigation(_('Neues Thema anlegen'), PluginEngine::getURL($this, array(), 'editThema')));
                 $root_nav->addSubNavigation('blacklist', new AutoNavigation(_('Benutzer-Blacklist'), PluginEngine::getURL($this, array(), 'blacklist')));
                 $root_nav->addSubNavigation('duplicates', new AutoNavigation(_('Doppelte Einträge suchen'), PluginEngine::getURL($this, array(), 'searchDuplicates')));
@@ -98,6 +103,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
     public function initialize()
     {
         PageLayout::setTitle(_('Schwarzes Brett'));
+        $this->addStylesheet('assets/schwarzesbrett.css');
     }
 
     public function getPluginname()
@@ -154,6 +160,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             $a->setBeschreibung(Request::get('beschreibung'));
             $a->setThemaId(Request::get('thema_id'));
             $a->setVisible(Request::get('visible', 0));
+            $a->setPublishable(Request::get('publishable', 0));
 
             //keine thema
             if(Request::get('thema_id') == 'nix') {
@@ -164,14 +171,14 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             //speichern
             } elseif (Request::get('titel') && Request::get('beschreibung')) {
                 $a->save();
-
+                PageLayout::postMessage(MessageBox::success("Die Anzeige wurde erfolgreich gespeichert."));
                 //nach dem verändern der themen, muss auch der cache geleert werden
                 StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
+                StudipCacheFactory::getCache()->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.$a->getThemaId());
+                StudipCacheFactory::getCache()->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.'all');
                 StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
-
-                PageLayout::postMessage(MessageBox::success("Die Anzeige wurde erfolgreich gespeichert."));
-                header('Location: ' . PluginEngine::getURL($this, array(), 'show'));
-                die;
+                $this->show_action();
+                return;
             //kein titel und beschreibung
             } else {
                 PageLayout::postMessage(MessageBox::error("Bitte geben Sie einen Titel und eine Beschreibung an."));
@@ -198,17 +205,19 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 "kategorie" => _("Information:"),
                 "eintrag" => array(
                     array("icon" => 'icons/16/black/info.png',
-                    "text" => 'Jede Anzeige <b>sollte</b> einen <b>universitären Bezug</b> haben, alle anderen Anzeigen werden entfernt.'),
+                    "text" => 'Bitte stellen Sie Artikel nur in eine Kategorie ein!'),
                     array("icon" => 'icons/16/black/info.png',
-                    "text" => '<b>Bitte Artikel nur in <em>eine</em> Kategorie einstellen!</b>'),
+                    "text" => 'Bitte entfernen Sie Anzeigen, sobald diese nicht mehr aktuell sind.'),
                     array("icon" => 'icons/16/black/info.png',
-                    "text" => 'Sobald eine Anzeige nicht mehr aktuell ist (z.b. in dem Fall, dass ein Buch verkauft oder eine Mitfahrgelegenheit gefunden wurde), sollte die Anzeige durch den Autor entfernt werden.'),
+                    "text" => 'Unter der Beschreibung wird automatisch ein Link zu Ihrer Benutzerhomepage eingebunden.'),
                     array("icon" => 'icons/16/black/info.png',
-                    "text" => 'Unter der Beschreibung wird automatisch ein Link zu Ihrer Benutzerhomepage eingebunden. <br />Außerdem können andere Nutzer direkt über einen Button antworten. Diese Nachrichten erhalten Sie als Stud.IP interne Post!'),
-                    #array("icon" => $pluginpfad. '/images/information.png',
-                    #"text" => 'Bitte die Anzeigen in die dafür vorgesehenen Themen einstellen, damit dieses schwarze Brett so übersichtlich wie möglich bleibt.'),
+                    "text" => 'Andere Nutzer können direkt über einen Button antworten. Diese Nachrichten erhalten Sie als Stud.IP interne Post!'),
                     array("icon" => 'icons/16/black/info.png',
                     "text" => 'Wird ein Gegenstand oder eine Dienstleistung gegen Bezahlung angeboten, sollte der Betrag genannt werden, um unnötige Nachfragen zu vermeiden.'),
+                    array("icon" => 'icons/16/black/info.png',
+                    "text" => 'Kleinanzeigen, die der Werbung für ein Produkt, eine Dienstleistung oder ein Unternehmen dienen, sind nicht gestattet.'),
+                    array("icon" => 'icons/16/black/info.png',
+                    "text" => 'Es ist weiterhin nicht gestattet Suchtmittel, Waffen, Arzneimittel sowie indizierte Spiele oder Filme anzubieten.'),
                     array("icon" => 'icons/16/black/info.png',
                     "text" => 'Jede Anzeige, die gegen diese Nutzungsordnung verstößt, wird umgehend entfernt.')
                 )
@@ -235,12 +244,13 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                     $t->setVisible(Request::get('visible', 0));
                     $t->save();
 
+                    PageLayout::postMessage(MessageBox::success("Das Thema wurde erfolgreich gespeichert."));
                     //nach dem verändern der themen, muss auch der cache geleert werden
                     StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
-
-                    PageLayout::postMessage(MessageBox::success("Das Thema wurde erfolgreich gespeichert."));
-                    header('Location: ' . PluginEngine::getURL($this, array(), 'show'));
-                    die;
+                    StudipCacheFactory::getCache()->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.$t->getThemaId());
+                    StudipCacheFactory::getCache()->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.'all');
+                    $this->showThemen();
+                    return;
                 } else {
                     PageLayout::postMessage(MessageBox::error("Bitte geben Sie einen Titel (Pflichtfeld) ein."));
                 }
@@ -279,8 +289,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 PageLayout::postMessage(MessageBox::info("Es gibt keine Artikel in der Datenbank, die gelöscht werden können."));
             }
         }
-        header('Location: ' . PluginEngine::getURL($this, array(), 'show'));
-        die;
+        $this->showThemen();
     }
 
     /**
@@ -295,16 +304,13 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             if (Request::get('modus') == "delete_thema_really") {
                 $t = new Thema(Request::get('thema_id'));
                 $t->delete();
-
+                PageLayout::postMessage(MessageBox::success("Das Thema und alle dazugehörigen Anzeigen wurden erfolgreich gelöscht."));
                 //nach dem verändern der themen, muss auch der cache geleert werden
                 StudipCacheFactory::getCache()->expire(self::THEMEN_CACHE_KEY);
-
-                PageLayout::postMessage(MessageBox::success("Das Thema und alle dazugehörigen Anzeigen wurden erfolgreich gelöscht."));
-                header('Location: ' . PluginEngine::getURL($this, array(), 'show'));
-                die;
+                StudipCacheFactory::getCache()->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.'all');
             } else {
                 $t = new Thema(Request::get('thema_id'));
-                $this->createQuestion('Soll das Thema **'.$t->getTitel().'** wirklich gelöscht werden?', array("modus"=>"delete_thema_really", "thema_id"=>$t->getThemaId()), 'deleteThema');
+                echo $this->createQuestion('Soll das Thema **'.$t->getTitel().'** wirklich gelöscht werden?', array("modus"=>"delete_thema_really", "thema_id"=>$t->getThemaId()), 'deleteThema');
             }
         }
         $this->showThemen();
@@ -332,8 +338,10 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             $cache = StudipCacheFactory::getCache();
             $cache->expire(self::ARTIKEL_CACHE_KEY.$a->getThemaId());
             $cache->expire(self::THEMEN_CACHE_KEY);
+            $cache->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.$a->getThemaId());
+            $cache->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.'all');
         } elseif ($a->getUserId() == $GLOBALS['user']->id || $GLOBALS['perm']->have_perm('root')) {
-            $this->createQuestion('Soll die Anzeige **'.$a->getTitel().'** von %%'.get_fullname($a->getUserId()).'%% wirklich gelöscht werden?', array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId()), 'deleteArtikel');
+            echo $this->createQuestion('Soll die Anzeige **'.$a->getTitel().'** von %%'.get_fullname($a->getUserId()).'%% wirklich gelöscht werden?', array("modus"=>"delete_artikel_really", "artikel_id"=>$a->getArtikelId()), 'deleteArtikel');
         } else {
             PageLayout::postMessage(MessageBox::error("Sie haben nicht die Berechtigung diese Anzeige zu löschen."));
         }
@@ -350,7 +358,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $db = DBManager::get()->prepare("DELETE FROM sb_blacklist WHERE user_id = ?");
                 $db->execute(array(Request::option('user_id')));
 
-                PageLayout::postMessage(MessageBox::success(_('Der Benutzer wurde erfolgreich von der Blacklist entfernt und kann nun wieder Anzeigen erstellen.')));
+                $template->message = MessageBox::success(_('Der Benutzer wurde erfolgreich von der Blacklist entfernt und kann nun wieder Anzeigen erstellen.'));
             } elseif (Request::get('action') == 'add' && Request::option('user_id')) {
                 //datenbank
                 $db = DBManager::get()->prepare("REPLACE INTO sb_blacklist SET user_id = ?, mkdate = UNIX_TIMESTAMP()");
@@ -361,7 +369,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $msg = _("Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde Ihr Zugang zum Schwarzen Brett gesperrt. Sie können keine weiteren Anzeigen erstellen.\n\n Bei Fragen wenden Sie sich bitte an die Systemadministratoren.");
                 $messaging->insert_message($msg, get_username(Request::option('user_id')), "____%system%____", FALSE, FALSE, 1, FALSE, "Schwarzes Brett: Sie wurden gesperrt.");
 
-                PageLayout::postMessage(MessageBox::success(_('Der Benutzer wurde erfolgreich auf die Blacklist gesetzt.')));
+                $template->message = MessageBox::success(_('Der Benutzer wurde erfolgreich auf die Blacklist gesetzt.'));
             }
 
             $users = DBManager::get()
@@ -427,7 +435,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array(
             $thema_id, $this->zeit, $GLOBALS['user']->id,
-            $GLOBALS['user']->perms,
+            $GLOBALS['perm']->get_perm($GLOBALS['user']->id),
         ));
         $artikel_ids = $statement->fetchAll(PDO::FETCH_COLUMN);
 
@@ -455,7 +463,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $statement = DBManager::get()->prepare($query);
         $statement->execute(array(
             $thema_id, $this->zeit, $GLOBALS['user']->id,
-            $GLOBALS['user']->perms,
+            $GLOBALS['perm']->get_perm($this->user->user_id),
         ));
         return $statement->fetchColumn();
     }
@@ -491,7 +499,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             $themen = DBManager::get()->query("SELECT t.thema_id, COUNT(a.thema_id) count_artikel "
                     ."FROM sb_themen t LEFT JOIN sb_artikel a USING (thema_id) "
                     ."WHERE t.visible=1 OR t.user_id='{$GLOBALS['user']->id}' "
-                    ."OR 'perm'='{$GLOBALS['perm']->perms}' "
+                    ."OR 'perm'='{$GLOBALS['perm']->get_perm($GLOBALS['user']->id)}' "
                     ."GROUP BY t.thema_id ORDER BY t.titel")->fetchAll(PDO::FETCH_ASSOC);
             $ret = array();
             foreach ($themen as $thema) {
@@ -568,7 +576,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
      */
     private function search()
     {
-        if (Request::get('search_user') && $GLOBALS['perm']->have_perm('root')) {
+        if (Request::get('search_user') && $GLOBALS['perm']->get_perm($GLOBALS['user']->id) == 'root') {
             //Datenbankabfrage
             $user = Request::get('search_user');
             $query = "SELECT a.thema_id, a.artikel_id, a.titel, t.titel AS t_titel "
@@ -599,7 +607,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             $statement->execute(array(
                 $search_text, $search_text,
                 $this->zeit, $GLOBALS['user']->id,
-                $GLOBALS['user']->perms,
+                $GLOBALS['perm']->get_perm($GLOBALS['user']->id),
             ));
 
         }
@@ -609,6 +617,58 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         // keine Ergebnisse vorhanden
         if(count($dbresults) == 0) {
             PageLayout::postMessage(MessageBox::error("Es wurden für <em>" . htmlReady($search_text) . "</em> keine Ergebnisse gefunden."));
+            $this->showThemen();
+            return;
+        }
+
+        //Ergebnisse anzeigen
+        $results = array();
+        $thema = array();
+        foreach ($dbresults as $result) {
+            $a = new Artikel($result['artikel_id']);
+            if(empty($thema['thema_id'])) {
+                $thema['thema_id'] = $result['thema_id'];
+                $thema['thema_titel'] = htmlReady($result['t_titel']);
+                $thema['artikel'] = array();
+            } elseif($result['thema_id'] != $thema['thema_id']) {
+                $results[] = $thema;
+
+                $thema = array();
+                $thema['thema_id'] = $result['thema_id'];
+                $thema['thema_titel'] = htmlReady($result['t_titel']);
+                $thema['artikel'] = array();
+            }
+            $thema['artikel'][] = $this->showArtikel($a);
+        }
+        $results[] = $thema;
+
+        //Ausgabe erzeugen
+        $template = $this->template_factory->open('search_results');
+        $template->set_layout($this->layout);
+        $template->zeit        = $this->zeit;
+        $template->pluginpfad  = $this->getPluginURL();
+        $template->link_search = PluginEngine::getURL($this, array("modus"=>"show_search_results"));
+        $template->link_back   = PluginEngine::getURL($this, array(), 'show');
+        $template->results     = $results;
+        echo $template->render();
+    }
+
+    public function ownArtikel_action()
+    {
+        $query = "SELECT a.thema_id, a.artikel_id, a.titel, t.titel AS t_titel
+                  FROM sb_artikel AS a, sb_themen AS t
+                  WHERE t.thema_id = a.thema_id AND a.user_id = :user_id AND a.mkdate + :lifetime >= UNIX_TIMESTAMP()
+                  ORDER BY t.titel, a.titel";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':user_id', $GLOBALS['user']->id);
+        $statement->bindValue(':lifetime', $this->zeit);
+        $statement->execute();
+
+        $dbresults = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        // keine Ergebnisse vorhanden
+        if(count($dbresults) == 0) {
+            PageLayout::postMessage(MessageBox::error(_('Sie haben momentan keine eigenen Anzeigen.')));
             $this->showThemen();
             return;
         }
@@ -659,16 +719,17 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
         $template = $this->template_factory->open('show_themen');
         $template->set_layout($this->layout);
-        $template->question        = $this->question ?: '';
         $template->zeit            = $this->zeit;
         $template->pluginpfad      = $this->getPluginURL();
         $template->link_edit       = PluginEngine::getURL($this, array(), 'editThema');
         $template->link_artikel    = PluginEngine::getURL($this, array(), 'editArtikel');
         $template->link_delete     = PluginEngine::getURL($this, array(), 'deleteThema');
+        $template->link_rss        = PluginEngine::getURL($this, array(), 'rss');
         $template->link_search     = PluginEngine::getURL($this, array("modus" => "show_search_results"));
         $template->link_back       = PluginEngine::getURL($this, array());
         $template->last_visit_date = $this->last_visitdate;
         $template->root            = $this->root;
+        $template->enableRss       = Config::get()->BULLETIN_BOARD_ENABLE_RSS;
 
         //Keine themen vorhanden
         if (count($themen) == 0) {
@@ -678,7 +739,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         else {
             //Anzahl Themen pro Spalte berechnen
             if(count($themen) > 6) { //3 Spalten
-                $template->themen_rows = 3;
+                $template->themen_rows = ceil(count($themen) / 3);
             } elseif(count($themen) > 2) { //2 Spalten
                 $template->themen_rows = 2;
             } else { //1 Spalte
@@ -734,19 +795,21 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $template->a            = $a;
         $template->anzahl       = $this->getArtikelLookups($a->getArtikelId());
         $template->pluginpfad   = $this->getPluginURL();
-        $template->pfeil        = ($this->hasVisited($a->getArtikelId()) ? "blue" : "red");
+        $template->pfeil        = $this->hasVisited($a->getArtikelId()) ? 'blue' : 'red';
         $template->pfeil_runter = "forumgraurunt";
         //benutzer und root extrafunktionen anzeigen
         if($a->getUserId() == $GLOBALS['user']->id || $GLOBALS['perm']->have_perm('root')) {
-            $template->access = true;
+            $template->access      = true;
             $template->link_delete = PluginEngine::getURL($this, array("artikel_id"=>$a->getArtikelId()), 'deleteArtikel');
-            $template->link_edit = PluginEngine::getURL($this, array("thema_id"=>$a->getThemaId(), "artikel_id"=>$a->getArtikelId()), 'editArtikel');
+            $template->link_edit   = PluginEngine::getURL($this, array("thema_id"=>$a->getThemaId(), "artikel_id"=>$a->getArtikelId()), 'editArtikel');
         }
         // oder einen antwortbutton
         if($a->getUserId() != $GLOBALS['user']->id) {
-            $template->antwort = true;
+            $template->antwort     = true;
+            $template->enableBlame = get_config('BULLETIN_BOARD_ENABLE_BLAME');
+            $template->link_blame  = PluginEngine::getURL($this, array("thema_id"=>$a->getThemaId(), "artikel_id"=>$a->getArtikelId()), 'blameArtikel');
         }
-        $template->link_search = PluginEngine::getURL($this, array('modus' => 'show_search_results'));
+        $template->link_search = PluginEngine::getURL($this, array("modus"=>"show_search_results"));
         $template->link_back   = PluginEngine::getURL($this, array());
         return $template->render();
     }
@@ -801,7 +864,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                        .     "last_visitdate = UNIX_TIMESTAMP()";
                 DBManager::get()
                     ->prepare($query)
-                    ->execute(array($obj_id, $GLOBALS['auth']->auth['uid']));
+                    ->execute(array($obj_id, $GLOBALS['user']->id));
 
                 $a = new Artikel($obj_id);
                 Header('Content-Type: text/html; charset=windows-1252');
@@ -812,7 +875,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             //thema
             if($thema_id){
                 $tt = $thema['thema'] = new Thema($thema_id);
-                if ($GLOBALS['perm']->have_perm($tt->getPerm()) ||  $GLOBALS['perm']->have_perm('root')) {
+                if($GLOBALS['perm']->have_perm($tt->getPerm(), $GLOBALS['user']->id) ||  $GLOBALS['perm']->have_perm('root')) {
                     $thema['permission'] = true;
                 }
                 $thema['artikel'] = array();
@@ -846,6 +909,166 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $msg->question = $question;
         $msg->approvalLink = PluginEngine::getURL($this, $approvalCmd, $link);
         $msg->disapprovalLink = PluginEngine::getURL($this);
-        $this->question = $msg->render();
+        echo $msg->render();
+    }
+
+    /**
+     * Managed das Melden eines Angebots
+     * Zeigt einen Modalen Dialog, wird dieser bestätigt wir das Angebot gemeldet
+     */
+    public function blameArtikel_action()
+    {
+        $artikel_id = Request::get('artikel_id');
+        $thema_id = Request::get('thema_id');
+
+        Navigation::activateItem('/schwarzesbrettplugin/show');
+        $a = new Artikel(Request::get('artikel_id'));
+
+        //Artikel melden Sicherheitsabfrage
+        if (Request::get('modus') == "blame_artikel_really") {
+            $a->blame(Request::get('blame_reason'));
+            PageLayout::postMessage(MessageBox::success("Die Anzeige wurde gemeldet"));
+        } else {
+            $msg = $this->template_factory->open('blame_dialog');
+            $msg->question = 'Soll die Anzeige "**'.$a->getTitel().'**" von %%'.get_fullname($a->getUserId()).'%% wirklich gemeldet werden?';
+            $msg->approvalLink = PluginEngine::getURL($this, array("modus"=>"blame_artikel_really", "artikel_id"=>$a->getArtikelId()), 'blameArtikel');
+            $msg->disapprovalLink = PluginEngine::getURL($this);
+            PageLayout::addBodyElements($msg->render());
+        }
+        $this->showThemen();
+    }
+
+    /**
+     * Zeigt die Einstellungsseite
+     */
+    public function settings_action()
+    {
+        if ($GLOBALS['perm']->have_perm('root')) {
+            $template = $this->template_factory->open('settings');
+            $template->set_layout($this->layout);
+            if (Request::get('action') == 'save'){
+                foreach ($this->getThemen() as $thema) {
+                    StudipCacheFactory::getCache()->expire(self::ARTIKEL_CACHE_KEY.$thema->getThemaId());
+                    StudipCacheFactory::getCache()->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.$thema->getThemaId());
+                }
+                StudipCacheFactory::getCache()->expire(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.'all');
+                write_config('BULLETIN_BOARD_ANNOUNCEMENTS', Request::get('announcements'));
+                write_config('BULLETIN_BOARD_DURATION', Request::get('duration'));
+                write_config('BULLETIN_BOARD_BLAME_RECIPIENTS', Request::get('blameRecipients'));
+                write_config('BULLETIN_BOARD_ENABLE_BLAME', (int)Request::get('enableBlame'));
+                write_config('BULLETIN_BOARD_ENABLE_RSS', (int)Request::get('enableRss'));
+                $template->message = MessageBox::success(_('Einstellungen gespeichert.'));
+            }
+            $metaAnnouncements   = Config::getInstance()->getMetadata('BULLETIN_BOARD_ANNOUNCEMENTS');
+            $metaDuration        = Config::getInstance()->getMetadata('BULLETIN_BOARD_DURATION');
+            $metaBlameRecipients = Config::getInstance()->getMetadata('BULLETIN_BOARD_BLAME_RECIPIENTS');
+            $metaEnableBlame     = Config::getInstance()->getMetadata('BULLETIN_BOARD_ENABLE_BLAME');
+            $metaEnableRss       = Config::getInstance()->getMetadata('BULLETIN_BOARD_ENABLE_RSS');
+            $template->descAnnouncements   = $metaAnnouncements['description'];
+            $template->descDuration        = $metaDuration['description'];
+            $template->descBlameRecipients = $metaBlameRecipients['description'];
+            $template->descEnableBlame     = $metaEnableBlame['description'];
+            $template->descEnableRss       = $metaEnableRss['description'];
+            $template->announcements       = Config::get()->BULLETIN_BOARD_ANNOUNCEMENTS;
+            $template->duration            = Config::get()->BULLETIN_BOARD_DURATION;
+            $template->blameRecipients     = Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS;
+            $template->enableBlame         = Config::get()->BULLETIN_BOARD_ENABLE_BLAME;
+            $template->enableRss           = Config::get()->BULLETIN_BOARD_ENABLE_RSS;
+            $template->link                = PluginEngine::getURL($this, array(), 'settings');
+            echo $template->render();
+        }
+    }
+
+    /**
+     * Zeigt den RSS Feed des Schwarzen Bretts
+     */
+    public function rss_action()
+    {
+        if (get_config('BULLETIN_BOARD_ENABLE_RSS') != 1)
+            return;
+        global $ABSOLUTE_URI_STUDIP;
+        $studipUrl = $ABSOLUTE_URI_STUDIP;
+        if (substr($ABSOLUTE_URI_STUDIP, -1) === '/')
+            $studipUrl = substr($studipUrl, 0, -1);
+
+        $themaId = Request::get('thema_id', false);
+        $items = '';
+        foreach ($this->getPublishableArtikel($themaId) as $article) {
+            $template = $this->template_factory->open('rss_artikel');
+            $template->studipUrl   = $studipUrl;
+            $template->title       = $article->getTitel();
+            $template->description = $article->getBeschreibung();
+            $template->pubDate     = $article->getMkdate();
+            $template->guid        = $article->getArtikelId();
+            $items .= $template->render();
+        }
+
+        $thema = '';
+        $description = '';
+        if ($themaId != 'all') {
+            $t = new Thema($themaId);
+            $thema = ' - '.$t->getTitel();
+            $description = $t->getBeschreibung();
+        }
+        header("Content-type: text/xml; charset=utf-8");
+        $template = $this->template_factory->open('rss');
+        $template->selfLink    = $studipUrl . PluginEngine::getURL($this, array('thema_id' => $themaId), 'rss');
+        $template->studipUrl   = $studipUrl;
+        $template->title       = 'Stud.IP Schwarzes Brett' . $thema;
+        $template->description = $description;
+        $template->items       = $items;
+        echo $template->render();
+    }
+
+    /**
+     * Gibt alle Anzeigen zurück, die veröffentlicht werden dürfen
+     *
+     * @uses StudipCache
+     *
+     * @param string $thema_id
+     * @return array Anzeigen
+     */
+    private function getPublishableArtikel($thema_id)
+    {
+        $cache = StudipCacheFactory::getCache();
+        $ret = unserialize($cache->read(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.$thema_id));
+
+        if (!empty($ret)) {
+            return $ret;
+        }
+
+        $ret = array();
+
+        if ($thema_id != 'all') {
+            $query = "SELECT artikel_id "
+                   . "FROM sb_artikel "
+                   . "WHERE thema_id = ? AND UNIX_TIMESTAMP() < mkdate + ? "
+                   .   "AND visible = 1 AND publishable = 1 "
+                   . "ORDER BY mkdate DESC";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute(array(
+                $thema_id, $this->zeit
+            ));
+        } else {
+            $query = "SELECT artikel_id "
+                   . "FROM sb_artikel "
+                   . "WHERE UNIX_TIMESTAMP() < mkdate + ? "
+                   .   "AND visible = 1 AND publishable = 1 "
+                   . "ORDER BY mkdate DESC";
+            $statement = DBManager::get()->prepare($query);
+            $statement->execute(array(
+                $this->zeit
+            ));
+        }
+
+        $artikel_ids = $statement->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($artikel_ids as $artikel_id) {
+            $ret[] = new Artikel($artikel_id);
+        }
+
+        $cache->write(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.$thema_id, serialize($ret));
+
+        return $ret;
     }
 }

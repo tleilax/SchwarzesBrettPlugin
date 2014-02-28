@@ -1,15 +1,13 @@
+<?= $message ?>
+
 <? if (count($users) > 0) : ?>
-<table class="default zebra-hover">
+<h3><?= _('Personen auf der schwarzen Liste') ?></h3>
+<table class="default zebra">
     <thead>
         <tr>
-            <th colspan="3" class="table_header_bold">
-                <?= _('Personen auf der schwarzen Liste:') ?>
-            </th>
-        </tr>
-        <tr>
-            <th>&nbsp;</th>
-            <th>Benutzer</th>
-            <th>&nbsp;</th>
+            <th></th>
+            <th><?= _('Benutzer') ?></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -27,18 +25,17 @@
                 </a>
             </td>
         </tr>
-    <? endforeach ?>
+<? endforeach ?>
     </tbody>
 </table>
 <? else : ?>
-    <?= MessageBox::info(_('Es befinden sich keine Benutzer auf der schwarzen Liste.')) ?>
+<?= MessageBox::info(_('Es befinden sich keine Benutzer auf der schwarzen Liste.')) ?>
 <? endif ?>
 
 <br>
-
-<h3>Benutzer auf die schwarze Liste setzen</h3>
+<h3><?= _('Benutzer auf die schwarze Liste setzen') ?></h3>
 <form method="post" action="<?= $link ?>">
     <input type="hidden" name="action" value="add">
     <?= QuickSearch::get('user_id', new StandardSearch('user_id'))->withButton()->render() ?>
-    <?= Studip\Button::create(_('Hinzufügen'), array('title' => _('Benutzer suchen'))) ?>
+    <?= Studip\Button::create(_('Hinzufügen'), 'hinzufuegen') ?>
 </form>

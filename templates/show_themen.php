@@ -21,13 +21,13 @@
 
 <? if(count($lastArtikel) > 0): $last=count($lastArtikel); ?>
 <h2 class="caption"><?= sprintf(_('Die %u neusten Anzeigen'), $last) ?></h2>
-<table border="0" cellpadding="2" cellspacing="0" width="100%">
+<table>
     <tr class="steel1">
         <td valign="top" width="50%">
-            <table border="0" cellpadding="5" cellspacing="0" width="100%">
+            <table class="default zebra-hover">
             <? for ($i=0; $i<ceil($last/2); $i++):
                 $a = $lastArtikel[$i]; ?>
-                <tr class="<?= TextHelper::cycle('cycle_even', 'cycle_odd') ?>">
+                <tr>
                     <td>
                         <?= $a ?>
                     </td>
@@ -36,10 +36,10 @@
             </table>
         </td>
         <td valign="top" width="50%">
-            <table border="0" cellpadding="5" cellspacing="0" width="100%">
+            <table class="default zebra-hover">
             <? for ($i=ceil($last/2); $i<($last); $i++):
                 $a = $lastArtikel[$i]; ?>
-                <tr class="<?= TextHelper::cycle('cycle_even', 'cycle_odd') ?>">
+                <tr>
                     <td>
                         <?= $a ?>
                     </td>

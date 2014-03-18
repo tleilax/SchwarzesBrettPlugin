@@ -21,7 +21,7 @@
 
 <? if(count($lastArtikel) > 0): $last=count($lastArtikel); ?>
 <h2 class="caption"><?= sprintf(_('Die %u neusten Anzeigen'), $last) ?></h2>
-<table>
+<table class="default">
     <tr class="steel1">
         <td valign="top" width="50%">
             <table class="default zebra-hover">

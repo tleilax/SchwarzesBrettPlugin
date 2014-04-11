@@ -727,10 +727,12 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $template->link_rss        = PluginEngine::getURL($this, array(), 'rss');
         $template->link_search     = PluginEngine::getURL($this, array("modus" => "show_search_results"));
         $template->link_back       = PluginEngine::getURL($this, array());
+        $template->link_visit      = PluginEngine::getURL($this, array(), 'visitAll');
         $template->last_visit_date = $this->last_visitdate;
         $template->root            = $this->root;
         $template->enableRss       = Config::get()->BULLETIN_BOARD_ENABLE_RSS;
 
+	$template->newArticles = false;
         //Keine themen vorhanden
         if (count($themen) == 0) {
             $template->keinethemen = true;
@@ -747,11 +749,12 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             }
 
             //
-            $query = "SELECT MAX(sv.last_visitdate) "
-                   . "FROM sb_visits AS sv "
-                   . "LEFT JOIN sb_artikel AS sa ON (sv.object_id = sa.artikel_id) "
-                   . "WHERE sv.user_id = ? AND sa.thema_id = ?";
+            $query = "SELECT MAX(IFNULL(sv.last_visitdate, 0)) < MAX(mkdate) "
+                   . "FROM sb_artikel AS sa "
+                   . "LEFT JOIN sb_visits AS sv ON (sv.object_id IN (sa.thema_id, sa.artikel_id)  AND sv.user_id = ?) "
+                   . "WHERE sa.thema_id = ? AND UNIX_TIMESTAMP() < sa.mkdate + :expire";
             $statement = DBManager::get()->prepare($query);
+            $statement->bindValue(':expire', $this->zeit);
 
             $results = array();
             $thema = array();
@@ -764,8 +767,10 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $thema['countArtikel'] = $tt->getArtikelCount();
 
                 $statement->execute(array($GLOBALS['user']->id, $tt->getThemaId()));
-                $thema['last_thema_user_date'] = $statement->fetchColumn();
+                $thema['newArticles'] = $statement->fetchColumn();
                 $statement->closeCursor();
+
+                $template->newArticles = $template->newArticles || $thema['newArticles'];
 
                 $results[] = $thema;
             }
@@ -874,6 +879,13 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             }
             //thema
             if($thema_id){
+                $query = "REPLACE INTO sb_visits "
+                       . "SET object_id = ?, user_id = ?, type='thema', "
+                       .     "last_visitdate = UNIX_TIMESTAMP()";
+                DBManager::get()
+                    ->prepare($query)
+                    ->execute(array($thema_id, $GLOBALS['user']->id));
+
                 $tt = $thema['thema'] = new Thema($thema_id);
                 if($GLOBALS['perm']->have_perm($tt->getPerm(), $GLOBALS['user']->id) ||  $GLOBALS['perm']->have_perm('root')) {
                     $thema['permission'] = true;
@@ -977,6 +989,21 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             $template->link                = PluginEngine::getURL($this, array(), 'settings');
             echo $template->render();
         }
+    }
+
+    public function visitAll_action()
+    {
+        $query = "INSERT INTO sb_visits (object_id, user_id, type, last_visitdate)
+                  SELECT thema_id, :user_id, 'thema', UNIX_TIMESTAMP() FROM sb_themen
+                  ON DUPLICATE KEY UPDATE last_visitdate = UNIX_TIMESTAMP()";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':user_id', $GLOBALS['user']->id);
+        $statement->execute();
+
+        PageLayout::postMessage(MessageBox::success(_('Alle Themen wurden als besucht markiert')));
+        
+        header('Location: ' . PluginEngine::getLink($this, array()));
+        die;
     }
 
     /**

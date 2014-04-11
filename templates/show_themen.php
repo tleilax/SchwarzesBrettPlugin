@@ -59,6 +59,13 @@
     <?= _('Themenübersicht') ?>
 <? if ($enableRss): ?>
     <div style="float: right;">
+    <? if ($newArticles): ?>
+        <a href="<?= URLHelper::getLink($link_visit) ?>">
+            <?= Assets::img('icons/16/white/refresh.png') ?>
+            <?= _('Alle Themen als besucht markieren') ?>
+        </a>
+	|
+    <? endif; ?>
         <a href="<?= URLHelper::getLink($link_rss, array('thema_id' => 'all')) ?>">
             <?= Assets::img('icons/16/white/rss.png', array('class' => 'text-top', 'title' => _('RSS Feed'))) ?></a>
     </div>
@@ -72,7 +79,7 @@
     <? endif; $tindex++; ?>
     <div class="steel1" style="padding:2px; margin:3px">
         <div style="float:left">
-            <a title="Klicken, um die Kategorie aufzuklappen" href="javascript: toggleThema('<?=$result['thema']->getThemaId() ?>');" <? if($result['thema']->getLastArtikelDate() > $result['last_thema_user_date']): ?> style="color: red !important;"<? endif ?>><b<? if($result['thema']->getLastArtikelDate() > $result['last_thema_user_date']): ?> style="color: red !important;"<? endif ?>><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
+            <a title="Klicken, um die Kategorie aufzuklappen" href="javascript: toggleThema('<?=$result['thema']->getThemaId() ?>');" <? if($result['newArticles']): ?> style="color: red !important;"<? endif ?>><b<? if($result['newArticles']): ?> style="color: red !important;"<? endif ?>><?=htmlReady($result['thema']->getTitel()) ?> <?=($result['countArtikel'] != 0)? '('.$result['countArtikel'].')':''?></b></a><br/>
             <span style="font-size: smaller"><?=htmlReady($result['thema']->getBeschreibung()) ?></span>
         </div>
         <div style="float:right">

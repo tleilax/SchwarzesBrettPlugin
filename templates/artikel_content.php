@@ -23,7 +23,7 @@
                                URLHelper::getLink('sms_send.php',
                                                   array('rec_uname' => get_username($a->getUserId()),
                                                         'messagesubject' => $a->getTitel(),
-                                                        'message' => rawurlencode('[quote] '.$a->getBeschreibung().' [/quote]')))) ?>
+                                                        'message' => '[quote] '.$a->getBeschreibung().' [/quote]'))) ?>
     <? endif; ?>
     <? if($enableBlame == 1): ?>
         <?= LinkButton::create(_('Melden'), $link_blame) ?>

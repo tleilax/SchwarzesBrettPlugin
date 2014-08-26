@@ -90,9 +90,11 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
                 $root_nav->addSubNavigation('blacklist', new AutoNavigation(_('Benutzer-Blacklist'), PluginEngine::getURL($this, array(), 'blacklist')));
                 $root_nav->addSubNavigation('duplicates', new AutoNavigation(_('Doppelte Einträge suchen'), PluginEngine::getURL($this, array(), 'searchDuplicates')));
 
-                $olds = Artikel::countExpired($this->zeit);
-                if ($olds > 0) {
-                    $root_nav->addSubNavigation('delete', new AutoNavigation(_('Datenbank bereinigen ('.$olds.' alte Einträge)'), PluginEngine::getURL($this, array(), 'deleteOldArtikel')));
+                if (!$this->hasActiveCronjob()) {
+                    $olds = Artikel::countExpired($this->zeit);
+                    if ($olds > 0) {
+                        $root_nav->addSubNavigation('delete', new AutoNavigation(_('Datenbank bereinigen ('.$olds.' alte Einträge)'), PluginEngine::getURL($this, array(), 'deleteOldArtikel')));
+                    }
                 }
                 $nav->addSubNavigation('root', $root_nav);
             }
@@ -1001,7 +1003,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $statement->execute();
 
         PageLayout::postMessage(MessageBox::success(_('Alle Themen wurden als besucht markiert')));
-        
+
         header('Location: ' . PluginEngine::getLink($this, array()));
         die;
     }
@@ -1097,5 +1099,13 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $cache->write(self::ARTIKEL_PUBLISHABLE_CACHE_KEY.$thema_id, serialize($ret));
 
         return $ret;
+    }
+
+    private function hasActiveCronjob()
+    {
+        return Config::get()->CRONJOBS_ENABLE
+            && ($tasks = CronjobTask::findByClass('SchwarzesBrettCronjob'))
+            && $tasks[0]->active
+            && $tasks[0]->schedules->findOneBy('active', '1');
     }
 }

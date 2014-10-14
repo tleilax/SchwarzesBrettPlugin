@@ -64,7 +64,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         if($GLOBALS['perm']->have_perm('user')) {
             //Navigation
             $nav = new AutoNavigation(_('Schwarzes Brett'), PluginEngine::getURL($this, array()));
-            $nav->setImage($image, array('title' => _('Schwarzes Brett'), 'class' => $this->hasNewArticles()));
+			$nav->setImage( 'icons/28/lightblue/billboard.png',array('title' => _('Schwarzes Brett'), "@2x" => TRUE));
 
             // Sachen in den Header laden (bis 1.11)
             PageLayout::addScript($this->getPluginURL().'/js/schwarzesbrett.js');

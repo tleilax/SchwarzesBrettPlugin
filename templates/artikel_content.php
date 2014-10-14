@@ -20,10 +20,10 @@
     <div class="button-group">
     <? if($antwort === true): ?>
         <?= LinkButton::create(_('Antworten'),
-                               URLHelper::getLink('sms_send.php',
+                               URLHelper::getURL('sms_send.php',
                                                   array('rec_uname' => get_username($a->getUserId()),
                                                         'messagesubject' => $a->getTitel(),
-                                                        'message' => '[quote] '.$a->getBeschreibung().' [/quote]'))) ?>
+                                                        'message' => '[quote] '.$a->getBeschreibung().' [/quote]')),array('data-dialog' => '') ) ?>
     <? endif; ?>
     <? if($enableBlame == 1): ?>
         <?= LinkButton::create(_('Melden'), $link_blame) ?>

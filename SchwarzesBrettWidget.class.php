@@ -1,11 +1,16 @@
 <?php
 class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
 {
-    public function initialize()
+    public function __construct()
     {
+        parent::__construct();
+        
         if (Request::isXhr()) {
             Header('Content-Type: text/html;charset=windows-1252');
         }
+
+        $this->addStylesheet('assets/schwarzesbrett.less');
+        PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
     }
     
     public function getPluginName()
@@ -28,7 +33,8 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
         
         if (Request::isPost()) {
             $selection = Request::getArray('categories');
-            $this->storeSelection($selection);
+            $count     = Request::int('count');
+            $this->storeConfig($selection, $count);
             
             if (Request::isXhr()) {
                 header('X-Location: ' . URLHelper::getLink('dispatch.php/start'));
@@ -42,10 +48,10 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
             header('X-Title: ' . PageLayout::getTitle());
         }
         
-        $template = $this->getTemplate('widget-settings.php');
+        $template = $this->getTemplate('widget/settings.php', true);
         $template->url        = PluginEngine::getLink($this, array(), 'settings');
         $template->categories = SBCategory::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC');
-        $template->selected   = $this->getSelection();
+        $template->config   = $this->getConfig();
         echo $template->render();
     }
 
@@ -62,8 +68,10 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
 
     protected function getContent()
     {
-        $template = $this->getTemplate('widget.php');
-        $template->categories = $this->getSelection(true);
+        $config = $this->getConfig();
+
+        $template = $this->getTemplate('widget/index.php');
+        $template->articles = SBArticle::findNewest($config['count'], $config['selected']);
         return $template->render();
     }
 
@@ -71,28 +79,22 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
     {
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views');
         $template = $factory->open($template);
+        $template->controller = PluginEngine::getPlugin('SchwarzesBrettPlugin');
         if ($layout && !Request::isXhr()) {
-            $template->set_layout($GLOBALS['template_factory']->open('layout/base.php'));
+            $template->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
         }
         return $template;
     }
     
-    protected function getSelection($as_objects = false)
+    protected function getConfig()
     {
-        $selection = isset($GLOBALS['user']->cfg->SCHWARZESBRETT_WIDGET_SELECTION)
-                   ? unserialize($GLOBALS['user']->cfg->SCHWARZESBRETT_WIDGET_SELECTION)
-                   : false;
-        if (!$as_objects) {
-            return $selection;
-        }
-        
-        return $selection === false
-             ? SBCategory::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC')
-             : SBCategory::findMany($selection);
+        return isset($GLOBALS['user']->cfg->SCHWARZESBRETT_WIDGET_SETTINGS)
+             ? unserialize($GLOBALS['user']->cfg->SCHWARZESBRETT_WIDGET_SETTINGS)
+             : array('selected' => false, 'count' => Config::get()->ENTRIES_PER_PAGE);
     }
-    
-    protected function storeSelection($selection)
+
+    protected function storeConfig($selected, $count)
     {
-        $GLOBALS['user']->cfg->store('SCHWARZESBRETT_WIDGET_SELECTION', serialize($selection));
+        $GLOBALS['user']->cfg->store('SCHWARZESBRETT_WIDGET_SETTINGS', serialize(compact(words('selected count'))));
     }
 }

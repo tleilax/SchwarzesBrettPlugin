@@ -90,9 +90,17 @@ class SBArticle extends SimpleORMap
         return self::findMany($ids);
     }
 
-    public static function findNewest($limit)
+    public static function findNewest($limit, $categories = false)
     {
-        return self::findBySQL('visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC LIMIT ' . (int)$limit);
+        $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC LIMIT ' . (int)$limit;
+        $params = array();
+        
+        if ($categories !== false && !empty($categories)) {
+            $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() AND thema_id IN (:categories) ORDER BY mkdate DESC LIMIT ' . (int)$limit;
+            $params = array(':categories' => $categories);
+        }
+
+        return self::findBySQL($query, $params);
     }
     
     public static function findPublishable($category_id = null)

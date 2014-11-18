@@ -110,4 +110,18 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $dispatcher->plugin = $this;
         $dispatcher->dispatch($unconsumed_path);
     }
+
+    public function url_for($to)
+    {
+        $args = func_get_args();
+        $last = end($args);
+
+        if (is_array($last)) {
+            $params = array_pop($args);
+        } else {
+            $params = array();
+        }
+        
+        return PluginEngine::getURL($this, $params, join('/', $args));
+    }
 }

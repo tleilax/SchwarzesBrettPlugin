@@ -18,12 +18,10 @@ class SchwarzesBrettCronjob extends CronJob
 
     public function execute($last_result, $parameters = array())
     {
-        $expiration_time = Config::get()->BULLETIN_BOARD_DURATION * 24 * 60 * 60;
-        $artikel = Artikel::getExpired($expiration_time);
+        $articles = SBArticles::findBySQL('expired < UNIX_TIMESTAMP()');
 
-        foreach ($artikel as $id) {
-            $a = new Artikel($id);
-            $a->delete();
+        foreach ($articles as $article) {
+            $article->delete();
         }
 
         if (count($artikel) > 0) {
@@ -31,3 +29,9 @@ class SchwarzesBrettCronjob extends CronJob
         }
     }
 }
+
+/*
+DELETE FROM sb_visits WHERE user_id NOT IN (SELECT user_id FROM auth_user_md5);
+DELETE FROM sb_visits WHERE type = 'artikel' AND object_id NOT IN (SELECT artikel_id FROM sb_artikel);
+DELETE FROM sb_visits WHERE type = 'thema' AND object_id NOT IN (SELECT thema_id FROM sb_themen);
+*/

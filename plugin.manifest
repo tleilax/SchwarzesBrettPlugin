@@ -1,5 +1,6 @@
-pluginclassname=SchwarzesBrettPlugin
 pluginname=SchwarzesBrettPlugin
+pluginclassname=SchwarzesBrettPlugin
+pluginclassname=SchwarzesBrettWidget
 origin=IBIT
 version=3.0
 studipMinVersion=2.0

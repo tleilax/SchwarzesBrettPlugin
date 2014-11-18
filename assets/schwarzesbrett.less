@@ -25,10 +25,10 @@
     }
     
     li {
+        .flex();
+        .flex-justify-content(space-between);
         border-bottom: 1px solid #ccc;
         padding-top: 1px;
-        display: flex;
-        justify-content: space-between;
         &:hover {
             background-color: fadeout(@light-gray-color, 80%);
         }

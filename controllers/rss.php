@@ -7,13 +7,13 @@ class RssController extends SchwarzesBrettController
             array_unshift($args, $action);
             $action = 'index';
         }
-        
+
         parent::before_filter($action, $args);
-        
+
         if (!$this->rss_enabled) {
             throw new Exception(_('RSS-Exporte sind nicht aktiviert.'));
         }
-        
+
         $this->set_layout(null);
     }
 

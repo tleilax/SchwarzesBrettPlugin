@@ -3,7 +3,7 @@
     $(document).on('dialog-load', function (event, data) {
         var href = $(data.options.origin).attr('href');
         if (href && href.indexOf('category/visit') !== -1) {
-            $('.sb-category .new-article').removeClass('new-article');
+            $('.sb-category,.sb-articles').find('.new-article').removeClass('new-article');
             $('.sb-categories .new-category').removeClass('new-category');
             
             $(data.options.origin).hide();

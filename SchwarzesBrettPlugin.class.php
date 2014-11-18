@@ -1,44 +1,35 @@
 <?php
 /**
- * SchwarzesBrettPlugin.class.php
+ * Schwarzes Brett
  *
  * Plugin zum Verwalten von Schwarzen Brettern (Angebote und Gesuche)
  *
- * Diese Datei enthält die Hauptklasse des Plugins
+ * Diese PluginVersion ist mehr oder eniger ein kompletter Rewrite des alten
+ * Plugins. Daher neue Lizent und nur ein Autor. Aber:
+ *
+ * Give credit where credit is due. Das eigentliche Plugin stammt von diesen
+ * Autoren:
+ *
+ * - Jan Kulmann <jankul@zmml.uni-bremen.de>
+ * - Daniel Kabel <daniel.kabel@me.com>
+ * - Michael Riehemann <michael.riehemann@uni-oldenburg.de>
  *
  * @author      Jan-Hendrik Willms <tleilax+studip@gmail.com>
- * @author      Jan Kulmann <jankul@zmml.uni-bremen.de>
- * @author      Michael Riehemann <michael.riehemann@uni-oldenburg.de>
- * @author      Daniel Kabel <daniel.kabel@me.com>
- * @package     IBIT_SchwarzesBrettPlugin
- * @copyright   2008-2014 IBIT und ZMML
- * @license     http://www.gnu.org/licenses/gpl.html GPL Licence 3
- * @version     2.5
+ * @copyright   2014 UOL
+ * @license     GPL2 or any later version
+ * @version     3.0
  */
 
-// IMPORTS
 require_once 'bootstrap.inc.php';
 
 /**
  * SchwarzesBrettPlugin Hauptklasse
- *
  */
 class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 {
-    const THEMEN_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/themen';
-    const ARTIKEL_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/artikel/';
-    const ARTIKEL_PUBLISHABLE_CACHE_KEY = 'plugins/SchwarzesBrettPlugin/artikel/publishable';
-
-    /**
-     *
-     */
     public function __construct()
     {
         parent::__construct();
-
-        StudipAutoloader::addAutoloadPath(__DIR__ . '/models');
-
-        $this->template_factory = new Flexi_TemplateFactory(dirname(__FILE__).'/templates');
 
         //menu nur anzeigen, wenn eingeloggt
         if ($GLOBALS['perm']->have_perm('user')) {
@@ -89,8 +80,9 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
     public function initialize()
     {
         require_once 'controllers/sb_controller.php';
-        
+
         PageLayout::setTitle(_('Schwarzes Brett'));
+
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
     }
@@ -108,7 +100,6 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             && $tasks[0]->schedules->findOneBy('active', '1');
     }
 
-    
     public function perform($unconsumed_path)
     {
         $dispatcher = new Trails_Dispatcher(

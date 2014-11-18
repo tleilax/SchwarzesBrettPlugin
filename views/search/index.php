@@ -1,9 +1,5 @@
-<? if (empty($categories)): ?>
-    <?= MessageBox::info(_('Sie haben momentan keine eigenen Anzeigen.')) ?>
-<? return; endif; ?>
-
 <table class="default">
-    <caption class="hide-in-dialog"><?= _('Meine Anzeigen') ?></caption>
+    <caption><?= sprintf(_('Suchergebnisse für "%s"'), $needle) ?></caption>
 <? foreach ($categories as $id => $category): ?>
     <tbody>
         <tr>
@@ -17,5 +13,5 @@
         <?= $this->render_partial('article-tr', compact('article')) ?>
     <? endforeach; ?>
     </tbody>
-<? endforeach; ?>
+<? endforeach; ?>    
 </table>

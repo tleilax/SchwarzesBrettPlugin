@@ -14,22 +14,8 @@ class ArticleController extends SchwarzesBrettController
         PageLayout::setTitle(_('Meine Anzeigen'));
         Navigation::activateItem('/schwarzesbrettplugin/show/own');
 
-        $articles = SBArticle::findBySQL('user_id = :user_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC',
-                                         array(':user_id' => $GLOBALS['user']->id));
-        
-        $categories = array();
-        foreach ($articles as $article) {
-            $category = $article->category;
-            if (!isset($categories[$category->id])) {
-                $categories[$category->id] = array(
-                    'titel'    => $category->titel,
-                    'articles' => array(),
-                );
-            }
-            $categories[$category->id]['articles'][] = $article;
-        }
-
-        $this->categories = $categories;
+        $articles = SBUser::get()->articles;
+        $this->categories = SBArticle::groupByCategory($articles);
     }
     
     public function create_action()

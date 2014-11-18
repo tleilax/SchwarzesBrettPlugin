@@ -96,13 +96,7 @@ class SchwarzesBrettController extends StudipController
                      ? reset($args)
                      : false;
 
-        if (isset($_REQUEST['debug'])) {
-            $info = new SidebarWidget();
-            $info->addElement(new WidgetElement($class . ' ' . $action . ' ' . serialize($args)));
-            Sidebar::get()->addWidget($info);
-        }
-
-        $search = new SearchWidget($this->url_for('category/search'));
+        $search = new SearchWidget($this->url_for('search'));
         $search->addNeedle(_('Suchbegriff'), 'needle', true);
         if ($category_id) {
             $search->addFilter(_('Nur in dieser Kategorie'), 'restrict[' . $category_id . ']');

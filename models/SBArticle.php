@@ -53,6 +53,11 @@ class SBArticle extends SimpleORMap
         return self::findBySQL("thema_id = :category_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id));
     }
     
+    public static function findValidByUserId($user_id)
+    {
+        return self::findBySQL("user_id = :user_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':user_id' => $user_id));
+    }
+    
     public static function findVisibleByCategoryId($category_id)
     {
         return self::findBySQL("thema_id = :category_id AND (visible = 1 OR user_id = :user_id) AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));
@@ -166,5 +171,35 @@ class SBArticle extends SimpleORMap
         }
         
         return $duplicates;
+    }
+    
+    public static function search($needle)
+    {
+        $query = "SELECT artikel_id
+                  FROM sb_artikel
+                  WHERE titel LIKE CONCAT('%', :needle, '%')";
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':needle', $needle);
+        $statement->execute();
+
+        $article_ids = $statement->fetchAll(PDO::FETCH_COLUMN);
+        
+        return SBArticle::findMany($article_ids, 'ORDER BY mkdate DESC');
+    }
+    
+    public static function groupByCategory($articles)
+    {
+        $categories = array();
+        foreach ($articles as $article) {
+            $category = $article->category;
+            if (!isset($categories[$category->id])) {
+                $categories[$category->id] = array(
+                    'titel'    => $category->titel,
+                    'articles' => array(),
+                );
+            }
+            $categories[$category->id]['articles'][] = $article;
+        }
+        return $categories;
     }
 }

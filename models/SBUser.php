@@ -1,6 +1,19 @@
 <?php
 class SBUser extends User
 {
+    public static function configure($config = array())
+    {
+        $config['has_many']['articles'] = array(
+            'class_name'  => 'SBArticle',
+            'assoc_func' => 'findValidByUserId',
+            'assoc_foreign_key' => 'user_id_id',
+            'foreign_key' => 'user_id',
+            'on_delete'   => 'delete',
+        );
+
+        parent::configure($config);
+    }
+    
     public static function Get($id = null)
     {
         return new self($id ?: $GLOBALS['user']->id);

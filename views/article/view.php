@@ -11,7 +11,7 @@
                                   )),
                                   array('data-dialog' => '')) ?>
     <? if ($blame_enabled): ?>
-        <?= Studip\LinkButton::create(_('Melden'),
+        <?= Studip\LinkButton::create(_('Verstoß melden'),
                                       $controller->url_for('article/blame/' . $article->id),
                                       array('data-dialog' => '')) ?>
     <? endif; ?>

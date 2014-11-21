@@ -3,7 +3,8 @@ class CategoryController extends SchwarzesBrettController
 {
     public function before_filter(&$action, &$args)
     {
-        if ($action === 'view' && empty(array_filter($args))) {
+        $tmp_args = array_filter($args);
+        if ($action === 'view' && empty($tmp_args)) {
             $action = 'list';
         }
         

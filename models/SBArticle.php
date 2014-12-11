@@ -6,7 +6,7 @@ class SBArticle extends SimpleORMap
         $config['db_table'] = 'sb_artikel';
         $config['has_many']['visits'] = array(
             'class_name'  => 'SBVisit',
-            'foreign_key' => 'object_id',
+            'assoc_foreign_key' => 'object_id',
             'on_delete'   => 'delete',
         );
         $config['belongs_to']['category'] = array(

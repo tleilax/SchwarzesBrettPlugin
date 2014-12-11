@@ -55,7 +55,7 @@
                                       array('formaction' => $controller->url_for('admin/blacklist/remove/' . $user->id))) ?>
                 </td>
             </tr>
-        <? endforeach ?>
+        <? endforeach; ?>
         </tbody>
         <tfoot>
             <tr>
@@ -67,4 +67,4 @@
         </tfoot>
     </table>
 </form>
-<? endif ?>
+<? endif; ?>

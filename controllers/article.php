@@ -52,6 +52,7 @@ class ArticleController extends SchwarzesBrettController
             $article->visible      = Request::int('visible', 0);
             $article->publishable  = Request::int('publishable', 1);
             $article->user_id      = $article->user_id ?: $GLOBALS['user']->id;
+            $article->expires      = time() + Config::get()->BULLETIN_BOARD_DURATION * 24 * 60 * 60;
             $article->store();
         
             $message = $id === null

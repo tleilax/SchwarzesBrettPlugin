@@ -1,6 +1,8 @@
 <?php
 class RssController extends SchwarzesBrettController
 {
+    protected $allow_nobody = true;
+
     public function before_filter(&$action, &$args)
     {
         if (!method_exists($this, $action . '_action')) {

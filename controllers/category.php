@@ -7,14 +7,12 @@ class CategoryController extends SchwarzesBrettController
         if ($action === 'view' && empty($tmp_args)) {
             $action = 'list';
         }
-        
+
         parent::before_filter($action, $args);
 
         if (SBUser::Get()->isBlacklisted()) {
             PageLayout::postMessage(MessageBox::info(_('Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')));
         }
-
-        Navigation::activateItem('/schwarzesbrettplugin/show/all');
     }
 
     public function index_action($category_id = null)

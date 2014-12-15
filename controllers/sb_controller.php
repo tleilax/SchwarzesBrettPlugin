@@ -1,11 +1,16 @@
 <?php
 class SchwarzesBrettController extends StudipController
 {
+    protected $allow_nobody = false;
     protected $temp_storage;
 
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
+
+        if (!$this->allow_nobody) {
+            $GLOBALS['perm']->check('user');
+        }
 
         if (Request::isXhr()) {
             $this->response->add_header('Content-Type', 'text/html;charset=windows-1252');

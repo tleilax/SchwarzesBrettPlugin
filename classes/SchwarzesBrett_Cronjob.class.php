@@ -13,12 +13,12 @@ class SchwarzesBrettCronjob extends CronJob
 
     public function setUp()
     {
-        require 'Artikel.class.php';
+        require __DIR__ . '/../models/SBArticle.php';
     }
 
     public function execute($last_result, $parameters = array())
     {
-        $articles = SBArticles::findBySQL('expired < UNIX_TIMESTAMP()');
+        $articles = SBArticle::findBySQL('expires < UNIX_TIMESTAMP()');
 
         foreach ($articles as $article) {
             $article->delete();

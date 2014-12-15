@@ -13,6 +13,8 @@ class SchwarzesBrettController extends StudipController
             $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
         }
 
+        Navigation::activateItem('/schwarzesbrettplugin/show');
+
         // Setup mandatory variables
         $config = Config::get();
         $this->rss_enabled   = (bool)($config->BULLETIN_BOARD_ENABLE_RSS ?: false);
@@ -119,7 +121,7 @@ class SchwarzesBrettController extends StudipController
         if (!SBUser::get()->isBlacklisted()) {
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
             $actions->addLink(_('Neue Anzeige erstellen'),
-                              $this->url_for('article/create'),
+                              $this->url_for('article/create/' . ($category_id ?: '')),
                               $this->dispatcher->plugin->getPluginURL() . '/assets/billboard-add-blue-16.png')->asDialog();
         }
         if ($this->is_admin) {

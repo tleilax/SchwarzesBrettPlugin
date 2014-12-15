@@ -14,7 +14,7 @@
             </th>
         </tr>
     <? foreach ($category['articles'] as $article): ?>
-        <?= $this->render_partial('article-tr', compact('article')) ?>
+        <?= $this->render_partial('article-tr', compact('article') + array('return_to' => $controller->url_for('article/own'))) ?>
     <? endforeach; ?>
     </tbody>
 <? endforeach; ?>

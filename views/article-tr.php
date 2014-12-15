@@ -15,7 +15,7 @@
         </a>
     </td>
     <td class="actions">
-    <? if ($article->user->id !== $GLOBALS['user']->id): ?>
+    <? if ($article->user_id !== $GLOBALS['user']->id): ?>
         <a href="<?= URLHelper::getURL('dispatch.php/messages/write', array(
                               'rec_uname'       => $article->user->username,
                               'default_subject' => 'Re: ' . $article->titel,
@@ -29,11 +29,11 @@
             </a>
         <? endif; ?>
     <? endif; ?>
-    <? if ($article->user->id === $GLOBALS['user']->id || $is_admin): ?>
+    <? if ($article->user_id === $GLOBALS['user']->id || $is_admin): ?>
         <a href="<?= $controller->url_for('article/edit/' . $article->id) ?>" data-dialog>
             <?= Assets::img('icons/16/blue/edit.png', tooltip2(_('Anzeige bearbeiten'))) ?>
         </a>
-        <a href="<?= $controller->url_for('article/delete/' . $article->id) ?>" data-confirm="<?= _('Wollen Sie diese Anzeige wirklich löschen?') ?>">
+        <a href="<?= $controller->url_for('article/delete/' . $article->id, $return_to ? compact('return_to') : array()) ?>" data-confirm="<?= _('Wollen Sie diese Anzeige wirklich löschen?') ?>">
             <?= Assets::img('icons/16/blue/trash.png', tooltip2(_('Anzeige löschen'))) ?>
         </a>
     <? endif; ?>

@@ -11,19 +11,26 @@ class ArticleController extends SchwarzesBrettController
 
     public function own_action()
     {
+        try {
+            Navigation::activateItem('/schwarzesbrettplugin/show/own');
+        } catch (Exception $e) {
+            $this->redirect('category/view');
+            return;
+        }
+
         PageLayout::setTitle(_('Meine Anzeigen'));
-        Navigation::activateItem('/schwarzesbrettplugin/show/own');
 
         $articles = SBUser::get()->articles;
         $this->categories = SBArticle::groupByCategory($articles);
     }
     
-    public function create_action()
+    public function create_action($category_id = null)
     {
         PageLayout::setTitle(_('Anzeige erstellen'));
         
-        $this->article    = new SBArticle();
-        $this->categories = $this->getCategories();
+        $this->article           = new SBArticle();
+        $this->article->thema_id = $category_id;
+        $this->categories        = $this->getCategories();
         
         $this->render_action('edit');
     }
@@ -61,7 +68,7 @@ class ArticleController extends SchwarzesBrettController
             PageLayout::postMessage(MessageBox::success($message));
         }
 
-        $this->redirect(Request::get('return_to', 'category') ?: 'category/view/' . $article->thema_id);
+        $this->redirect(Request::get('return_to') ?: $this->url_for('category/view/' . $article->thema_id));
     }
     
     private function getCategories()
@@ -72,7 +79,7 @@ class ArticleController extends SchwarzesBrettController
     public function delete_action($id)
     {
         $article = SBArticle::find($id);
-        if (!$this->is_admin || !$article->user->id === $GLOBALS['user']->id) {
+        if (!$this->is_admin && $article->user_id !== $GLOBALS['user']->id) {
             throw new AccessDeniedException(_('Sie dürfen diese Anzeige nicht löschen.'));
         }
 
@@ -80,7 +87,7 @@ class ArticleController extends SchwarzesBrettController
 
         PageLayout::postMessage(MessageBox::success(_('Die Anzeige wurde gelöscht.')));
 
-        $this->redirect(Request::get('return_to', 'category'));
+        $this->redirect(Request::get('return_to') ?: $this->url_for('category'));
     }
 
     public function blame_action($id)

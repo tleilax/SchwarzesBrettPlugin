@@ -13,7 +13,10 @@ class SchwarzesBrettController extends StudipController
             $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
         }
 
-        Navigation::activateItem('/schwarzesbrettplugin/show');
+        try {
+            Navigation::activateItem('/schwarzesbrettplugin/show/all');
+        } catch (Exception $e) {
+        }
 
         // Setup mandatory variables
         $config = Config::get();

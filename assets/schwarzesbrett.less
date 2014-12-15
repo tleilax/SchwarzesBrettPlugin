@@ -18,6 +18,10 @@
         .flex-justify-content(space-between);
         border-bottom: 1px solid #ccc;
         padding-top: 1px;
+
+        break-inside: avoid-column;
+        -webkit-column-break-inside: avoid;
+
         &:hover {
             background-color: fadeout(@light-gray-color, 80%);
         }

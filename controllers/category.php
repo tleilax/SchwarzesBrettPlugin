@@ -19,7 +19,8 @@ class CategoryController extends SchwarzesBrettController
 
     public function index_action($category_id = null)
     {
-        $this->redirect('category/view/' . $category_id);
+        $url = $this->url_for('category/view/' . $category_id);
+        $this->redirect($url);
     }
 
     public function list_action()

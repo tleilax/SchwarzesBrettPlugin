@@ -104,7 +104,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
     {
         $dispatcher = new Trails_Dispatcher(
             $this->getPluginPath(),
-            rtrim(PluginEngine::getLink($this, array(), null), '/'),
+            rtrim(PluginEngine::getLink($this, array('cid' => null), null), '/'),
             'category'
         );
         $dispatcher->plugin = $this;

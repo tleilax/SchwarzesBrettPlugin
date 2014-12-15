@@ -17,9 +17,10 @@ class RssController extends SchwarzesBrettController
         $this->set_layout(null);
     }
 
-    public function index_action($category_id = null)
+    public function index_action($category_id = null, $limit = 50)
     {
         $this->articles = SBArticle::findPublishable($category_id);
+        $this->articles = array_slice($this->articles, 0, $limit);
 
         $this->title       = _('Stud.IP Schwarzes Brett');
         $this->description = '';
@@ -31,6 +32,6 @@ class RssController extends SchwarzesBrettController
             $this->link         = $this->absolute_url_for('category/' . $category->id);
         }
 
-        $this->response->add_header('Content-Type', 'application/rss+xml;charset=utf-8');
+        $this->set_content_type('application/rss+xml;charset=utf-8');
     }
 }

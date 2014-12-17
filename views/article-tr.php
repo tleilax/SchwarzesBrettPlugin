@@ -9,7 +9,7 @@
     </td>
     <td><?= $article->views ?></td>
     <td>
-        <a href="<?= URLHelper::getLink('dispatch.php?username=' . $article->user->username) ?>">
+        <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . $article->user->username) ?>">
             <?= Avatar::getAvatar($article->user->id)->getImageTag(Avatar::SMALL) ?>
             <?= $article->user->getFullname() ?>
         </a>

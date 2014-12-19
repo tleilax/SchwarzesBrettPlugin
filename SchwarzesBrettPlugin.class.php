@@ -102,6 +102,10 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
     public function perform($unconsumed_path)
     {
+        if ($unconsumed_path === 'show/all') {
+            $unconsumed_path = 'category/list';
+        }
+        
         $dispatcher = new Trails_Dispatcher(
             $this->getPluginPath(),
             rtrim(PluginEngine::getLink($this, array('cid' => null), null), '/'),

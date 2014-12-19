@@ -7,6 +7,11 @@ class CategoryController extends SchwarzesBrettController
         if ($action === 'view' && empty($tmp_args)) {
             $action = 'list';
         }
+        
+        if (!method_exists($this, $action . '_action')) {
+            array_unshift($args, $action);
+            $action = 'view';
+        }
 
         parent::before_filter($action, $args);
 

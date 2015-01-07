@@ -55,7 +55,7 @@ class ArticleController extends SchwarzesBrettController
 
             $article->thema_id     = Request::option('thema_id');
             $article->titel        = Request::get('titel');
-            $article->beschreibung = Request::get('beschreibung');
+            $article->beschreibung = transformBeforeSave(Request::get('beschreibung'));
             $article->visible      = Request::int('visible', 0);
             $article->publishable  = Request::int('publishable', 1);
             $article->user_id      = $article->user_id ?: $GLOBALS['user']->id;

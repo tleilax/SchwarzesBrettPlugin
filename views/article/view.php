@@ -15,7 +15,15 @@
         </span>
     </header>
 
-    <p><?= formatReady($article->beschreibung) ?></p>
+    <section>
+        <?= formatReady($article->beschreibung) ?>
+    <? if (count(OpenGraphURL::$tempURLStorage)): 
+        $og = new OpenGraphURL(OpenGraphURL::$tempURLStorage[0]);
+        if (!$og->isNew()): ?>
+            <?= $og->render() ?>
+        <? endif;  ?>
+    <? endif; ?>
+    </section>
 
     <footer class="button-group" data-dialog-button>
     <? if ($article->user->id !== $GLOBALS['user']->id): ?>

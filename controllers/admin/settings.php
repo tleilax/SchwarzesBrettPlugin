@@ -12,7 +12,8 @@ class Admin_SettingsController extends SchwarzesBrettController
     {
         Navigation::activateItem('/schwarzesbrettplugin/root/settings');
 
-        $this->options = $this->getOptions();
+        $this->options            = $this->getOptions();
+        $this->visible_for_nobody = $this->getVisibility('Nobody');
     }
 
     public function store_action()
@@ -90,5 +91,18 @@ class Admin_SettingsController extends SchwarzesBrettController
         }
 
         return $options;
+    }
+    
+    protected function getVisibility($requested_role)
+    {
+        $plugin_id = $this->dispatcher->plugin->getPluginId();
+        
+        $role_persistence = new RolePersistence();
+        $plugin_roles     = $role_persistence->getAssignedPluginRoles($plugin_id);
+        $role_test        = array_filter($plugin_roles, function ($role) use ($requested_role) {
+            return $role->getRolename() === $requested_role;
+        });
+        
+        return count($role_test) > 0;
     }
 }

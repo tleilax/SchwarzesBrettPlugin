@@ -49,4 +49,6 @@
     </table>
 </form>
 
-<?= MessageBox::info(_('Hinweise'), array('Bei Aktivierung der RSS Feeds muss das Plugin für nobody freigegeben werden, damit die Feeds ohne Login abgerufen werden können.')) ?>
+<? if (!$visible_for_nobody): ?>
+    <?= MessageBox::info(_('Hinweise'), array(_('Bei Aktivierung der RSS Feeds muss das Plugin für nobody freigegeben werden, damit die Feeds ohne Login abgerufen werden können.'))) ?>
+<? endif; ?>

@@ -28,6 +28,8 @@ class CategoryController extends SchwarzesBrettController
 
     public function list_action()
     {
+        Navigation::activateItem('/schwarzesbrettplugin/show/all');
+
         $this->categories = $this->is_admin
                           ? SBCategory::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC')
                           : SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
@@ -38,6 +40,8 @@ class CategoryController extends SchwarzesBrettController
 
     public function view_action($category_id)
     {
+        Navigation::activateItem('/schwarzesbrettplugin/show/all');
+
         $this->inject_rss($category_id);
 
         $this->category = SBCategory::find($category_id);

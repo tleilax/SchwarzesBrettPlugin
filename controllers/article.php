@@ -128,7 +128,7 @@ class ArticleController extends SchwarzesBrettController
     {
         $GLOBALS['perm']->check('root');
 
-        $articles = SBArticle::findBySQL('expired < UNIX_TIMESTAMP()');
+        $articles = SBArticle::findBySQL('expires < UNIX_TIMESTAMP()');
         foreach ($articles as $article) {
             $article->delete();
         }

@@ -17,11 +17,14 @@
 
     <section>
         <?= formatReady($article->beschreibung) ?>
-    <? if (count(OpenGraphURL::$tempURLStorage)): 
-        $og = new OpenGraphURL(OpenGraphURL::$tempURLStorage[0]);
-        if (!$og->isNew()): ?>
-            <?= $og->render() ?>
-        <? endif;  ?>
+    <? if (count(OpenGraphURL::$tempURLStorage)): ?>
+        <div class="opengraph-area">
+        <? foreach (OpenGraphURL::$tempURLStorage as $url):
+            $og = new OpenGraphURL($url);
+            if (!$og->isNew()) {
+                echo $og->render();
+            }
+        endforeach; ?>
     <? endif; ?>
     </section>
 

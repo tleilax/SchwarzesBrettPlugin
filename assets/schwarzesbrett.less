@@ -69,13 +69,13 @@
         .flex-align-items(center);
         .flex-direction-row();
         .flex-justify-content(space-between);
-        
+
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
         height: @info-size;
-        
+
         background: @base-color-20;
         border-top: 1px solid @brand-color-darker;
         margin: 0 1em;
@@ -138,6 +138,46 @@
             li > *:last-child {
                 display: none;
             }
+        }
+    }
+}
+
+// Open graph
+.opengraph-area {
+    margin-bottom: 5px;
+    
+    .switcher {
+        list-style: none;
+        margin: 0 auto -10px;
+        padding: 0;
+        text-align: right;
+        width: 720px;
+        z-index: 10;
+
+        li {
+            border-top: thin solid lightgrey;
+            display: inline-block;
+            padding: 5px 0;
+            
+            &:first-child {
+                border-left: thin solid lightgrey;
+                padding-left: 5px;
+            }
+            &:last-child {
+                border-right: thin solid lightgrey;
+                padding-right: 5px;
+            }
+        }
+        button[disabled] {
+            opacity: 0.5;
+        }
+    }
+
+    .opengraph {
+        display: none;
+        z-index: 11;
+        &:first-of-type {
+            display: block;
         }
     }
 }

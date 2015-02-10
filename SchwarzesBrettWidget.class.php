@@ -6,11 +6,8 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
         parent::__construct();
         
         if (Request::isXhr()) {
-            Header('Content-Type: text/html;charset=windows-1252');
+            header('Content-Type: text/html;charset=windows-1252');
         }
-
-        $this->addStylesheet('assets/schwarzesbrett.less');
-        PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
     }
     
     public function getPluginName()
@@ -20,6 +17,9 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
 
     public function getPortalTemplate()
     {
+        $this->addStylesheet('assets/schwarzesbrett.less');
+        PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
+
         $widget = $GLOBALS['template_factory']->open('shared/string');
         $widget->content = $this->getContent();
         $widget->icons   = $this->getNavigation();

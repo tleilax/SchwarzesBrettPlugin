@@ -68,7 +68,7 @@ class ArticleController extends SchwarzesBrettController
             PageLayout::postMessage(MessageBox::success($message));
         }
 
-        $this->redirect(Request::get('return_to') ?: $this->url_for('category/view/' . $article->thema_id));
+        $this->redirect(Request::get('return_to') ?: $this->url_for('category/view/' . $article->thema_id . '#sb-article-' . $article->id));
     }
     
     private function getCategories()

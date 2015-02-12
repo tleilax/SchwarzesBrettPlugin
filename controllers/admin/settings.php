@@ -37,7 +37,7 @@ class Admin_SettingsController extends SchwarzesBrettController
             PageLayout::postMessage(MessageBox::success(_('Die Einstellungen wurden gespeichert.')));
         }
 
-        $this->redirect('settings');
+        $this->redirect('admin/settings');
     }
 
     protected function getConfig($key, $type)
@@ -82,6 +82,15 @@ class Admin_SettingsController extends SchwarzesBrettController
 
         $options['BULLETIN_BOARD_ENABLE_RSS'] = array(
             'key'  => 'enableRss',
+            'type' => 'checkbox',
+        );
+
+        $options['BULLETIN_BOARD_MEDIA_PROXY'] = array(
+            'key'  => 'enableMediaProxy',
+            'type' => 'checkbox',
+        );
+        $options['BULLETIN_BOARD_MEDIA_PROXY_CACHED'] = array(
+            'key'  => 'cacheMediaProxy',
             'type' => 'checkbox',
         );
         

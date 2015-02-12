@@ -1,4 +1,4 @@
-<tr class="<? if (!$article->visible) echo 'hidden'; ?> <? if ($article->new) echo 'new-article'; ?>">
+<tr class="<? if (!$article->visible) echo 'hidden'; ?> <? if ($article->new) echo 'new-article'; ?>" id="sb-article-<?= $article->id ?>">
     <td>
         <a href="<?= $controller->url_for('article/view/' . $article->id) ?>" data-dialog>
             <?= htmlReady($article->titel) ?>

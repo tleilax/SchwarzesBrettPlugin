@@ -20,7 +20,7 @@
     <? if (count(OpenGraphURL::$tempURLStorage)): ?>
         <div class="opengraph-area">
         <? foreach (OpenGraphURL::$tempURLStorage as $url):
-            $og = new OpenGraphURL($url);
+            $og = new SBOpenGraphURL($url);
             if (!$og->isNew()) {
                 echo $og->render();
             }

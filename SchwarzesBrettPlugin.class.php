@@ -36,7 +36,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
             $this->buildMenu();
         }
     }
-    
+
     protected function buildMenu()
     {
         // Hauptmenüpunkt
@@ -47,7 +47,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         // Untermenü
         $nav = new Navigation(_('Schwarzes Brett'), PluginEngine::getURL($this, array(), 'category'));
         Navigation::addItem('/schwarzesbrettplugin/show', $nav);
-        
+
         $nav = new Navigation(_('Übersicht'), PluginEngine::getURL($this, array(), 'category'));
         Navigation::addItem('/schwarzesbrettplugin/show/all', $nav);
         if (count(SBUser::Get()->articles) > 0) {
@@ -59,7 +59,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         if ($GLOBALS['perm']->have_perm('root')) {
             $nav = new Navigation(_('Administration'), PluginEngine::getURL($this, array(), 'admin/settings'));
             Navigation::addItem('/schwarzesbrettplugin/root', $nav);
-            
+
             $nav = new Navigation(_('Grundeinstellungen'), PluginEngine::getURL($this, array(), 'admin/settings'));
             Navigation::addItem('/schwarzesbrettplugin/root/settings', $nav);
 
@@ -102,10 +102,16 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
     public function perform($unconsumed_path)
     {
+        URLHelper::removeLinkParam('cid');
+
+        if (Config::get()->BULLETIN_BOARD_MEDIA_PROXY) {
+            SBOpenGraphURL::setProxyURL(PluginEngine::getURL($this, array(), 'proxy'));
+        }
+
         if ($unconsumed_path === 'show/all') {
             $unconsumed_path = 'category/list';
         }
-        
+
         $dispatcher = new Trails_Dispatcher(
             $this->getPluginPath(),
             rtrim(PluginEngine::getLink($this, array('cid' => null), null), '/'),
@@ -125,7 +131,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         } else {
             $params = array();
         }
-        
+
         return PluginEngine::getURL($this, $params, join('/', $args));
     }
 }

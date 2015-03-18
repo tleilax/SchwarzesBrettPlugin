@@ -16,7 +16,7 @@ class CategoryController extends SchwarzesBrettController
         parent::before_filter($action, $args);
 
         if (SBUser::Get()->isBlacklisted()) {
-            PageLayout::postMessage(MessageBox::info(_('Sie wurden gesperrt und kÃ¶nnen daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')));
+            PageLayout::postMessage(MessageBox::info(_('Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')));
         }
     }
 
@@ -129,7 +129,7 @@ class CategoryController extends SchwarzesBrettController
         $count = count($category->articles);
         $category->delete();
 
-        $message = sprintf(_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelÃ¶scht.'),
+        $message = sprintf(_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelöscht.'),
                            $title, $count);
         PageLayout::postMessage(MessageBox::success($message));
 

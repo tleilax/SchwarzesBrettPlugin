@@ -134,4 +134,34 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
         return PluginEngine::getURL($this, $params, join('/', $args));
     }
+
+    public static function onEnable($plugin_id)
+    {
+        $manager = PluginManager::getInstance();
+
+        $plugin = $manager->getPlugin('RestipPlugin');
+        if (!$plugin) {
+            return;
+        }
+
+        $info = $manager->getPluginInfo('SchwarzesBrettAPI');
+        if ($info !== null) {
+            return;
+        }
+
+        $info = $manager->getPluginInfo('SchwarzesBrettPlugin');
+        $manager->registerPlugin('SchwarzesBrettAPI', 'SchwarzesBrettAPI', $info['path'], $plugin_id);
+    }
+    
+    public static function onDisable($plugin_id)
+    {
+        $manager = PluginManager::getInstance();
+
+        $info = $manager->getPluginInfo('SchwarzesBrettAPI');
+        if ($info === null || !$info['enabled']) {
+            return;
+        }
+
+        $manager->setPluginEnabled($info['id'], false);
+    }
 }

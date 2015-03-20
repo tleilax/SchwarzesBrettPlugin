@@ -47,17 +47,49 @@ class SBArticle extends SimpleORMap
 
         parent::configure($config);
     }
-    
+
+    public static function countNew($category_id = null)
+    {
+        $cache_hash = '/schwarzes-brett/counts/new/' . $GLOBALS['user']->id;
+        if ($category_id) {
+            $cache_hash .= '/' . $category_id;
+        }
+
+        $cache = StudipCacheFactory::getCache();
+        $count = $cache->read($cache_hash);
+        if ($count === false) {
+            $query = "SELECT COUNT(*)
+                      FROM sb_artikel AS a
+                      LEFT JOIN sb_visits AS v0 ON v0.object_id = a.artikel_id AND v0.user_id = :user_id
+                      LEFT JOIN sb_visits AS v1 ON v1.object_id = a.thema_id AND v1.user_id = :user_id
+                      WHERE expires > UNIX_TIMESTAMP()
+                         AND visible = 1
+                         AND a.user_id != :user_id
+                         AND v0.object_id IS NULL
+                         AND (v1.last_visitdate IS NULL OR a.mkdate > v1.last_visitdate)
+                         AND thema_id = IFNULL(:category_id, thema_id)";
+            $statement = DBManager::get()->prepare($query);
+            $statement->bindValue(':user_id', $GLOBALS['user']->id);
+            $statement->bindValue(':category_id', $category_id);
+            $statement->execute();
+            $count = $statement->fetchColumn();
+
+            $cache->write($cache_hash, $count ?: 0, 60); // Store in cache for a minute
+        }
+
+        return $count;
+    }
+
     public static function findValidByCategoryId($category_id)
     {
         return self::findBySQL("thema_id = :category_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id));
     }
-    
+
     public static function findValidByUserId($user_id)
     {
         return self::findBySQL("user_id = :user_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':user_id' => $user_id));
     }
-    
+
     public static function findVisibleByCategoryId($category_id)
     {
         return self::findBySQL("thema_id = :category_id AND (visible = 1 OR user_id = :user_id) AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));
@@ -65,7 +97,7 @@ class SBArticle extends SimpleORMap
 
     public static function findNewByCategoryId($category_id)
     {
-        $visit = SBVisit::findOneBySQL("object_id = :category_id AND user_id = :user_id AND type = 'thema'", 
+        $visit = SBVisit::findOneBySQL("object_id = :category_id AND user_id = :user_id AND type = 'thema'",
                                        array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));
         $last_visit = $visit
                     ? $visit->last_visitdate
@@ -94,7 +126,7 @@ class SBArticle extends SimpleORMap
     {
         $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC LIMIT ' . (int)$limit;
         $params = array();
-        
+
         if ($categories !== false && !empty($categories)) {
             $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() AND thema_id IN (:categories) ORDER BY mkdate DESC LIMIT ' . (int)$limit;
             $params = array(':categories' => $categories);
@@ -102,7 +134,7 @@ class SBArticle extends SimpleORMap
 
         return self::findBySQL($query, $params);
     }
-    
+
     public static function findPublishable($category_id = null)
     {
         $query = "SELECT a.artikel_id
@@ -118,12 +150,12 @@ class SBArticle extends SimpleORMap
         $statement->bindValue(':category_id', $category_id);
         $statement->bindValue(':expire', Config::get()->BULLETIN_BOARD_DURATION * 24 * 60 * 60);
         $statement->execute();
-        
+
         $ids = $statement->fetchAll(PDO::FETCH_COLUMN);
-        
+
         return self::findMany($ids, "ORDER BY mkdate DESC");
     }
-    
+
     public function visit()
     {
         $visit = SBVisit::find(array($this->id, $GLOBALS['user']->id));
@@ -136,7 +168,7 @@ class SBArticle extends SimpleORMap
         $visit->last_visitdate = time();
         $visit->store();
     }
-    
+
     public function findDuplicates()
     {
         $query = "SELECT DISTINCT artikel_ids FROM (
@@ -146,7 +178,7 @@ class SBArticle extends SimpleORMap
                       GROUP BY titel
                       HAVING COUNT(*) > 1 AND COUNT(DISTINCT user_id) = 1
 
-                      UNION 
+                      UNION
 
                       SELECT GROUP_CONCAT(artikel_id) AS artikel_ids, COUNT(*) AS dupe_count
                       FROM sb_artikel
@@ -163,11 +195,11 @@ class SBArticle extends SimpleORMap
 
             $articles = SBArticle::findMany($ids, 'ORDER BY mkdate DESC');
             $user_id  = $articles[0]->user_id;
-            
+
             if (!isset($duplicates[$user_id])) {
                 $duplicates[$user_id] = array();
             }
-            
+
             foreach ($articles as $article) {
                 if (!isset($duplicates[$user_id][$article->id])) {
                     $duplicates[$user_id][$article->id] = $article;
@@ -177,10 +209,10 @@ class SBArticle extends SimpleORMap
         foreach ($duplicates as $user_id => $articles) {
             $duplicates[$user_id] = array_values($articles);
         }
-        
+
         return $duplicates;
     }
-    
+
     public static function search($needle)
     {
         $query = "SELECT artikel_id
@@ -191,10 +223,10 @@ class SBArticle extends SimpleORMap
         $statement->execute();
 
         $article_ids = $statement->fetchAll(PDO::FETCH_COLUMN);
-        
+
         return SBArticle::findMany($article_ids, 'ORDER BY mkdate DESC');
     }
-    
+
     public static function groupByCategory($articles)
     {
         $categories = array();

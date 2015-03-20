@@ -42,6 +42,9 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         // Hauptmenüpunkt
         $nav = new Navigation(_('Schwarzes Brett'), PluginEngine::getURL($this, array(), 'category'));
         $nav->setImage('icons/28/lightblue/billboard.png', tooltip2(_('Schwarzes Brett')));
+        if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
+            $nav->setBadgeNumber(SBArticle::countNew());
+        }
         Navigation::addItem('/schwarzesbrettplugin', $nav);
 
         // Untermenü

@@ -64,6 +64,11 @@ class Admin_SettingsController extends SchwarzesBrettController
             'type' => 'number',
         );
 
+        $options['BULLETIN_BOARD_DISPLAY_BADGE'] = array(
+            'key'  => 'displayBadge',
+            'type' => 'checkbox',
+        );
+
         $options['BULLETIN_BOARD_ANNOUNCEMENTS'] = array(
             'key'  => 'announcements',
             'type' => 'number',

@@ -93,7 +93,6 @@ class CategoryController extends SchwarzesBrettController
         PageLayout::setTitle(_('Thema bearbeiten'));
 
         $this->category = SBCategory::find($id);
-        
     }
 
     public function store_action($id = null)
@@ -105,8 +104,8 @@ class CategoryController extends SchwarzesBrettController
                       ? SBCategory::find($id)
                       : new SBCategory();
 
-            $category->titel        = Request::get('titel');
-            $category->beschreibung = Request::get('beschreibung');
+            $category->titel        = trim(Request::get('titel'));
+            $category->beschreibung = trim(Request::get('beschreibung'));
             $category->perm         = Request::option('thema_perm');
             $category->visible      = Request::int('visible', 0);
             $category->publishable  = Request::int('publishable', 0);

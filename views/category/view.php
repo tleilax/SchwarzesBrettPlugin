@@ -3,7 +3,7 @@
         <div class="caption-container">
             <div class="caption-content">
                 <?= htmlReady($category->titel) ?>
-            <? if ($category->beschreibung): ?>
+            <? if (trim($category->beschreibung)): ?>
                 <br>
                 <small><?= formatReady($category->beschreibung) ?></small>
             <? endif; ?>

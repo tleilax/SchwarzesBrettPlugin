@@ -18,7 +18,7 @@
                     <label for="description"><?= _('Beschreibung') ?></label>
                 </td>
                 <td>
-                    <textarea required name="beschreibung" id="description"><?= htmlReady($category->beschreibung) ?></textarea>
+                    <textarea name="beschreibung" id="description"><?= htmlReady($category->beschreibung) ?></textarea>
                 </td>
             </tr>
             <tr>

@@ -7,7 +7,7 @@ class CategoryController extends SchwarzesBrettController
         if ($action === 'view' && empty($tmp_args)) {
             $action = 'list';
         }
-        
+
         if (!method_exists($this, $action . '_action')) {
             array_unshift($args, $action);
             $action = 'view';
@@ -49,7 +49,7 @@ class CategoryController extends SchwarzesBrettController
                         ? $this->category->articles
                         : $this->category->visible_articles;
     }
-    
+
     public function choose_action()
     {
         $id = Request::option('id');
@@ -59,11 +59,11 @@ class CategoryController extends SchwarzesBrettController
             $this->redirect('category/view/' . $id);
         }
     }
-    
+
     public function visit_action($id = null)
     {
         SBCategory::visitAll($id);
-        
+
         if ($id) {
             $category = SBCategory::find($id);
             $message = sprintf(_('Thema "%s" wurde als besucht markiert.'), $category->titel);
@@ -84,7 +84,7 @@ class CategoryController extends SchwarzesBrettController
         PageLayout::setTitle(_('Thema erstellen'));
 
         $this->category = new SBCategory();
-        
+
         $this->render_action('edit');
     }
 
@@ -98,7 +98,7 @@ class CategoryController extends SchwarzesBrettController
     public function store_action($id = null)
     {
         CSRFProtection::verifyUnsafeRequest();
-        
+
         if (Request::isPost() && check_ticket(Request::get('studip_ticket'))) {
             $category = $id
                       ? SBCategory::find($id)
@@ -111,7 +111,7 @@ class CategoryController extends SchwarzesBrettController
             $category->publishable  = Request::int('publishable', 0);
             $category->user_id      = $category->user_id ?: $GLOBALS['user']->id;
             $category->store();
-        
+
             $message = $id === null
                      ? _('Das Thema wurde angelegt.')
                      : _('Das Thema wurde gespeichert.');
@@ -120,7 +120,7 @@ class CategoryController extends SchwarzesBrettController
 
         $this->redirect('category/view/' . $id);
     }
-    
+
     public function delete_action($id)
     {
         $category = SBCategory::find($id);
@@ -133,5 +133,50 @@ class CategoryController extends SchwarzesBrettController
         PageLayout::postMessage(MessageBox::success($message));
 
         $this->redirect('category/list');
+    }
+
+    public function bulk_action($id)
+    {
+        if (!Request::isPost()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $ids = Request::optionArray('ids');
+
+        if (Request::submitted('move')) {
+            PageLayout::setTitle(_('Neue Kategorie'));
+
+            $this->ids         = $ids;
+            $this->category_id = $id;
+            $this->categories  = SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci');
+            $this->render_template('category/bulk-move.php', $this->layout);
+        } elseif (Request::submitted('moved')) {
+            $category_id = Request::option('category_id');
+            
+            if ($category_id !== $id) {
+                $articles = SBArticle::findMany($ids);
+                foreach ($articles as $article) {
+                    $article->thema_id = $category_id;
+                    $article->store();
+                }
+
+                $message = sprintf(_('%u Artikel wurde(n) verschoben.'), count($ids));
+                PageLayout::postMessage(MessageBox::success($message));
+            }
+
+            $this->redirect('category/view/' . $id);
+        } elseif (Request::submitted('delete')) {
+            $deleted = 0;
+
+            $articles = SBArticle::findMany($ids);
+            foreach ($articles as $article) {
+                $deleted += (int)($article->delete() !== false);
+            }
+
+            $message = sprintf(_('%u Artikel wurde(n) gelöscht.'), $deleted);
+            PageLayout::postMessage(MessageBox::success($message));
+
+            $this->redirect('category/view/' . $id);
+        }
     }
 }

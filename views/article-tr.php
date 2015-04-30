@@ -1,4 +1,9 @@
 <tr class="<? if (!$article->visible) echo 'hidden'; ?> <? if ($article->new) echo 'new-article'; ?>" id="sb-article-<?= $article->id ?>">
+<? if (!empty($checkbox)): ?>
+    <td>
+        <input type="checkbox" name="ids[]" value="<?= htmlReady($article->id) ?>">
+    </td>
+<? endif; ?>
     <td>
         <a href="<?= $controller->url_for('article/view/' . $article->id) ?>" data-dialog>
             <?= htmlReady($article->titel) ?>

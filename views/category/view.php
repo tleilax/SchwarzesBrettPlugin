@@ -1,3 +1,6 @@
+<? if ($GLOBALS['user']->perms === 'root'): ?>
+<form action="<?= $controller->url_for('category/bulk/' . $category->id) ?>" method="post">
+<? endif; ?>
 <table class="default sb-category">
     <caption>
         <div class="caption-container">
@@ -17,6 +20,11 @@
     </colgroup>
     <thead>
         <tr>
+        <? if ($GLOBALS['user']->perms === 'root'): ?>
+            <th>
+                <input type="checkbox" data-proxyfor=".sb-category tbody :checkbox" data-activates=".sb-category tfoot button">
+            </th>
+        <? endif; ?>
             <th><?= _('Titel') ?></th>
             <th><?= _('Datum') ?></th>
             <th>
@@ -40,8 +48,29 @@
         </tr>
 <? else: ?>
     <? foreach ($articles as $article): ?>
-        <?= $this->render_partial('article-tr.php', compact('article') + array('return_to' => $controller->url_for('category/view/' . $category->id))) ?>
+        <?= $this->render_partial('article-tr.php', compact('article') + array(
+                'return_to' => $controller->url_for('category/view/' . $category->id),
+                'checkbox'  => $GLOBALS['user']->perms === 'root',
+        )) ?>
     <? endforeach; ?>
 <? endif; ?>
     </tbody>
+<? if ($GLOBALS['user']->perms === 'root'): ?>
+    <tfoot>
+        <tr>
+            <td colspan="6">
+                <?= _('Alle markierten') ?>
+                <?= Studip\Button::create(_('Verschieben'), 'move', array(
+                        'data-dialog' => 'size=auto',
+                )) ?>
+                <?= Studip\Button::create(_('Löschen'), 'delete', array(
+                        'onclick' => "return confirm('" . _('Sollen die Anzeigen wirklich gelöscht werden?') . "');",
+                )) ?>
+            </td>
+        </tr>
+    </tfoot>
+<? endif; ?>
 </table>
+<? if ($GLOBALS['user']->perms === 'root'): ?>
+</form>
+<? endif; ?>

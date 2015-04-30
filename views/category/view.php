@@ -40,7 +40,7 @@
         </tr>
 <? else: ?>
     <? foreach ($articles as $article): ?>
-        <?= $this->render_partial('article-tr.php', compact('article')) ?>
+        <?= $this->render_partial('article-tr.php', compact('article') + array('return_to' => $controller->url_for('category/view/' . $category->id))) ?>
     <? endforeach; ?>
 <? endif; ?>
     </tbody>

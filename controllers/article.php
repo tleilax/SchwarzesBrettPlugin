@@ -6,7 +6,7 @@ class ArticleController extends SchwarzesBrettController
         $this->article = SBArticle::find($id);
         $this->article->visit();
 
-        PageLayout::setTitle($this->article->titel);
+        PageLayout::setTitle($this->article->titel . ' (' . $this->article->category->titel . ')');
     }
 
     public function own_action()

@@ -27,7 +27,7 @@ class SchwarzesBrettController extends StudipController
         $this->newest_limit  = (int)($config->BULLETIN_BOARD_ANNOUNCEMENTS ?: 20);
 
         $this->is_admin = is_object($GLOBALS['perm']) && $GLOBALS['perm']->have_perm('root');
-        
+
         // Setup sidebar
         $this->setup_sidebar(get_class($this), $action, $args);
     }
@@ -45,25 +45,27 @@ class SchwarzesBrettController extends StudipController
     {
         if (Request::isXhr()) {
             $this->response->add_header('X-Dialog-Close', 1);
-            
+
             $messages = PageLayout::getMessages();
             if (!empty($messages)) {
                 $this->response->add_header('X-Messages', json_encode(join('', $messages)));
             }
-            
+
             if (!$this->performed) {
                 $this->render_nothing();
             }
             return;
         }
-        
+
         return parent::redirect($to);
     }
 
     public function absolute_url_for($to)
     {
         $url = call_user_func_array('parent::url_for', func_get_args());
-        return str_replace($GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'], '', $GLOBALS['ABSOLUTE_URI_STUDIP']) . $url;
+        return ($GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] !== '/')
+            ? str_replace($GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'], '', $GLOBALS['ABSOLUTE_URI_STUDIP']) . $url
+            : $GLOBALS['ABSOLUTE_URI_STUDIP'] . $url;
     }
 
     protected function inject_rss($category_id = null)
@@ -94,7 +96,7 @@ class SchwarzesBrettController extends StudipController
             ));
         }
     }
-    
+
     private function setup_sidebar($class, $action, $args)
     {
         $category_id = ($class === 'CategoryController' && $action === 'view' && !empty($args))
@@ -149,20 +151,20 @@ class SchwarzesBrettController extends StudipController
                          $this->url_for('rss/' . $category_id),
                          'icons/16/blue/rss.png');
         Sidebar::get()->addWidget($export);
-        
+
         if ($category_id) {
             $this->temp_storage = $category_id;
             NotificationCenter::addObserver($this, 'addCategorySelector', 'SidebarWillRender');
         }
     }
-    
+
     public function addCategorySelector()
     {
         $selected = $this->temp_storage;
-        
+
         $widget = new SelectWidget(_('Kategorie'), $this->url_for('category/choose'), 'id');
         $widget->setSelection($selected);
-        
+
         $categories = SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
         foreach ($categories as $category) {
             $title = $category->titel;

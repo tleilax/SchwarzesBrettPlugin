@@ -98,6 +98,11 @@ class Admin_SettingsController extends SchwarzesBrettController
             'key'  => 'cacheMediaProxy',
             'type' => 'checkbox',
         );
+
+        $options['BULLETIN_BOARD_RULES'] = array(
+            'key'  => 'rules',
+            'type' => 'textarea',
+        );
         
         foreach ($options as $key => $data) {
             $options[$key]['description'] = $this->getConfig($key, 'description');

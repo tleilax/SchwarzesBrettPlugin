@@ -10,7 +10,7 @@
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
 
-    <table class="default">
+    <table class="default" id="bb-config">
         <thead>
             <tr>
                 <th><?= _('Einstellung') ?></th>
@@ -18,16 +18,28 @@
             </tr>
         </thead>
         <tbody>
-        <? foreach ($options as $key => $option): ?>
+    <? foreach ($options as $key => $option): ?>
+        <? if ($option['type'] === 'textarea'): ?>
+            <tr>
+                <td colspan="2">
+                    <label for="option-<?= md5($key) ?>">
+                        <?= htmlReady($option['description']) ?>
+                    </label><br>
+
+                    <textarea name="<?= htmlReady($option['key']) ?>" class="add_toolbar"><?= htmlReady($option['value']) ?></textarea>
+                </td>
+            </tr>
+        <? else: ?>
             <tr>
                 <td>
                     <label for="option-<?= md5($key) ?>">
-                    <?= htmlReady($option['description']) ?>
+                        <?= htmlReady($option['description']) ?>
+                    </label>
                 </td>
                 <td>
                 <? if ($option['type'] === 'checkbox'): ?>
-                    <input type="hidden" name="<?= $option['key'] ?>" value="0">
-                    <input type="checkbox" name="<?= $option['key'] ?>"
+                    <input type="hidden" name="<?= htmlReady($option['key']) ?>" value="0">
+                    <input type="checkbox" name="<?= htmlReady($option['key']) ?>"
                            id="option-<?= md5($key) ?>" value="1"
                            <? if ((bool)$option['value']) echo 'checked'; ?>
                            <? if ($option['activates']) printf('data-activates="#option-%s"', md5($option['activates'])); ?>>
@@ -38,7 +50,8 @@
                 <? endif; ?>
                 </td>
             </tr>
-        <? endforeach; ?>
+        <? endif; ?>
+    <? endforeach; ?>
         </tbody>
         <tfoot>
             <tr>

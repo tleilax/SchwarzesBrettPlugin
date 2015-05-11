@@ -15,24 +15,4 @@
 </ul>
 <? endif; ?>
 
-<h3>Allgemeine Hinweise:</h3>
-<ul>
-    <li>
-        Eine Anzeige hat zur Zeit eine Laufzeit von <b><?= $expire_days ?> Tagen</b>.
-        Nach Ablauf dieser Frist wird die Anzeige automatisch nicht mehr angezeigt.
-    </li>
-    <li>Sie können nur in Themen eine Anzeige erstellen, in denen Sie die nötigen Rechte haben.</li>
-    <li>Mit der Suche werden sowohl Titel als auch Beschreibung aller Anzeigen durchsucht.</li>
-    <li>
-        Sie können Ihre eigenen Anzeigen jederzeit nachträglich <em>bearbeiten</em>
-        oder <em>löschen</em>. Die Buttons befinden sich unter dem Text.
-    </li>
-    <li>
-        Bitte stellen Sie Ihre Anzeigen in die richtigen Kategorien ein.
-        Damit das Schwarze Brett übersichtlich bleibt, <em>löschen</em> Sie
-        bitte Ihre Anzeigen umgehend nach Abschluss/Verkauf.
-    </li>
-    <li><b>Bitte Artikel nur in <em>eine</em> Kategorie einstellen!</b></li>
-    <li><b>Bitte keine kommerziellen Angebote einstellen (dazu gehören auch solche Anzeigen die einen Link enthalten, der dem Einstellenden eine Provision verspricht). Sie werden gelöscht!</b></li>
-</ul>
-<br/>
+<?= formatReady(Config::get()->BULLETIN_BOARD_RULES) ?>

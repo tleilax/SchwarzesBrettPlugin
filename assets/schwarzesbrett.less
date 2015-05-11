@@ -114,9 +114,12 @@
 }
 
 .studip_form {
-    textarea {
-        min-height: 5em;
+    input[type=text], textarea, select {
+        .box-sizing(border-box);
         width: 100%;
+    }
+    textarea {
+        min-height: 10em;
     }
 
     .ui-dialog & fieldset {

@@ -23,35 +23,37 @@ class ArticleController extends SchwarzesBrettController
         $articles = SBUser::get()->articles;
         $this->categories = SBArticle::groupByCategory($articles);
     }
-    
+
     public function create_action($category_id = null)
     {
         PageLayout::setTitle(_('Anzeige erstellen'));
-        
+
         $this->article           = new SBArticle();
         $this->article->thema_id = $category_id;
         $this->categories        = $this->getCategories();
-        
+
         $this->render_action('edit');
     }
-    
+
     public function edit_action($id = null)
     {
         PageLayout::setTitle(_('Anzeige bearbeiten'));
-        
+
         $this->id         = $id;
         $this->article    = SBArticle::find($id);
         $this->categories = $this->getCategories();
     }
-    
+
     public function store_action($id = null)
     {
         CSRFProtection::verifyUnsafeRequest();
-        
+
         if (Request::isPost() && check_ticket(Request::get('studip_ticket'))) {
             $article = $id
                      ? SBArticle::find($id)
                      : new SBArticle();
+
+            $duration = max(1, min(Config::get()->BULLETIN_BOARD_DURATION, Request::int('duration')));
 
             $article->thema_id     = Request::option('thema_id');
             $article->titel        = Request::get('titel');
@@ -59,9 +61,10 @@ class ArticleController extends SchwarzesBrettController
             $article->visible      = Request::int('visible', 0);
             $article->publishable  = Request::int('publishable', 1);
             $article->user_id      = $article->user_id ?: $GLOBALS['user']->id;
-            $article->expires      = time() + Config::get()->BULLETIN_BOARD_DURATION * 24 * 60 * 60;
+            $article->duration     = $duration;
+            $article->expires      = strtotime('+' . $duration . ' days 23:59:59', $article->mkdate ?: time());
             $article->store();
-        
+
             $message = $id === null
                      ? _('Die Anzeige wurde erstellt.')
                      : _('Die Anzeige wurde gespeichert.');
@@ -70,7 +73,7 @@ class ArticleController extends SchwarzesBrettController
 
         $this->redirect(Request::get('return_to') ?: $this->url_for('category/view/' . $article->thema_id . '#sb-article-' . $article->id));
     }
-    
+
     private function getCategories()
     {
         return SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci');
@@ -123,7 +126,7 @@ class ArticleController extends SchwarzesBrettController
                                      $this->article->titel,
                                      $this->article->user->getFullname()));
     }
-    
+
     public function purge_action()
     {
         $GLOBALS['perm']->check('root');
@@ -132,13 +135,13 @@ class ArticleController extends SchwarzesBrettController
         foreach ($articles as $article) {
             $article->delete();
         }
-        
+
         $message = count($articles) > 0
                  ? MessageBox::success(sprintf(_('Es wurden %u Anzeigen aus der Datenbank gelöscht.'), count($articles)))
                  : MessageBox::info(_('Es gibt keine Artikel in der Datenbank, die gelöscht werden können.'));
-    
+
         PageLayout::postMessage($message);
-        
+
         $this->redirect('admin/settings');
     }
 }

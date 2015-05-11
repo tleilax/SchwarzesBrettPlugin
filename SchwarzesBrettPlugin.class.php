@@ -80,16 +80,6 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         }
     }
 
-    public function initialize()
-    {
-        require_once 'controllers/sb_controller.php';
-
-        PageLayout::setTitle(_('Schwarzes Brett'));
-
-        $this->addStylesheet('assets/schwarzesbrett.less');
-        PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
-    }
-
     public function getPluginname()
     {
         return _('Schwarzes Brett');
@@ -105,10 +95,15 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
     public function perform($unconsumed_path)
     {
-        URLHelper::removeLinkParam('cid');
+        require_once 'controllers/sb_controller.php';
+
+        PageLayout::setTitle(_('Schwarzes Brett'));
+
+        $this->addStylesheet('assets/schwarzesbrett.less');
+        PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
 
         if (Config::get()->BULLETIN_BOARD_MEDIA_PROXY) {
-            SBOpenGraphURL::setProxyURL(PluginEngine::getURL($this, array(), 'proxy'));
+            SBOpenGraphURL::setProxyURL(PluginEngine::getURL($this, array(), 'proxy', true));
         }
 
         if ($unconsumed_path === 'show/all') {
@@ -117,7 +112,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
 
         $dispatcher = new Trails_Dispatcher(
             $this->getPluginPath(),
-            rtrim(PluginEngine::getLink($this, array('cid' => null), null), '/'),
+            rtrim(PluginEngine::getLink($this, array('cid' => null), null, true), '/'),
             'category'
         );
         $dispatcher->plugin = $this;

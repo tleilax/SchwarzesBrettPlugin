@@ -39,7 +39,7 @@
     <tbody>
 <? if (count($articles) === 0): ?>
         <tr class="nohover">
-            <td colspan="5" style="text-align: center;">
+            <td colspan="<?= 5 + (int)($GLOBALS['user']->perms === 'root') ?>" style="text-align: center;">
                 <?= _('Dieses Thema enthält noch keine Anzeigen.') ?><br>
                 <?= Studip\LinkButton::create(_('Anzeige erstellen'),
                                               $controller->url_for('article/create'),

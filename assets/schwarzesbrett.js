@@ -5,10 +5,10 @@
         if (href && href.indexOf('category/visit') !== -1) {
             $('.sb-category,.sb-articles').find('.new-article').removeClass('new-article');
             $('.sb-categories .new-category').removeClass('new-category');
-            
+
             $(data.options.origin).hide();
         }
-        
+
         var msgs = data.xhr.getResponseHeader('X-Messages');
         if (msgs) {
             messages.push(JSON.parse(msgs));
@@ -26,7 +26,8 @@
     }).on('click', '.new-article a[href*="article/view/"]', function () {
         $(this).closest('.new-article').removeClass('new-article');
     });
-    
+
+    // OpenGraph
     $(document).on('dialog-open ready', function () {
         $('.opengraph-area:not(.handled)').each(function () {
             var items = $('.opengraph', this),
@@ -41,7 +42,7 @@
             $(this).addClass('handled');
         });
     });
-    
+
     $(document).on('click', '.opengraph-area .switcher button', function () {
         var direction = $(this).is('.switch-left') ? 'left' : 'right',
             current   = $(this).closest('.opengraph-area').find('.opengraph:visible'),

@@ -1,3 +1,15 @@
+<?php
+$format_duration = function ($duration, $now = null) {
+    $formatted  = sprintf(ngettext('%u Tag', '%u Tage', $duration), $duration);
+    $formatted .= ' - ';
+    $formatted .= strftime(_('bis zum %d.%m.%Y'), strtotime('+' . $duration . ' days', $now ?: time()));
+
+    return $formatted;
+};
+$expired_test = function ($duration, $now = null) {
+    return strtotime('+' . $duration . ' days', $now ?: time()) <= time();
+};
+?>
 <form method="post" action="<?= $controller->url_for('article/store/' . $article->id . '?return_to=' . Request::get('return_to')) ?>" class="studip_form">
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
@@ -30,18 +42,25 @@
         </fieldset>
 
         <fieldset>
-            <label>
-                <?= _('Laufzeit') ?>:
-                <strong><?= sprintf(_('%u Tage'), $expire_days) ?></strong>.
-                <?= _('Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht.') ?>
+            <label for="duration">
+                <?= _('Laufzeit') ?>
+                <small><?= _('Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht.') ?></small>
             </label>
+            <select name="duration" id="duration">
+            <? for ($i = 1; $i <= Config::Get()->BULLETIN_BOARD_DURATION; $i += 1): ?>
+                <option value="<?= $i ?>" <? if (($article->duration ?: Config::Get()->BULLETIN_BOARD_DURATION) == $i) echo 'selected'; ?>
+                        <? if ($expired_test($i, $article->mkdate)) echo 'disabled'; ?>>
+                    <?= $format_duration($i, $article->mkdate) ?>
+                </option>
+            <? endfor; ?>
+            </select>
         </fieldset>
 
         <fieldset>
             <input type="hidden" name="visible" value="0">
             <label for="visibility">
                 <input type="checkbox" name="visible" id="visibility" value="1"
-                       <? if($article->visible || $article->isNew()) echo 'checked'; ?>>
+                       <? if ($article->visible || $article->isNew()) echo 'checked'; ?>>
                 <?= _('Sichtbar') ?>
             </label>
         </fieldset>

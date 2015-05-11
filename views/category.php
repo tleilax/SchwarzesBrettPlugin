@@ -4,6 +4,9 @@
     <? if ($count = count($category->articles)): ?>
         (<?= number_format($count, 0, ',', '.') ?>)
     <? endif; ?>
+    <? if ($category->beschreibung): ?>
+        <?= tooltipIcon($category->beschreibung) ?>
+    <? endif; ?>
     </a>
 <? if ($rss_enabled || $is_admin): ?>
     <div class="options">

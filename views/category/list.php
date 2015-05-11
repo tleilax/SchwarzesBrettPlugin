@@ -33,6 +33,6 @@
         bitte Ihre Anzeigen umgehend nach Abschluss/Verkauf.
     </li>
     <li><b>Bitte Artikel nur in <em>eine</em> Kategorie einstellen!</b></li>
-    <li><b>Bitte keine kommerziellen Angebote einstellen. Sie werden gelöscht!</b></li>
+    <li><b>Bitte keine kommerziellen Angebote einstellen (dazu gehören auch solche Anzeigen die einen Link enthalten, der dem Einstellenden eine Provision verspricht). Sie werden gelöscht!</b></li>
 </ul>
 <br/>

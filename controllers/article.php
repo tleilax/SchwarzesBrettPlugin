@@ -24,6 +24,18 @@ class ArticleController extends SchwarzesBrettController
         $this->categories = SBArticle::groupByCategory($articles);
     }
 
+    public function user_action()
+    {
+        Navigation::activateItem('/schwarzesbrettplugin/show/all');
+
+        $username   = Request::get('username');
+        $this->user = SBUser::findByUsername($username);
+
+        PageLayout::setTitle(sprintf(_('Alle Anzeigen von %s'), $this->user->getFullname()));
+
+        $this->categories = SBArticle::groupByCategory($this->user->articles);
+    }
+
     public function create_action($category_id = null)
     {
         PageLayout::setTitle(_('Anzeige erstellen'));

@@ -6,6 +6,11 @@
                 <?= Avatar::getAvatar($article->user_id)->getImageTag(Avatar::SMALL) ?>
                 <?= htmlReady($article->user->getFullname()) ?>
             </a>
+        <? if ($more = count($article->user->articles) - 1): ?>
+            <a href="<?= $controller->url_for('article/user?username=' . $article->user->username) ?>">
+                (<?= sprintf(ngettext('%u weitere Anzeige', '%u weitere Anzeigen', $more), $more) ?>)
+            </a>
+        <? endif; ?>
         </address>
         <time title="<?= strftime('%x %X', $article->mkdate) ?>">
             <?= reltime($article->mkdate) ?>

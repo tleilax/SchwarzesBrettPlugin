@@ -11,6 +11,10 @@
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
 
     <table class="default" id="bb-config">
+        <colgroup>
+            <col width="50%">
+            <col width="50%">
+        </colgroup>
         <thead>
             <tr>
                 <th><?= _('Einstellung') ?></th>

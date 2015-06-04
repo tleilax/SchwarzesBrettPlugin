@@ -85,6 +85,11 @@ class Admin_SettingsController extends SchwarzesBrettController
             'type' => 'text',
         );
 
+        $options['BULLETIN_BOARD_BAD_WORDS'] = array(
+            'key'  => 'badWords',
+            'type' => 'text',
+        );
+
         $options['BULLETIN_BOARD_ENABLE_RSS'] = array(
             'key'  => 'enableRss',
             'type' => 'checkbox',

@@ -66,7 +66,7 @@ class ArticleController extends SchwarzesBrettController
     {
         CSRFProtection::verifyUnsafeRequest();
 
-        if (Request::isPost() && check_ticket(Request::get('studip_ticket'))) {
+        if (Request::isPost() && $this->checkTicket()) {
             $article = $id
                      ? SBArticle::find($id)
                      : new SBArticle();
@@ -82,6 +82,35 @@ class ArticleController extends SchwarzesBrettController
             $article->duration     = $duration;
             $article->expires      = strtotime('+' . $duration . ' days 23:59:59', $article->mkdate ?: time());
             $article->store();
+
+            $config_words = Config::get()->BULLETIN_BOARD_BAD_WORDS;
+            $needles    = array_filter(explode(',', $config_words));
+            if (!empty($needles)) {
+                $bad_words = array();
+
+                $regexp = '/' . implode('|', $needles) . '/i';
+
+                $haystack = $article->titel . '###' . $article->beschreibung;
+                if (preg_match_all($regexp, $haystack, $matches)) {
+                    $bad_words = array_merge($bad_words, $matches[0]);
+                    $bad_words = array_unique($bad_words);
+
+                    $url = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+                    $template = $this->get_template_factory()->open('article/mail-bad-words.php');
+                    $template->controller = $this;
+                    $template->article    = $article;
+                    $template->bad_words  = $bad_words;
+                    $mailbody = $template->render();
+                    URLHelper::setBaseURL($url);
+
+                    $mail = new StudipMail();
+                    $mail->addRecipient(Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS)
+                         ->setSubject(_('Anzeige enthält unzulässige Begriffe'))
+                         ->setBodyText($mailbody)
+                         ->setBodyHtml(formatReady($mailbody))
+                         ->send();
+                }
+            }
 
             $message = $id === null
                      ? _('Die Anzeige wurde erstellt.')
@@ -122,16 +151,19 @@ class ArticleController extends SchwarzesBrettController
         if (Request::isPost()) {
             $reason = Request::get('reason');
 
-            $template = $this->get_template_factory()->open('article/blame-mail.php');
+            $url = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+            $template = $this->get_template_factory()->open('article/mail-blame.php');
             $template->controller = $this;
             $template->article    = $this->article;
             $template->reason     = $reason;
             $mailbody = $template->render();
+            URLHelper::setBaseURL($url);
 
             $mail = new StudipMail();
             $mail->addRecipient(Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS)
-                 ->setSubject(_('Anzeige wurde gemeldet'))
+                 ->setSubject(_('Anzeige wurde gemeldet') . ': ' . $article->titel)
                  ->setBodyText($mailbody)
+                 ->setBodyHtml(formatReady($mailbody))
                  ->send();
 
             PageLayout::postMessage(MessageBox::info(_('Die Anzeige wurde den Administratoren gemeldet.')));

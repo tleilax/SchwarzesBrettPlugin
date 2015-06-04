@@ -5,7 +5,7 @@
 <table class="default">
     <caption class="hide-in-dialog"><?= _('Meine Anzeigen') ?></caption>
 <? foreach ($categories as $id => $category): ?>
-    <tbody>
+    <tbody class="sb-articles">
         <tr>
             <th colspan="5">
                 <a href="<?= $controller->url_for('category/' . $id) ?>">

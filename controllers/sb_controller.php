@@ -176,4 +176,18 @@ class SchwarzesBrettController extends StudipController
 
         Sidebar::get()->insertWidget($widget, ':first');
     }
+    
+    protected function checkTicket($force_ticket = true)
+    {
+        $ticket = Request::get('studip_ticket');
+        if (!$ticket && !$force_ticket) {
+            return true;
+        }
+
+        if (!$ticket || !check_ticket($ticket)) {
+            throw new AccessDeniedException('Invalid ticket');
+        }
+
+        return true;
+    }
 }

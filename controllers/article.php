@@ -33,6 +33,12 @@ class ArticleController extends SchwarzesBrettController
 
         PageLayout::setTitle(sprintf(_('Alle Anzeigen von %s'), $this->user->getFullname()));
 
+        $articles = $this->user->articles;
+        if ($this->user->id !== $GLOBALS['user']->id && !$this->is_admin) {
+            $articles = array_filter($articles, function ($article) {
+                return $article->visible;
+            });
+        }
         $this->categories = SBArticle::groupByCategory($this->user->articles);
     }
 

@@ -19,11 +19,11 @@ class Admin_BlacklistController extends SchwarzesBrettController
         $this->users = SBBlacklist::findBySQL('1');
     }
 
-    public function remove_action($id = null)
+    public function remove_action($id)
     {
         CSRFProtection::verifyUnsafeRequest();
 
-        if (($ticket = Request::get('studip_ticket')) && check_ticket($ticket)) {
+        if ($this->checkTicket()) {
             if ($id === 'bulk') {
                 $ids = Request::optionArray('user_id');
             } else {
@@ -48,10 +48,21 @@ class Admin_BlacklistController extends SchwarzesBrettController
     {
         CSRFProtection::verifyUnsafeRequest();
 
-        if (($ticket = Request::get('studip_ticket')) && check_ticket($ticket)) {
+        if ($this->checkTicket()) {
+            // Find user
+            $user_id = Request::option('user_id');
+            $user    = SBUser::find($user_id);
+
+            // Add user to blacklist
             $item = new SBBlacklist();
-            $item->user_id = Request::option('user_id');
+            $item->user_id = $user->id;
             $item->store();
+
+            // Hide all user's article
+            foreach ($user->articles as $article) {
+                $article->visible = false;
+                $article->store();
+            }
 
             $msg = _('Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde '
                     .'Ihr Zugang zum Schwarzen Brett gesperrt.');

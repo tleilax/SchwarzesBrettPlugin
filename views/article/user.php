@@ -7,7 +7,7 @@
         <?= sprintf(_('Alle Anzeigen von %s'), $user->getFullname()) ?>
     </caption>
 <? foreach ($categories as $id => $category): ?>
-    <tbody>
+    <tbody class="sb-articles">
         <tr>
             <th colspan="5">
                 <a href="<?= $controller->url_for('category/' . $id) ?>">

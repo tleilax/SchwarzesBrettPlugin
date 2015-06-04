@@ -134,6 +134,17 @@
                 inset 0 2px 4px 0px rgba(50, 50, 50, 0.75);
 }
 
+tbody.sb-articles {
+    .hidden {
+        background-color: fadeout(@light-gray-color-20, 50%);
+        text-decoration: line-through;
+        
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
+
 // Hide category in right, smaller column
 @media (min-width: 1024px) {
     .portal-widget-list:last-child {

@@ -36,7 +36,7 @@
             <th><?= _('Aktionen') ?></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="sb-articles">
 <? if (count($articles) === 0): ?>
         <tr class="nohover">
             <td colspan="<?= 5 + (int)($GLOBALS['user']->perms === 'root') ?>" style="text-align: center;">

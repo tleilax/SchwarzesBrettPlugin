@@ -90,6 +90,11 @@ class SBArticle extends SimpleORMap
         return self::findBySQL("user_id = :user_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':user_id' => $user_id));
     }
 
+    public static function findVisibleByUserId($user_id)
+    {
+        return self::findBySQL("user_id = :user_id AND visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':user_id' => $user_id));
+    }
+
     public static function findVisibleByCategoryId($category_id)
     {
         return self::findBySQL("thema_id = :category_id AND (visible = 1 OR user_id = :user_id) AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));

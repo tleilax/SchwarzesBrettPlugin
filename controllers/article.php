@@ -86,14 +86,11 @@ class ArticleController extends SchwarzesBrettController
             $config_words = Config::get()->BULLETIN_BOARD_BAD_WORDS;
             $needles    = array_filter(explode(',', $config_words));
             if (!empty($needles)) {
-                $bad_words = array();
-
                 $regexp = '/' . implode('|', $needles) . '/i';
 
                 $haystack = $article->titel . '###' . $article->beschreibung;
                 if (preg_match_all($regexp, $haystack, $matches)) {
-                    $bad_words = array_merge($bad_words, $matches[0]);
-                    $bad_words = array_unique($bad_words);
+                    $bad_words = array_unique($matches[0]);
 
                     $url = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                     $template = $this->get_template_factory()->open('article/mail-bad-words.php');

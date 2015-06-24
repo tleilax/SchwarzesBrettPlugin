@@ -71,20 +71,15 @@ class SchwarzesBrettController extends StudipController
     protected function inject_rss($category_id = null)
     {
         if (!$this->rss_enabled) {
-            $this->response->set_status(404);
-            $this->render_nothing();
             return;
         }
-
-        $base = str_replace($GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'], '', $GLOBALS['ABSOLUTE_URI_STUDIP']);
-
 
         if ($category_id === null) {
             PageLayout::addHeadElement('link', array(
                 'rel'   => 'alternate',
                 'type'  => 'application/rss+xml',
                 'title' => _('RSS-Feed'),
-                'href'  => $base . $this->url_for('rss'),
+                'href'  => $this->absolute_url_for('rss'),
             ));
         } else {
             $category = SBCategory::find($category_id);
@@ -92,7 +87,7 @@ class SchwarzesBrettController extends StudipController
                 'rel'   => 'alternate',
                 'type'  => 'application/rss+xml',
                 'title' => _('RSS-Feed') . ': ' . $category->titel,
-                'href'  => $base . $this->url_for('rss/' . $category->id),
+                'href'  => $this->absolute_url_for('rss/' . $category->id),
             ));
         }
     }

@@ -25,7 +25,7 @@ require_once 'bootstrap.inc.php';
 /**
  * SchwarzesBrettPlugin Hauptklasse
  */
-class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
+class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
 {
     public function __construct()
     {
@@ -150,7 +150,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         $info = $manager->getPluginInfo('SchwarzesBrettPlugin');
         $manager->registerPlugin('SchwarzesBrettAPI', 'SchwarzesBrettAPI', $info['path'], $plugin_id);
     }
-    
+
     public static function onDisable($plugin_id)
     {
         $manager = PluginManager::getInstance();
@@ -161,5 +161,32 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin
         }
 
         $manager->setPluginEnabled($info['id'], false);
+    }
+
+    public function getHomepageTemplate($user_id)
+    {
+        $this->addStylesheet('assets/schwarzesbrett.less');
+
+        $own_profile = $user_id === $GLOBALS['user']->id;
+
+        $user   = SBUser::find($user_id);
+        $config = UserConfig::get($user_id);
+        if (!$own_profile && !$config->BULLETIN_BOARD_SHOW_HOMEPAGE_TEMPLATE) {
+            return null;
+        }
+
+        $title = $own_profile
+               ? _('Meine aktuellen Anzeigen im Schwarzen Brett')
+               : sprintf(_('Aktuelle Anzeigen von %s im Schwarzen Brett'), $user->getFullname());
+
+        $factory  = new Flexi_TemplateFactory(__DIR__ . '/views/');
+        $template = $factory->open('homepage/plugin.php');
+        $template->title       = $title;
+        $template->icon_url    = Assets::image_path('icons/16/black/billboard.png');
+        $template->admin_url   = $this->url_for('homepage_admin');
+        $template->admin_title = _('Einstellungen');
+        $template->categories  = SBArticle::groupByCategory($own_profile ? $user->articles : $user->visible_articles);
+        $template->controller  = $this;
+        return $template;
     }
 }

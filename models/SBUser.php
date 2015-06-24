@@ -6,7 +6,15 @@ class SBUser extends User
         $config['has_many']['articles'] = array(
             'class_name'        => 'SBArticle',
             'assoc_func'        => 'findValidByUserId',
-            'assoc_foreign_key' => 'user_id_id',
+            'assoc_foreign_key' => 'user_id',
+            'foreign_key'       => 'user_id',
+            'on_delete'         => 'delete',
+        );
+
+        $config['has_many']['visible_articles'] = array(
+            'class_name'        => 'SBArticle',
+            'assoc_func'        => 'findVisibleByUserId',
+            'assoc_foreign_key' => 'user_id',
             'foreign_key'       => 'user_id',
             'on_delete'         => 'delete',
         );

@@ -141,11 +141,13 @@ class SchwarzesBrettController extends StudipController
 
         Sidebar::get()->addWidget($actions);
 
-        $export = new ExportWidget();
-        $export->addLink($category_id ? _('RSS-Feed dieser Kategorie') : _('RSS-Feed'),
-                         $this->url_for('rss/' . $category_id),
-                         'icons/16/blue/rss.png');
-        Sidebar::get()->addWidget($export);
+        if ($this->rss_enabled) {
+            $export = new ExportWidget();
+            $export->addLink($category_id ? _('RSS-Feed dieser Kategorie') : _('RSS-Feed'),
+                             $this->url_for('rss/' . $category_id),
+                             'icons/16/blue/rss.png');
+            Sidebar::get()->addWidget($export);
+        }
 
         if ($category_id) {
             $this->temp_storage = $category_id;

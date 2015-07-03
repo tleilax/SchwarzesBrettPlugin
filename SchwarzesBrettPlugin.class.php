@@ -183,8 +183,6 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         $template = $factory->open('homepage/plugin.php');
         $template->title       = $title;
         $template->icon_url    = Assets::image_path('icons/16/black/billboard.png');
-        $template->admin_url   = $this->url_for('homepage_admin');
-        $template->admin_title = _('Einstellungen');
         $template->categories  = SBArticle::groupByCategory($own_profile ? $user->articles : $user->visible_articles);
         $template->controller  = $this;
         return count($template->categories) ? $template : null;

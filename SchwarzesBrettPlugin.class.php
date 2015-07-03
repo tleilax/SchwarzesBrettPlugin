@@ -165,15 +165,15 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
 
     public function getHomepageTemplate($user_id)
     {
+        if (!PluginManager::getInstance()->isPluginActivatedForUser($this->getPluginId(), $user_id)) {
+            return null;
+        }
+
         $this->addStylesheet('assets/schwarzesbrett.less');
 
         $own_profile = $user_id === $GLOBALS['user']->id;
 
-        $user   = SBUser::find($user_id);
-        $config = UserConfig::get($user_id);
-        if (!$own_profile && !$config->BULLETIN_BOARD_SHOW_HOMEPAGE_TEMPLATE) {
-            return null;
-        }
+        $user  = SBUser::find($user_id);
 
         $title = $own_profile
                ? _('Meine aktuellen Anzeigen im Schwarzen Brett')
@@ -187,6 +187,6 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         $template->admin_title = _('Einstellungen');
         $template->categories  = SBArticle::groupByCategory($own_profile ? $user->articles : $user->visible_articles);
         $template->controller  = $this;
-        return $template;
+        return count($template->categories) ? $template : null;
     }
 }

@@ -222,7 +222,8 @@ class SBArticle extends SimpleORMap
     {
         $query = "SELECT artikel_id
                   FROM sb_artikel
-                  WHERE titel LIKE CONCAT('%', :needle, '%')";
+                  WHERE titel LIKE CONCAT('%', :needle, '%')
+                     OR beschreibung LIKE CONCAT('%', :needle, '%')";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':needle', $needle);
         $statement->execute();
@@ -246,5 +247,29 @@ class SBArticle extends SimpleORMap
             $categories[$category->id]['articles'][] = $article;
         }
         return $categories;
+    }
+
+    public static function markup($needle, $subject = null)
+    {
+        if (!$needle) {
+            return $subject;
+        }
+
+        $replacer = function ($matches) {
+            return sprintf('<span class="sb-highlighted">%s</span>', $matches[0]);
+        };
+
+        $needle = preg_quote($needle);
+        $needle = preg_replace_callback('/[a-z]/i', function ($match) {
+            return sprintf('[%s%s]', strtolower($match[0]), strtoupper($match[0]));
+        }, $needle);
+
+        if ($subject) {
+            return preg_replace_callback('/' . $needle . '/', $replacer, $subject);
+        } else {
+            StudipFormat::addStudipMarkup('sb-highlight', $needle, false, function ($markup, $matches, $contents) use ($replacer) {
+                return $replacer($matches);
+            });
+        }
     }
 }

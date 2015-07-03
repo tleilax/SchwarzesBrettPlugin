@@ -3,6 +3,11 @@ class ArticleController extends SchwarzesBrettController
 {
     public function view_action($id)
     {
+        $needle = Request::get('needle');
+        if ($needle) {
+            SBArticle::markup($needle);
+        }
+
         $this->article = SBArticle::find($id);
         $this->article->visit();
 
@@ -159,6 +164,7 @@ class ArticleController extends SchwarzesBrettController
             $mail = new StudipMail();
             $mail->addRecipient(Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS)
                  ->setSubject(_('Anzeige wurde gemeldet') . ': ' . $article->titel)
+                 ->setReplyToEmail($GLOBALS['user']->email)
                  ->setBodyText($mailbody)
                  ->setBodyHtml(formatReady($mailbody))
                  ->send();

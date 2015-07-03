@@ -5,8 +5,8 @@
     </td>
 <? endif; ?>
     <td>
-        <a href="<?= $controller->url_for('article/view/' . $article->id) ?>" data-dialog>
-            <?= htmlReady($article->titel) ?>
+        <a href="<?= $controller->url_for('article/view/' . $article->id, compact('needle')) ?>" data-dialog>
+            <?= SBArticle::markup($needle, htmlReady($article->titel)) ?>
         </a>
     </td>
     <td>

@@ -1,15 +1,6 @@
 <?php
 class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
 {
-    public function __construct()
-    {
-        parent::__construct();
-        
-        if (Request::isXhr()) {
-            header('Content-Type: text/html;charset=windows-1252');
-        }
-    }
-    
     public function getPluginName()
     {
         return _('Schwarzes Brett');
@@ -77,6 +68,10 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
 
     protected function getTemplate($template, $layout = false)
     {
+        if (Request::isXhr()) {
+            header('Content-Type: text/html;charset=windows-1252');
+        }
+
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views');
         $template = $factory->open($template);
         $template->controller = PluginEngine::getPlugin('SchwarzesBrettPlugin');

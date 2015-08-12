@@ -114,23 +114,26 @@
     @padding: 0.5ex;
 
     &.unseen {
-        font-weight: bold;
-        
-        li & {
-            border-left: @border-width solid @red;
-            border-top-left-radius: @border-radius;
-            border-bottom-left-radius: @border-radius;
-        }
-        td & {
-            .icon-after('red/star.png', 8);
-        }
+        // font-weight: bold;
     }
+    &.seen {
+        font-weight: lighter;
+    }
+    
     li & {
         padding-left: @padding;
     }
     li &.seen {
         // font-weight: lighter;
         // margin-left: @border-width;
+    }
+    li &.unseen {
+        border-left: @border-width solid @red;
+        border-top-left-radius: @border-radius;
+        border-bottom-left-radius: @border-radius;
+    }
+    td &.unseen {
+        .icon-after('red/star.png', 8);
     }
 }
 

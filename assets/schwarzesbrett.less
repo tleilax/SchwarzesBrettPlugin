@@ -27,7 +27,7 @@
         }
         > * {
             .flex-item(0, 1);
-            &:last-child {
+            &:last-child:not(:first-child) {
                 .flex-item(1, 0);
                 .flex-align-self(flex-end);
                 padding-left: 0.5em;
@@ -108,9 +108,22 @@
     font-weight: normal;
 }
 
-.new-article a[href*="article/view/"],
-.new-category a[href*="category/view/"] {
-    color: red;
+.category, .article {
+    @border-width: 2px;
+    @border-radius: ceil(@border-width / 2);
+    @padding: 0.5ex;
+
+    padding-left: @padding;
+    &.seen {
+        // font-weight: lighter;
+        // margin-left: @border-width;
+    }
+    &.unseen {
+        font-weight: bold;
+        border-left: @border-width solid @red;
+        border-top-left-radius: @border-radius;
+        border-bottom-left-radius: @border-radius;
+    }
 }
 
 .studip_form, #bb-config {
@@ -138,7 +151,7 @@ tbody.sb-articles {
     .hidden {
         background-color: fadeout(@light-gray-color-20, 50%);
         text-decoration: line-through;
-        
+
         &:hover {
             text-decoration: none;
         }
@@ -159,7 +172,7 @@ tbody.sb-articles {
 // Open graph
 .opengraph-area {
     margin-bottom: 5px;
-    
+
     .switcher {
         list-style: none;
         margin: 0 auto -10px;
@@ -172,7 +185,7 @@ tbody.sb-articles {
             border-top: thin solid lightgrey;
             display: inline-block;
             padding: 5px 0;
-            
+
             &:first-child {
                 border-left: thin solid lightgrey;
                 padding-left: 5px;

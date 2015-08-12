@@ -1,5 +1,5 @@
-<li <? if ($category->new) echo 'class="new-category"'; ?>>
-    <a href="<?= $controller->url_for('category/view/' . $category->id) ?>" class="link">
+<li>
+    <a href="<?= $controller->url_for('category/view/' . $category->id) ?>" class="category <?= $category->new ? 'unseen' : 'seen' ?>">
         <?= htmlReady($category->titel) ?>
     <? if ($count = count($category->articles)): ?>
         (<?= number_format($count, 0, ',', '.') ?>)

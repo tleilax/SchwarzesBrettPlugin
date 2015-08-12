@@ -1,4 +1,6 @@
 <?php
+require_once 'app/controllers/studip_controller.php'; 
+
 class SchwarzesBrettController extends StudipController
 {
     protected $allow_nobody = false;

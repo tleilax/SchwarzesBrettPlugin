@@ -1,15 +1,19 @@
+/*jslint browser: true, unparam: true */
+/*global jQuery */
 (function ($) {
+    'use strict';
+
     var messages = [];
     $(document).on('dialog-load', function (event, data) {
-        var href = $(data.options.origin).attr('href');
+        var href = $(data.options.origin).attr('href'),
+            msgs = data.xhr.getResponseHeader('X-Messages');
         if (href && href.indexOf('category/visit') !== -1) {
-            $('.sb-category,.sb-articles').find('.new-article').removeClass('new-article');
-            $('.sb-categories .new-category').removeClass('new-category');
+            $('.sb-category,.sb-articles').find('.unseen').toggleClass('unseen seen');
+            $('.sb-categories .unseen').toggleClass('unseen seen');
 
             $(data.options.origin).hide();
         }
 
-        var msgs = data.xhr.getResponseHeader('X-Messages');
         if (msgs) {
             messages.push(JSON.parse(msgs));
         }
@@ -20,11 +24,11 @@
         }
     }).on('click submit', '[data-confirm]', function (event) {
         var message = $(this).data().confirm || $(this).attr('title') || $(this).text();
-        if (!confirm(message)) {
+        if (!window.confirm(message)) {
             event.preventDefault();
         }
-    }).on('click', '.new-article a[href*="article/view/"]', function () {
-        $(this).closest('.new-article').removeClass('new-article');
+    }).on('click', 'a.article.unseen', function () {
+        $(this).toggleClass('unseen seen');
     });
 
     // OpenGraph

@@ -113,16 +113,24 @@
     @border-radius: ceil(@border-width / 2);
     @padding: 0.5ex;
 
-    padding-left: @padding;
-    &.seen {
-        // font-weight: lighter;
-        // margin-left: @border-width;
-    }
     &.unseen {
         font-weight: bold;
-        border-left: @border-width solid @red;
-        border-top-left-radius: @border-radius;
-        border-bottom-left-radius: @border-radius;
+        
+        li & {
+            border-left: @border-width solid @red;
+            border-top-left-radius: @border-radius;
+            border-bottom-left-radius: @border-radius;
+        }
+        td & {
+            .icon-after('red/star.png', 8px);
+        }
+    }
+    li & {
+        padding-left: @padding;
+    }
+    li &.seen {
+        // font-weight: lighter;
+        // margin-left: @border-width;
     }
 }
 

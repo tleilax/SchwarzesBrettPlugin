@@ -1,4 +1,4 @@
-3<?
+<?
 class InitPlugin extends DBMigration
 {
     function description ()

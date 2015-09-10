@@ -30,6 +30,7 @@
                 echo $og->render();
             }
         endforeach; ?>
+        </div>
     <? endif; ?>
     </section>
 

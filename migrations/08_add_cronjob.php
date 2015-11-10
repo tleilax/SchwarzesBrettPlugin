@@ -24,7 +24,7 @@ class AddCronjob extends DBMigration
 
     private function getCronjobFilename()
     {
-        return str_replace($GLOBALS['STUDIP_BASE_PATH'] . '/', '',
+        return str_replace(realpath($GLOBALS['STUDIP_BASE_PATH'] . '/'), '',
                            realpath(__DIR__ . '/../classes/SchwarzesBrett_Cronjob.class.php'));
     }
 }

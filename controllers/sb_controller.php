@@ -64,10 +64,11 @@ class SchwarzesBrettController extends StudipController
 
     public function absolute_url_for($to)
     {
+        $old_base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
         $url = call_user_func_array('parent::url_for', func_get_args());
-        return ($GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'] !== '/')
-            ? str_replace($GLOBALS['CANONICAL_RELATIVE_PATH_STUDIP'], '', $GLOBALS['ABSOLUTE_URI_STUDIP']) . $url
-            : $GLOBALS['ABSOLUTE_URI_STUDIP'] . $url;
+        URLHelper::setBaseURL($old_base);
+
+        return $url;
     }
 
     protected function inject_rss($category_id = null)

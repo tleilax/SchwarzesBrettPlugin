@@ -97,7 +97,7 @@
     }
 }
 
-.sb-category .caption-content small {
+.sb-category caption small {
     &:before {
         content: "“ ";
     }
@@ -220,4 +220,17 @@ tbody.sb-articles {
     background-color: @activity-color-40;
     border: 1px solid @activity-color-80;
     .border-radius(3px);
+}
+
+// disclaimer
+.category-disclaimer {
+    background: fadeout(@red-20, 50%);
+    border: 1px solid @red-40;
+    font-size: 0.9em;
+    margin: 0.5em 0;
+    padding: 0.5em 1em;
+    
+    &:first-child {
+        margin-top: 0;
+    }
 }

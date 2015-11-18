@@ -21,7 +21,7 @@ $expired_test = function ($duration, $now = null) {
 
         <fieldset>
             <label for="category_id"><?= _('Thema') ?>:</label>
-            <select required name="thema_id" id="category_id">
+            <select required name="thema_id" id="category_id" class="has-disclaimer">
                 <option value="">- <?= _('Kategorie auswählen') ?> -</option>
             <? foreach ($categories as $category): ?>
                 <option value="<?= $category->id ?>" <? if ($category->id === $article->thema_id) echo 'selected'; ?>>
@@ -29,6 +29,14 @@ $expired_test = function ($duration, $now = null) {
                 </option>
             <? endforeach; ?>
             </select>
+    <? foreach ($categories as $category): ?>
+        <? if ($category->disclaimer): ?>
+            <div class="category-disclaimer" id="disclaimer-<?= $category->id ?>"
+                   <? if ($category->id !== $article->thema_id) echo 'style="display: none;"'; ?>>
+                <?= formatReady($category->disclaimer) ?>
+            </div>
+        <? endif; ?>
+    <? endforeach; ?>
         </fieldset>
     
         <fieldset>

@@ -29,6 +29,9 @@
         }
     }).on('click', 'a.article.unseen', function () {
         $(this).toggleClass('unseen seen');
+    }).on('change', 'select.has-disclaimer', function () {
+        var id = $(this).val();
+        $(this).closest('form').find('.category-disclaimer').hide().filter('#disclaimer-' + id).show();
     });
 
     // OpenGraph

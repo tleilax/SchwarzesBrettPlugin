@@ -15,10 +15,12 @@
             <label for="title"><?= _('Titel') ?></label>
             <input required type="text" name="titel" id="title" value="<?= htmlReady($category->titel) ?>">
         </fieldset>
+
         <fieldset>
             <label for="description"><?= _('Beschreibung') ?></label>
             <textarea name="beschreibung" id="description"><?= htmlReady($category->beschreibung) ?></textarea>
         </fieldset>
+
         <fieldset>
             <label for="perm">
                 <?= _('Berechtigung') ?>
@@ -33,6 +35,34 @@
             <? endforeach; ?>
             </select>
         </fieldset>
+
+        <fieldset>
+            <label for="dislaimer">
+                <?= _('Kurzhinweis') ?>
+                <?= tooltipIcon(_('Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese Kategorie ausgewählt wird.')) ?>
+            </label>
+            <textarea name="disclaimer" id="disclaimer" class="add_toolbar" style="min-height: 4em"><?= htmlReady($category->disclaimer) ?></textarea>
+        </fieldset>
+
+        <fieldset>
+            <label for="terms">
+                <?= _('Regeln') ?>
+                <?= tooltipIcon(_('Die Regeln werden oberhalb einer Kategorie in deren Übersicht angezeigt.')) ?>
+            </label>
+            <textarea class="add_toolbar" name="terms" id="terms"><?= htmlReady($category->terms) ?></textarea>
+        </fieldset>
+
+        <fieldset>
+            <input type="hidden" name="display_terms_in_article" value="0">
+            <label for="terms">
+                <input type="checkbox" name="display_terms_in_article" value="1"
+                        <? if ($category->display_terms_in_article) echo 'checked'; ?>>    
+
+                <?= _('Regeln in Anzeige') ?>
+                <?= tooltipIcon(_('Die Regeln werden zusätzlich unterhalb einer Anzeige angezeigt.')) ?>
+            </label>
+        </fieldset>
+
         <fieldset>
             <input type="hidden" name="visible" value="0">
             <label for="visibility">
@@ -41,6 +71,7 @@
                 <?= _('Sichtbar') ?>
             </label>
         </fieldset>
+
     <? if ($rss_enabled): ?>
         <fieldset>
             <input type="hidden" name="publishable" value="0">

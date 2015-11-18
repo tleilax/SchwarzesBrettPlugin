@@ -21,8 +21,18 @@
     </header>
 
     <section>
+    <? if ($article->category->terms && $article->category->display_terms_in_article): ?>
+        <span></span>
+        <div class="category-disclaimer">
+            <?= formatReady($article->category->terms) ?>
+        </div>
+    <? endif; ?>
+
         <?= formatReady($article->beschreibung) ?>
-    <? if (count(OpenGraphURL::$tempURLStorage)): ?>
+
+    <? if (class_exists('OpenGraph')): ?>
+        <?= OpenGraph::extract($article->beschreibung)->render(true) ?>
+    <? elseif (count(OpenGraphURL::$tempURLStorage)): ?>
         <div class="opengraph-area">
         <? foreach (OpenGraphURL::$tempURLStorage as $url):
             $og = new SBOpenGraphURL($url);

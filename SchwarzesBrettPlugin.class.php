@@ -182,7 +182,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views/');
         $template = $factory->open('homepage/plugin.php');
         $template->title       = $title;
-        $template->icon_url    = Assets::image_path('icons/16/black/billboard.png');
+        $template->icon_url    = Assets::image_path('icons/black/billboard.svg');
         $template->categories  = SBArticle::groupByCategory($own_profile ? $user->articles : $user->visible_articles);
         $template->controller  = $this;
         return count($template->categories) ? $template : null;

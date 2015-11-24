@@ -34,8 +34,10 @@
         $(this).closest('form').find('.category-disclaimer').hide().filter('#disclaimer-' + id).show();
     });
 
-    // OpenGraph
-    $(document).on('dialog-open ready', function () {
+    // OpenGraph && toolbar
+    $(document).on('dialog-open dualog-update ready', function () {
+        $('.add_toolbar').addToolbar();
+
         $('.opengraph-area:not(.handled)').each(function () {
             var items = $('.opengraph', this),
                 switcher;

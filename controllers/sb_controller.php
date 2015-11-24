@@ -112,33 +112,33 @@ class SchwarzesBrettController extends StudipController
         if ($category_id && count(SBCategory::find($category_id)->new_articles) > 0) {
             $actions->addLink(_('Dieses Thema als besucht markieren'),
                               $this->url_for('category/visit/' . $category_id),
-                              'icons/16/blue/check-circle.png')
+                              'icons/blue/check-circle.svg')
                     ->asDialog();
         }
         if (!$category_id /* TODO || $newArticles*/) {
             $actions->addLink(_('Alle Themen als besucht markieren'),
                               $this->url_for('category/visit'),
-                              'icons/16/blue/accept.png')
+                              'icons/blue/accept.svg')
                     ->asDialog();
         }
         if (!SBUser::get()->isBlacklisted()) {
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
             $actions->addLink(_('Neue Anzeige erstellen'),
                               $this->url_for('article/create/' . ($category_id ?: '')),
-                              $this->dispatcher->plugin->getPluginURL() . '/assets/billboard-add-blue-16.png')->asDialog();
+                              'icons/blue/add/billboard.svg')->asDialog();
         }
         if ($this->is_admin) {
             $actions->addLink(_('Neues Thema anlegen'),
                               $this->url_for('category/create'),
-                              'icons/16/blue/add/folder-empty.png')->asDialog();
+                              'icons/blue/add/folder-empty.svg')->asDialog();
         }
         if ($category_id && $this->is_admin) {
             $actions->addLink(_('Dieses Thema bearbeiten'),
                               $this->url_for('category/edit/' . $category_id),
-                              'icons/16/blue/edit.png')->asDialog();
+                              'icons/blue/edit.svg')->asDialog();
             $actions->addLink(_('Dieses Thema löschen'),
                               $this->url_for('category/delete/' . $category_id),
-                              'icons/16/blue/trash.png',
+                              'icons/blue/trash.svg',
                               array('data-confirm' => _('Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen löschen?')));
         }
 
@@ -148,7 +148,7 @@ class SchwarzesBrettController extends StudipController
             $export = new ExportWidget();
             $export->addLink($category_id ? _('RSS-Feed dieser Kategorie') : _('RSS-Feed'),
                              $this->url_for('rss/' . $category_id),
-                             'icons/16/blue/rss.png');
+                             'icons/blue/rss.svg');
             Sidebar::get()->addWidget($export);
         }
 

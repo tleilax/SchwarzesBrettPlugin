@@ -22,11 +22,6 @@
             $('#layout_content').prepend(messages.join(''));
             messages = [];
         }
-    }).on('click submit', '[data-confirm]', function (event) {
-        var message = $(this).data().confirm || $(this).attr('title') || $(this).text();
-        if (!window.confirm(message)) {
-            event.preventDefault();
-        }
     }).on('click', 'a.article.unseen', function () {
         $(this).toggleClass('unseen seen');
     }).on('change', 'select.has-disclaimer', function () {

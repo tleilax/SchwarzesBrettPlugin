@@ -9,6 +9,12 @@ class ArticleController extends SchwarzesBrettController
         }
 
         $this->article = SBArticle::find($id);
+        if (!$this->article) {
+            $this->set_status(404);
+            $this->render_nothing();
+            return;
+        }
+
         $this->article->visit();
 
         PageLayout::setTitle($this->article->titel . ' (' . $this->article->category->titel . ')');

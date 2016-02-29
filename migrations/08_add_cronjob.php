@@ -1,22 +1,24 @@
 <?php
 class AddCronjob extends DBMigration
 {
-    function description ()
+    public function description ()
     {
         return 'Fügt den Cronjob zum Entfernen abgelaufener Anzeigen hinzu..';
     }
 
     // Schedule removement of expired items every day at 3:00
-    function up()
+    public function up()
     {
-        $task_id = CronjobScheduler::registerTask($this->getCronjobFilename());
-        $schedule = CronjobScheduler::schedulePeriodic($task_id, 0, 3);
+        if (CronjobTask::countBySql('filename = ?', [$this->getCronjobFilename()]) === 0) {
+            $task_id = CronjobScheduler::registerTask($this->getCronjobFilename());
+            $schedule = CronjobScheduler::schedulePeriodic($task_id, 0, 3);
 
-        $schedule->active = true;
-        $schedule->store();
+            $schedule->active = true;
+            $schedule->store();
+        }
     }
 
-    function down()
+    public function down()
     {
         $task_id = CronjobTask::findByFilename($this->getCronjobFilename())->task_id;
         CronjobScheduler::unregisterTask($task_id);

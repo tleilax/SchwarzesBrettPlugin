@@ -8,7 +8,7 @@
     
         <fieldset>
             <label for="reason"><?= _('Grund') ?>:</label>
-            <textarea required name="reason" id="reason" placeholder="<?= _('Bitte geben Sie einen aussagekrätigen Grund ein, weshalb diese Anzeige nicht den Regeln entspricht.') ?>"></textarea>
+            <textarea required name="reason" id="reason" placeholder="<?= _('Bitte geben Sie einen aussagekräftigen Grund ein, weshalb diese Anzeige nicht den Regeln entspricht.') ?>"></textarea>
         </fieldset>
         
         <?= Studip\Button::createAccept(_('Anzeige melden'), 'submit', array('data-dialog-button' => '')) ?>

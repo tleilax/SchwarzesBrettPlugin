@@ -30,7 +30,7 @@
     });
 
     // OpenGraph && toolbar
-    $(document).on('dialog-open dualog-update ready', function () {
+    $(document).on('dialog-open dialog-update ready', function () {
         $('.add_toolbar').addToolbar();
 
         $('.opengraph-area:not(.handled)').each(function () {

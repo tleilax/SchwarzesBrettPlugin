@@ -11,7 +11,9 @@ class SBOpenGraphURL extends OpenGraphURL
     public function render()
     {
         if (self::$proxy_url !== null) {
+            $old_base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
             $this['image'] = URLHelper::getURL(self::$proxy_url, array('url' => $this['image']));
+            URLHelper::setBaseURL($old_base);
         }
             
         return parent::render();

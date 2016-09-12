@@ -4,6 +4,7 @@ require_once 'app/controllers/studip_controller.php';
 class SchwarzesBrettController extends StudipController
 {
     protected $allow_nobody = false;
+    protected $utf8decode_xhr = true;
     protected $temp_storage;
 
     public function before_filter(&$action, &$args)

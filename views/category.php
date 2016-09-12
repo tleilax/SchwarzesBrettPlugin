@@ -5,7 +5,7 @@
         (<?= number_format($count, 0, ',', '.') ?>)
     <? endif; ?>
     <? if ($category->beschreibung): ?>
-        <?= tooltipIcon($category->beschreibung) ?>
+        <?= tooltipIcon(htmlReady($category->beschreibung)) ?>
     <? endif; ?>
     </a>
 <? if ($rss_enabled || $is_admin): ?>

@@ -1,18 +1,18 @@
-<?
-class Rss extends DBMigration
+<?php
+class Rss extends Migration
 {
-    function description ()
+    public function description ()
     {
         return 'eintraege fuer rss werden angelegt';
     }
 
-    function up ()
+    public function up ()
     {
         $db = DBManager::get();
         $db->exec("ALTER IGNORE TABLE `sb_artikel` ADD `publishable` tinyint(2) NOT NULL default '0'");
     }
 
-    function down ()
+    public function down ()
     {
         $db = DBManager::get();
         $db->exec("ALTER IGNORE TABLE `sb_artikel` DROP `publishable`");

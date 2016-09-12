@@ -1,5 +1,5 @@
 <?php
-class MediaProxyConfig extends DBMigration
+class MediaProxyConfig extends Migration
 {
     public function description ()
     {

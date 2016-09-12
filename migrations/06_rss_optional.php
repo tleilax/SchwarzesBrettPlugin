@@ -1,12 +1,12 @@
-<?
-class RssOptional extends DBMigration
+<?php
+class RssOptional extends Migration
 {
-    function description ()
+    public function description ()
     {
         return 'config eintraege fuer rss werden angelegt';
     }
 
-    function up ()
+    public function up ()
     {
         $db = DBManager::get();
         $db->exec("INSERT IGNORE INTO `config` ( `config_id` , `parent_id` , `field` , `value` , `is_default` , `type` , `range` , `section` , `position` , `mkdate` , `chdate` , `description` , `comment` , `message_template` )
@@ -15,10 +15,9 @@ class RssOptional extends DBMigration
         )");
     }
 
-    function down ()
+    public function down ()
     {
         $db = DBManager::get();
         $db->exec("DELETE FROM `config` WHERE `config_id`=MD5('BULLETIN_BOARD_ENABLE_RSS')");
     }
 }
-?>

@@ -1,12 +1,12 @@
-<?
-class Blacklist extends DBMigration
+<?php
+class Blacklist extends Migration
 {
-    function description ()
+    public function description ()
     {
         return 'es wird eine neue db für benutzer auf einer schwarzen liste erstellst.';
     }
 
-    function up ()
+    public function up ()
     {
         $db = DBManager::get();
         $db->exec("CREATE TABLE IF NOT EXISTS `sb_blacklist` (
@@ -16,8 +16,7 @@ class Blacklist extends DBMigration
                     ) ENGINE=MyISAM;");
     }
 
-    function down ()
+    public function down ()
     {
-
     }
 }

@@ -1,5 +1,5 @@
 <?php
-class MigrateTimes extends DBMigration
+class MigrateTimes extends Migration
 {
     public function description()
     {

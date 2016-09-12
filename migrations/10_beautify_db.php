@@ -1,5 +1,5 @@
 <?php
-class BeautifyDb extends DBMigration
+class BeautifyDb extends Migration
 {
     public function description()
     {

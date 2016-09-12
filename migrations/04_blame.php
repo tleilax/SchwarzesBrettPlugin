@@ -1,12 +1,12 @@
-<?
-class Blame extends DBMigration
+<?php
+class Blame extends Migration
 {
-    function description ()
+    public function description ()
     {
         return 'config eintraege fuer blame funktion werden angelegt';
     }
 
-    function up ()
+    public function up ()
     {
         $query = "INSERT IGNORE INTO `config`
                   (`config_id`, `parent_id`, `field`, `value`, `is_default`, `type`, `range`,
@@ -27,7 +27,7 @@ class Blame extends DBMigration
         $statement->execute();
     }
 
-    function down ()
+    public function down ()
     {
         $query = "DELETE FROM `config` WHERE `config_id` IN (MD5('BULLETIN_BOARD_BLAME_RECIPIENTS'), MD5('BULLETIN_BOARD_ENABLE_BLAME'))";
         DBManager::get()->exec($query);

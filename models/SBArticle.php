@@ -244,10 +244,12 @@ class SBArticle extends SimpleORMap
     {
         $query = "SELECT artikel_id
                   FROM sb_artikel
-                  WHERE titel LIKE CONCAT('%', :needle, '%')
-                     OR beschreibung LIKE CONCAT('%', :needle, '%')";
+                  WHERE (visible = 1 OR user_id = :user_id)
+                    AND (titel LIKE CONCAT('%', :needle, '%')
+                     OR beschreibung LIKE CONCAT('%', :needle, '%'))";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':needle', $needle);
+        $statement->bindValue(':user_id', $GLOBALS['user']->id);
         $statement->execute();
 
         $article_ids = $statement->fetchAll(PDO::FETCH_COLUMN);

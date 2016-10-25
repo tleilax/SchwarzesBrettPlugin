@@ -38,6 +38,7 @@ class SBArticle extends SimpleORMap
                           LEFT JOIN sb_visits AS v1 ON a.thema_id = v1.object_id AND v1.user_id = :user_id
                           WHERE a.artikel_id = :id
                             AND (v0.object_id IS NOT NULL
+                             OR a.user_id = :user_id
                              OR a.mkdate < v1.last_visitdate)";
                 $statement = DBManager::get()->prepare($query);
                 $statement->bindValue(':id', $object->id);

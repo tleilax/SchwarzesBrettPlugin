@@ -16,10 +16,7 @@
                 </th>
             </tr>
         <? foreach ($category['articles'] as $article): ?>
-            <?= $this->render_partial('article-tr', compact('article') + [
-                    'return_to' => $controller->url_for('watchlist'),
-                    'checkbox'  => true,
-            ]) ?>
+            <?= $this->render_partial('article-tr', compact('article') + ['checkbox'  => true]) ?>
         <? endforeach; ?>
         </tbody>
     <? endforeach; ?>

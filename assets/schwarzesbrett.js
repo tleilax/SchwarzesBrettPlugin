@@ -65,8 +65,19 @@
         }
     });
 
+    function reloadWatchlist() {
+        if (location.href.match('schwarzesbrettplugin/watchlist') === null) {
+            return;
+        }
+
+        $.get(STUDIP.URLHelper.getURL('plugins.php/schwarzesbrettplugin/watchlist')).then(function (response) {
+            $('#watchlist', response).replaceAll('#watchlist');
+        });
+    }
+
     STUDIP.Dialog.handlers.header['X-Article-Watched'] = function (id) {
         $('[data-article-id="' + id + '"]').addClass('watched');
+        reloadWatchlist();
     };
 
     STUDIP.Dialog.handlers.header['X-Article-Unwatched'] = function (id) {
@@ -79,6 +90,8 @@
         for (i = 0, l = id.length; i < l; i += 1) {
             $('[data-article-id="' + id[i] + '"]').removeClass('watched');
         }
+
+        reloadWatchlist();
     };
 
 }(jQuery, STUDIP));

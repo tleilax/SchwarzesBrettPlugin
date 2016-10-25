@@ -1,23 +1,25 @@
 <?php
 class SBArticle extends SimpleORMap
 {
-    public static function configure($config = array())
+    private static $watched = [];
+    
+    public static function configure($config = [])
     {
         $config['db_table'] = 'sb_artikel';
-        $config['has_many']['visits'] = array(
+        $config['has_many']['visits'] = [
             'class_name'        => 'SBVisit',
             'assoc_foreign_key' => 'object_id',
             'on_delete'         => 'delete',
-        );
-        $config['belongs_to']['category'] = array(
+        ];
+        $config['belongs_to']['category'] = [
             'class_name'  => 'SBCategory',
             'foreign_key' => 'thema_id',
-        );
-        $config['belongs_to']['user'] = array(
+        ];
+        $config['belongs_to']['user'] = [
             'class_name'  => 'SBUser',
             'foreign_key' => 'user_id',
-        );
-        $config['additional_fields']['views'] = array(
+        ];
+        $config['additional_fields']['views'] = [
             'get' => function ($object) {
                 $query = "SELECT COUNT(*)
                           FROM sb_visits
@@ -27,8 +29,8 @@ class SBArticle extends SimpleORMap
                 $statement->execute();
                 return $statement->fetchColumn() ?: 0;
             }
-        );
-        $config['additional_fields']['new'] = array(
+        ];
+        $config['additional_fields']['new'] = [
             'get' => function ($object) {
                 $query = "SELECT 1
                           FROM sb_artikel AS a
@@ -42,8 +44,20 @@ class SBArticle extends SimpleORMap
                 $statement->bindValue(':user_id', $GLOBALS['user']->id);
                 $statement->execute();
                 return $statement->fetchColumn() === false;
-            }
-        );
+            },
+        ];
+
+        $config['additional_fields']['watched'] = [
+            'get' => function (SBArticle $article) {
+                $user_id = $GLOBALS['user']->id;
+
+                if (!isset(self::$watched['user_id'])) {
+                    self::$watched[$user_id] = SBWatchlist::getWatchedIds($user_id);
+                }
+
+                return in_array($article->id, self::$watched[$user_id]);
+            },
+        ];
 
         parent::configure($config);
     }
@@ -216,6 +230,13 @@ class SBArticle extends SimpleORMap
         }
 
         return $duplicates;
+    }
+
+    public function delete()
+    {
+        SBWatchlist::deleteBySQL('artikel_id = ?', [$this->id]);
+
+        return parent::delete();
     }
 
     public static function search($needle)

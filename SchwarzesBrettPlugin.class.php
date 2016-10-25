@@ -40,7 +40,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
     protected function buildMenu()
     {
         // Hauptmenüpunkt
-        $nav = new Navigation(_('Schwarzes Brett'), PluginEngine::getURL($this, array(), 'category'));
+        $nav = new Navigation(_('Schwarzes Brett'), $this->url_for('category'));
         $nav->setImage('icons/lightblue/billboard.svg', tooltip2(_('Schwarzes Brett')));
         if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
             $nav->setBadgeNumber(SBArticle::countNew());
@@ -48,33 +48,40 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         Navigation::addItem('/schwarzesbrettplugin', $nav);
 
         // Untermenü
-        $nav = new Navigation(_('Schwarzes Brett'), PluginEngine::getURL($this, array(), 'category'));
+        $nav = new Navigation(_('Schwarzes Brett'), $this->url_for('category'));
         Navigation::addItem('/schwarzesbrettplugin/show', $nav);
 
-        $nav = new Navigation(_('Übersicht'), PluginEngine::getURL($this, array(), 'category'));
+        $nav = new Navigation(_('Übersicht'), $this->url_for('category'));
         Navigation::addItem('/schwarzesbrettplugin/show/all', $nav);
-        if (count(SBUser::Get()->articles) > 0) {
-            $nav = new Navigation(_('Meine Anzeigen'), PluginEngine::getURL($this, array(), 'article/own'));
-            Navigation::addItem('/schwarzesbrettplugin/show/own', $nav);
+
+        $nav = new Navigation(_('Merkliste'), $this->url_for('watchlist'));
+        Navigation::addItem('/schwarzesbrettplugin/show/watchlist', $nav);
+
+        $title = _('Meine Anzeigen');
+        $count = count(SBUser::Get()->articles);
+        if ($count > 0) {
+            $title .= sprintf(' (%u)', $count);
         }
+        $nav = new Navigation($title, $this->url_for('article/own'));
+        Navigation::addItem('/schwarzesbrettplugin/show/own', $nav);
 
         //zusatzpunkte für root
         if ($GLOBALS['perm']->have_perm('root')) {
-            $nav = new Navigation(_('Administration'), PluginEngine::getURL($this, array(), 'admin/settings'));
+            $nav = new Navigation(_('Administration'), $this->url_for('admin/settings'));
             Navigation::addItem('/schwarzesbrettplugin/root', $nav);
 
-            $nav = new Navigation(_('Grundeinstellungen'), PluginEngine::getURL($this, array(), 'admin/settings'));
+            $nav = new Navigation(_('Grundeinstellungen'), $this->url_for('admin/settings'));
             Navigation::addItem('/schwarzesbrettplugin/root/settings', $nav);
 
-            $nav = new Navigation(_('Benutzer-Blacklist'), PluginEngine::getURL($this, array(), 'admin/blacklist'));
+            $nav = new Navigation(_('Benutzer-Blacklist'), $this->url_for('admin/blacklist'));
             Navigation::addItem('/schwarzesbrettplugin/root/blacklist', $nav);
 
-            $nav = new Navigation(_('Doppelte Einträge suchen'), PluginEngine::getURL($this, array(), 'admin/duplicates'));
+            $nav = new Navigation(_('Doppelte Einträge suchen'), $this->url_for('admin/duplicates'));
             Navigation::addItem('/schwarzesbrettplugin/root/duplicates', $nav);
 
             if (!$this->hasActiveCronjob() && $expired = SBArticle::countBySQL('expires < UNIX_TIMESTAMP()')) {
                 $title = sprintf(_('Datenbank bereinigen') . ' (' . _('%u alte Einträge') . ')', $expired);
-                $nav = new Navigation($title, PluginEngine::getURL($this, array(), 'article/purge'));
+                $nav = new Navigation($title, $this->url_for('article/purge'));
                 Navigation::addItem('/schwarzesbrettplugin/root/gc', $nav);
             }
         }
@@ -103,7 +110,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
 
         if (Config::get()->BULLETIN_BOARD_MEDIA_PROXY) {
-            SBOpenGraphURL::setProxyURL(PluginEngine::getURL($this, array(), 'proxy', true));
+            SBOpenGraphURL::setProxyURL(PluginEngine::getURL($this, [], 'proxy', true));
         }
 
         if ($unconsumed_path === 'show/all') {
@@ -127,7 +134,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         if (is_array($last)) {
             $params = array_pop($args);
         } else {
-            $params = array();
+            $params = [];
         }
 
         return PluginEngine::getURL($this, $params, join('/', $args));

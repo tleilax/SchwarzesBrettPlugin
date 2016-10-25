@@ -54,6 +54,20 @@
                                       )),
                                       array('data-dialog' => '',
                                             'autofocus'   => '')) ?>
+        <? if ($article->watched): ?>
+            <?= Studip\LinkButton::create(
+                _('Nicht merken'),
+                $controller->url_for('watchlist/remove/' . $article->id, ['return_to' => Request::get('return_to')]),
+                ['class' => 'unwatch']
+            ) ?>
+        <? else: ?>
+            <?= Studip\LinkButton::create(
+                _('Merken'),
+                $controller->url_for('watchlist/add/' . $article->id, ['return_to' => Request::get('return_to')]),
+                ['class' => 'watch']
+            ) ?>
+        <? endif; ?>
+
         <? if ($blame_enabled): ?>
             <?= Studip\LinkButton::create(_('Verstoß melden'),
                                           $controller->url_for('article/blame/' . $article->id),

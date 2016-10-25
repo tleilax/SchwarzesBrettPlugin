@@ -58,13 +58,13 @@
             <?= Studip\LinkButton::create(
                 _('Nicht merken'),
                 $controller->url_for('watchlist/remove/' . $article->id, ['return_to' => Request::get('return_to')]),
-                ['class' => 'unwatch']
+                ['data-dialog' => '']
             ) ?>
         <? else: ?>
             <?= Studip\LinkButton::create(
                 _('Merken'),
                 $controller->url_for('watchlist/add/' . $article->id, ['return_to' => Request::get('return_to')]),
-                ['class' => 'watch']
+                ['data-dialog' => '']
             ) ?>
         <? endif; ?>
 

@@ -34,6 +34,8 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         //menu nur anzeigen, wenn eingeloggt
         if ($GLOBALS['perm']->have_perm('user')) {
             $this->buildMenu();
+
+            NotificationCenter::addObserver($this, 'onDelete', 'UserWillDelete');
         }
     }
 
@@ -138,6 +140,14 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         }
 
         return PluginEngine::getURL($this, $params, join('/', $args));
+    }
+
+    public function onDelete($user)
+    {
+        SBArticle::deleteBySQL("user_id = ?", [$user->id]);
+        SBBlacklist::deleteBySQL("user_id = ?", [$user->id]);
+        SBVisit::deleteBySQL("user_id = ?", [$user->id]);
+        SBWatchlist::deleteBySQL("user_id = ?", [$user->id]);
     }
 
     public static function onEnable($plugin_id)

@@ -9,16 +9,17 @@ class SchwarzesBrettController extends StudipController
 
     public function before_filter(&$action, &$args)
     {
+        $this->flash = Trails_Flash::instance();
+        
         parent::before_filter($action, $args);
 
         if (!$this->allow_nobody) {
             $GLOBALS['perm']->check('user');
         }
 
-        if (Request::isXhr()) {
-            $this->response->add_header('Content-Type', 'text/html;charset=windows-1252');
-        } else {
-            $this->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));
+        if (isset($this->flash['send_headers'])) {
+            $headers = $this->flash['send_headers'];
+            $this->response->add_header($headers[0], $headers[1]);
         }
 
         // Setup mandatory variables
@@ -47,17 +48,10 @@ class SchwarzesBrettController extends StudipController
     public function redirect($to)
     {
         if (Request::isXhr()) {
-            $this->response->add_header('X-Dialog-Close', 1);
-
             $messages = PageLayout::getMessages();
             if (!empty($messages)) {
                 $this->response->add_header('X-Messages', json_encode(join('', $messages)));
             }
-
-            if (!$this->performed) {
-                $this->render_nothing();
-            }
-            return;
         }
 
         return parent::redirect($to);

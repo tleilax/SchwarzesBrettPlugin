@@ -1,6 +1,6 @@
 /*jslint browser: true, unparam: true */
-/*global jQuery */
-(function ($) {
+/*global jQuery, STUDIP */
+(function ($, STUDIP) {
     'use strict';
 
     var messages = [];
@@ -64,4 +64,21 @@
             buttons.right.attr('disabled', current.next('.opengraph').length === 0);
         }
     });
-}(jQuery));
+
+    STUDIP.Dialog.handlers.header['X-Article-Watched'] = function (id) {
+        $('[data-article-id="' + id + '"]').addClass('watched');
+    };
+
+    STUDIP.Dialog.handlers.header['X-Article-Unwatched'] = function (id) {
+        var i, l;
+
+        if (!$.isArray(id)) {
+            id = [id];
+        }
+
+        for (i = 0, l = id.length; i < l; i += 1) {
+            $('[data-article-id="' + id[i] + '"]').removeClass('watched');
+        }
+    };
+
+}(jQuery, STUDIP));

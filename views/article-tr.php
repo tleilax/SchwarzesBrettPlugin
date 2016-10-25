@@ -1,11 +1,11 @@
-<tr class="<? if (!$article->visible) echo 'hidden'; ?>" id="sb-article-<?= $article->id ?>">
+<tr class="<? if (!$article->visible) echo 'hidden'; ?>  <? if ($article->watched) echo 'watched'; ?>" id="sb-article-<?= $article->id ?>" data-article-id="<?= htmlReady($article->id) ?>">
 <? if (!empty($checkbox)): ?>
     <td>
         <input type="checkbox" name="ids[]" value="<?= htmlReady($article->id) ?>">
     </td>
 <? endif; ?>
     <td>
-        <a href="<?= $controller->url_for('article/view/' . $article->id, compact('needle')) ?>"
+        <a href="<?= $controller->url_for('article/view/' . $article->id, compact('needle', 'return_to')) ?>"
             class="article <?= $article->new ? 'unseen' : 'seen' ?>" data-dialog>
             <?= SBArticle::markup($needle, htmlReady($article->titel)) ?>
         </a>

@@ -15,6 +15,7 @@ class SchwarzesBrettCronjob extends CronJob
     {
         require_once __DIR__ . '/../models/SBArticle.php';
         require_once __DIR__ . '/../models/SBVisit.php';
+        require_once __DIR__ . '/../models/SBWatchlist.php';
     }
 
     public function execute($last_result, $parameters = array())
@@ -28,11 +29,10 @@ class SchwarzesBrettCronjob extends CronJob
         if (count($artikel) > 0) {
             printf('Removed %u items' . "\n", count($artikel));
         }
+
+        // Do big garbage collection with a chance of 5%
+        if (mt_rand() / PHP_INT_MAX >= 0.95) {
+            SBVisit::gc();
+        }
     }
 }
-
-/*
-DELETE FROM sb_visits WHERE user_id NOT IN (SELECT user_id FROM auth_user_md5);
-DELETE FROM sb_visits WHERE type = 'artikel' AND object_id NOT IN (SELECT artikel_id FROM sb_artikel);
-DELETE FROM sb_visits WHERE type = 'thema' AND object_id NOT IN (SELECT thema_id FROM sb_themen);
-*/

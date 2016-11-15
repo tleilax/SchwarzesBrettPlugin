@@ -51,7 +51,7 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
         $navigation = array();
 
         $nav = new Navigation('', PluginEngine::getLink($this, array(), 'settings'));
-        $nav->setImage('icons/16/blue/admin.png', tooltip2(_('Einstellungen')) + array('data-dialog' => ''));
+        $nav->setImage(Icon::create('admin', 'clickable', tooltip2(_('Einstellungen')) + array('data-dialog' => '')));
         $navigation[] = $nav;
 
         return $navigation;

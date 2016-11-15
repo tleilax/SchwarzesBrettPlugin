@@ -43,7 +43,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
     {
         // Hauptmenüpunkt
         $nav = new Navigation(_('Schwarzes Brett'), $this->url_for('category'));
-        $nav->setImage('icons/lightblue/billboard.svg', tooltip2(_('Schwarzes Brett')));
+        $nav->setImage(Icon::create('billboard', 'navigation', tooltip2(_('Schwarzes Brett'))));
         if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
             $nav->setBadgeNumber(SBArticle::countNew());
         }
@@ -199,7 +199,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views/');
         $template = $factory->open('homepage/plugin.php');
         $template->title       = $title;
-        $template->icon_url    = Assets::image_path('icons/black/billboard.svg');
+        $template->icon_url    = Icon::create('billboard', 'info');
         $template->categories  = SBArticle::groupByCategory($own_profile ? $user->articles : $user->visible_articles);
         $template->controller  = $this;
         return count($template->categories) ? $template : null;

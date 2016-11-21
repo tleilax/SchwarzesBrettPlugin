@@ -129,7 +129,7 @@
             border-bottom-left-radius: @border-radius;
         }
         td & {
-            .icon-after('red/star.png', 8);
+            .icon('after', 'star', 'attention', 8);
         }
     }
     li & {
@@ -240,5 +240,11 @@ tbody.sb-articles {
     
     &:first-child {
         margin-top: 0;
+    }
+}
+
+.sb-search-form {
+    .quicksearch_frame.extendedLayout {
+        display: inline-block;
     }
 }

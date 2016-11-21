@@ -12,15 +12,15 @@
     <div class="options">
     <? if ($is_admin): ?>
         <a href="<?= $controller->url_for('category/edit/' . $category->id) ?>" data-dialog>
-            <?= Assets::img('icons/16/blue/edit.png', tooltip2(_('Thema bearbeiten'))) ?>
+            <?= Icon::create('edit', 'clickable', tooltip2(_('Thema bearbeiten'))) ?>
         </a>
         <a href="<?= $controller->url_for('category/delete/' . $category->id) ?>" data-confirm="<?= _('Wollen Sie dieses Thema wirklich löschen?') ?>">
-            <?= Assets::img('icons/16/blue/trash.png', tooltip2(_('Thema löschen'))) ?>
+            <?= Icon::create('trash', 'clickable', tooltip2(_('Thema löschen'))) ?>
         </a>
     <? endif; ?>
     <? if ($rss_enabled): ?>
         <a href="<?= $controller->url_for('rss/' . $category->id) ?>">
-            <?= Assets::img('icons/16/blue/rss.png', tooltip2(_('RSS-Feed zu dieser Kategorie abrufen'))) ?>
+            <?= Icon::create('rss', 'clickable', tooltip2(_('RSS-Feed zu dieser Kategorie abrufen'))) ?>
         </a>
     <? endif; ?>
     </div>

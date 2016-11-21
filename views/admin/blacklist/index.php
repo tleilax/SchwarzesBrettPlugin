@@ -1,5 +1,5 @@
 <h3><?= _('Benutzer auf die schwarze Liste setzen') ?></h3>
-<form method="post" action="<?= $controller->url_for('admin/blacklist/add') ?>">
+<form method="post" action="<?= $controller->url_for('admin/blacklist/add') ?>" class="sb-search-form">
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
     <?= QuickSearch::get('user_id', new StandardSearch('user_id'))->withButton()->render() ?>
@@ -50,9 +50,9 @@
                     (<?= htmlReady($user->user->username) ?> / <?= htmlReady($user->user->perms) ?>)
                 </td>
                 <td class="actions">
-                    <?= Assets::input('icons/16/blue/trash.png',
+                    <?= Icon::create('trash', 'clickable', 
                                       tooltip2(_('Benutzer von der schwarzen Liste entfernen')) +
-                                      array('formaction' => $controller->url_for('admin/blacklist/remove/' . $user->id))) ?>
+                                      array('formaction' => $controller->url_for('admin/blacklist/remove/' . $user->id)))->asInput() ?>
                 </td>
             </tr>
         <? endforeach; ?>

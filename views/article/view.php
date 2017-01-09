@@ -52,8 +52,7 @@
                                           'default_subject' => 'Re: ' . $article->titel,
                                           'default_body'    => '[quote]' . $article->beschreibung . '[/quote]',
                                       )),
-                                      array('data-dialog' => '',
-                                            'autofocus'   => '')) ?>
+                                      array('data-dialog' => '')) ?>
         <? if ($article->watched): ?>
             <?= Studip\LinkButton::create(
                 _('Nicht merken'),

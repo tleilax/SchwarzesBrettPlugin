@@ -25,7 +25,7 @@ require_once 'bootstrap.inc.php';
 /**
  * SchwarzesBrettPlugin Hauptklasse
  */
-class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin
+class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin, Loggable
 {
     public function __construct()
     {
@@ -43,7 +43,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
     {
         // Hauptmenüpunkt
         $nav = new Navigation(_('Schwarzes Brett'), $this->url_for('category'));
-        $nav->setImage('icons/lightblue/billboard.svg', tooltip2(_('Schwarzes Brett')));
+        $nav->setImage(Icon::create('billboard', 'navigation', tooltip2(_('Schwarzes Brett'))));
         if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
             $nav->setBadgeNumber(SBArticle::countNew());
         }
@@ -199,9 +199,46 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views/');
         $template = $factory->open('homepage/plugin.php');
         $template->title       = $title;
-        $template->icon_url    = Assets::image_path('icons/black/billboard.svg');
+        $template->icon_url    = Icon::create('billboard', 'info');
         $template->categories  = SBArticle::groupByCategory($own_profile ? $user->articles : $user->visible_articles);
         $template->controller  = $this;
         return count($template->categories) ? $template : null;
+    }
+
+    public static function logFormat(LogEvent $event)
+    {
+        $replaces = [
+            '%title'               => $event->info,
+            '%category(%affected)' => _('Unbekannt'),
+            '%user(%coaffected)'   => '',
+        ];
+
+        if ($category = SBCategory::find($event->affected_range_id)) {
+            $replaces['%category(%affected)'] = sprintf(
+                '<a href="%s">%s</a>',
+                URLHelper::getLink('plugins.php/schwarzesbrettplugin/category/view/' . $category->id),
+                htmlReady($category->titel)
+            );
+        }
+
+        if ($event->coaffected_range_id && $event->coaffected_range_id !== $GLOBALS['user']->id) {
+            $user = User::find($event->coaffected_range_id);
+            $replaces['%user(%coaffected)'] = sprintf(
+                ' von <a href="%s">%s</a>',
+                URLHelper::getLink('dispatch.php/profile?username=' . $user->username),
+                htmlReady($user->getFullName())
+            );
+        }
+
+        return str_replace(
+            array_keys($replaces),
+            array_values($replaces),
+            $event->action->info_template
+        );
+    }
+
+    public static function logSearch($needle, $action_name = null)
+    {
+        return [];
     }
 }

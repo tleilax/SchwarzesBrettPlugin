@@ -233,9 +233,19 @@ class SBArticle extends SimpleORMap
         return $duplicates;
     }
 
+    public function store()
+    {
+        if ($this->isNew()) {
+            StudipLog::log('SB_ARTICLE_CREATED', $this->category->id, null, $this->titel);
+        }
+
+        return parent::store();
+    }
+
     public function delete()
     {
         SBWatchlist::deleteBySQL('artikel_id = ?', [$this->id]);
+        StudipLog::log('SB_ARTICLE_DELETED', $this->category->id, null, $this->titel);
 
         return parent::delete();
     }

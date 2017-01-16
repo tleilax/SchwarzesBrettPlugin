@@ -1,5 +1,15 @@
 <?php
-class SBArticle extends SimpleORMap
+namespace SchwarzesBrett;
+
+use Config;
+use DBManager;
+use PDO;
+use SimpleORMap;
+use StudipCacheFactory;
+use StudipFormat;
+use StudipLog;
+
+class Article extends SimpleORMap
 {
     private static $watched = [];
     
@@ -7,16 +17,16 @@ class SBArticle extends SimpleORMap
     {
         $config['db_table'] = 'sb_artikel';
         $config['has_many']['visits'] = [
-            'class_name'        => 'SBVisit',
+            'class_name'        => 'SchwarzesBrett\\Visit',
             'assoc_foreign_key' => 'object_id',
             'on_delete'         => 'delete',
         ];
         $config['belongs_to']['category'] = [
-            'class_name'  => 'SBCategory',
+            'class_name'  => 'SchwarzesBrett\\Category',
             'foreign_key' => 'thema_id',
         ];
         $config['belongs_to']['user'] = [
-            'class_name'  => 'SBUser',
+            'class_name'  => 'SchwarzesBrett\\User',
             'foreign_key' => 'user_id',
         ];
         $config['additional_fields']['views'] = [
@@ -49,11 +59,11 @@ class SBArticle extends SimpleORMap
         ];
 
         $config['additional_fields']['watched'] = [
-            'get' => function (SBArticle $article) {
+            'get' => function (Article $article) {
                 $user_id = $GLOBALS['user']->id;
 
                 if (!isset(self::$watched['user_id'])) {
-                    self::$watched[$user_id] = SBWatchlist::getWatchedIds($user_id);
+                    self::$watched[$user_id] = Watchlist::getWatchedIds($user_id);
                 }
 
                 return in_array($article->id, self::$watched[$user_id]);
@@ -119,7 +129,7 @@ class SBArticle extends SimpleORMap
 
     public static function findNewByCategoryId($category_id)
     {
-        $visit = SBVisit::findOneBySQL("object_id = :category_id AND user_id = :user_id AND type = 'thema'",
+        $visit = Visit::findOneBySQL("object_id = :category_id AND user_id = :user_id AND type = 'thema'",
                                        array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));
         $last_visit = $visit
                     ? $visit->last_visitdate
@@ -180,9 +190,9 @@ class SBArticle extends SimpleORMap
 
     public function visit()
     {
-        $visit = SBVisit::find(array($this->id, $GLOBALS['user']->id));
+        $visit = Visit::find(array($this->id, $GLOBALS['user']->id));
         if (!$visit) {
-            $visit = new SBVisit();
+            $visit = new Visit();
             $visit->object_id = $this->id;
             $visit->user_id   = $GLOBALS['user']->id;
             $visit->type      = 'artikel';
@@ -215,7 +225,7 @@ class SBArticle extends SimpleORMap
         while ($ids = $statement->fetchColumn()) {
             $ids = explode(',', $ids);
 
-            $articles = SBArticle::findMany($ids, 'ORDER BY mkdate DESC');
+            $articles = Article::findMany($ids, 'ORDER BY mkdate DESC');
             $user_id  = $articles[0]->user_id;
 
             if (!isset($duplicates[$user_id])) {
@@ -246,7 +256,7 @@ class SBArticle extends SimpleORMap
 
     public function delete()
     {
-        SBWatchlist::deleteBySQL('artikel_id = ?', [$this->id]);
+        Watchlist::deleteBySQL('artikel_id = ?', [$this->id]);
         StudipLog::log('SB_ARTICLE_DELETED', $this->category->id, null, $this->titel);
 
         return parent::delete();
@@ -266,7 +276,7 @@ class SBArticle extends SimpleORMap
 
         $article_ids = $statement->fetchAll(PDO::FETCH_COLUMN);
 
-        return SBArticle::findMany($article_ids, 'ORDER BY mkdate DESC');
+        return Article::findMany($article_ids, 'ORDER BY mkdate DESC');
     }
 
     public static function groupByCategory($articles)

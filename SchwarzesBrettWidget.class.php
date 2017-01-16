@@ -1,4 +1,7 @@
 <?php
+use SchwarzesBrett\Article;
+use SchwarzesBrett\Category;
+
 class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
 {
     public function getPluginName()
@@ -41,7 +44,7 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
         
         $template = $this->getTemplate('widget/settings.php', true);
         $template->url        = PluginEngine::getLink($this, array(), 'settings');
-        $template->categories = SBCategory::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC');
+        $template->categories = Category::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC');
         $template->config   = $this->getConfig();
         echo $template->render();
     }
@@ -62,7 +65,7 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
         $config = $this->getConfig();
 
         $template = $this->getTemplate('widget/index.php');
-        $template->articles = SBArticle::findNewest($config['count'], $config['selected']);
+        $template->articles = Article::findNewest($config['count'], $config['selected']);
         return $template->render();
     }
 

@@ -1,5 +1,10 @@
 <?php
-class SBVisit extends SimpleORMAP
+namespace SchwarzesBrett;
+
+use DBManager;
+use SimpleORMAP;
+
+class Visit extends SimpleORMAP
 {
     public static function configure($config = array())
     {

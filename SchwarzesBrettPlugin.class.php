@@ -20,6 +20,13 @@
  * @version     3.0
  */
 
+use SchwarzesBrett\Article;
+use SchwarzesBrett\Category;
+use SchwarzesBrett\OpenGraphURL;
+use SchwarzesBrett\User;
+use SchwarzesBrett\Visit;
+use SchwarzesBrett\Watchlist;
+
 require_once 'bootstrap.inc.php';
 
 /**
@@ -45,7 +52,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         $nav = new Navigation(_('Schwarzes Brett'), $this->url_for('category'));
         $nav->setImage('icons/lightblue/billboard.svg', tooltip2(_('Schwarzes Brett')));
         if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
-            $nav->setBadgeNumber(SBArticle::countNew());
+            $nav->setBadgeNumber(Article::countNew());
         }
         Navigation::addItem('/schwarzesbrettplugin', $nav);
 
@@ -60,7 +67,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         Navigation::addItem('/schwarzesbrettplugin/show/watchlist', $nav);
 
         $title = _('Meine Anzeigen');
-        $count = count(SBUser::Get()->articles);
+        $count = count(User::Get()->articles);
         if ($count > 0) {
             $title .= sprintf(' (%u)', $count);
         }
@@ -81,7 +88,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
             $nav = new Navigation(_('Doppelte Einträge suchen'), $this->url_for('admin/duplicates'));
             Navigation::addItem('/schwarzesbrettplugin/root/duplicates', $nav);
 
-            if (!$this->hasActiveCronjob() && $expired = SBArticle::countBySQL('expires < UNIX_TIMESTAMP()')) {
+            if (!$this->hasActiveCronjob() && $expired = Article::countBySQL('expires < UNIX_TIMESTAMP()')) {
                 $title = sprintf(_('Datenbank bereinigen') . ' (' . _('%u alte Einträge') . ')', $expired);
                 $nav = new Navigation($title, $this->url_for('article/purge'));
                 Navigation::addItem('/schwarzesbrettplugin/root/gc', $nav);
@@ -97,22 +104,20 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
     protected function hasActiveCronjob()
     {
         return Config::get()->CRONJOBS_ENABLE
-            && ($tasks = CronjobTask::findByClass('SchwarzesBrettCronjob'))
+            && ($tasks = CronjobTask::findByClass('SchwarzesBrett\\Cronjob'))
             && $tasks[0]->active
             && $tasks[0]->schedules->findOneBy('active', '1');
     }
 
     public function perform($unconsumed_path)
     {
-        require_once 'controllers/sb_controller.php';
-
         PageLayout::setTitle(_('Schwarzes Brett'));
 
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
 
         if (Config::get()->BULLETIN_BOARD_MEDIA_PROXY) {
-            SBOpenGraphURL::setProxyURL(PluginEngine::getURL($this, [], 'proxy', true));
+            OpenGraphURL::setProxyURL(PluginEngine::getURL($this, [], 'proxy', true));
         }
 
         if ($unconsumed_path === 'show/all') {
@@ -144,10 +149,10 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
 
     public function onDelete($user)
     {
-        SBArticle::deleteBySQL("user_id = ?", [$user->id]);
-        SBBlacklist::deleteBySQL("user_id = ?", [$user->id]);
-        SBVisit::deleteBySQL("user_id = ?", [$user->id]);
-        SBWatchlist::deleteBySQL("user_id = ?", [$user->id]);
+        Article::deleteBySQL("user_id = ?", [$user->id]);
+        Blacklist::deleteBySQL("user_id = ?", [$user->id]);
+        Visit::deleteBySQL("user_id = ?", [$user->id]);
+        Watchlist::deleteBySQL("user_id = ?", [$user->id]);
     }
 
     public static function onEnable($plugin_id)
@@ -190,7 +195,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
 
         $own_profile = $user_id === $GLOBALS['user']->id;
 
-        $user  = SBUser::find($user_id);
+        $user  = User::find($user_id);
 
         $title = $own_profile
                ? _('Meine aktuellen Anzeigen im Schwarzen Brett')
@@ -200,7 +205,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         $template = $factory->open('homepage/plugin.php');
         $template->title       = $title;
         $template->icon_url    = Assets::image_path('icons/black/billboard.svg');
-        $template->categories  = SBArticle::groupByCategory($own_profile ? $user->articles : $user->visible_articles);
+        $template->categories  = Article::groupByCategory($own_profile ? $user->articles : $user->visible_articles);
         $template->controller  = $this;
         return count($template->categories) ? $template : null;
     }
@@ -213,7 +218,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
             '%user(%coaffected)'   => '',
         ];
 
-        if ($category = SBCategory::find($event->affected_range_id)) {
+        if ($category = Category::find($event->affected_range_id)) {
             $replaces['%category(%affected)'] = sprintf(
                 '<a href="%s">%s</a>',
                 URLHelper::getLink('plugins.php/schwarzesbrettplugin/category/view/' . $category->id),

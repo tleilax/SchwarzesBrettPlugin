@@ -1,5 +1,9 @@
 <?php
-class CategoryController extends SchwarzesBrettController
+use SchwarzesBrett\Article;
+use SchwarzesBrett\Category;
+use SchwarzesBrett\User;
+
+class CategoryController extends SchwarzesBrett\Controller
 {
     public function before_filter(&$action, &$args)
     {
@@ -15,7 +19,7 @@ class CategoryController extends SchwarzesBrettController
 
         parent::before_filter($action, $args);
 
-        if (SBUser::Get()->isBlacklisted()) {
+        if (User::Get()->isBlacklisted()) {
             PageLayout::postMessage(MessageBox::info(_('Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')));
         }
     }
@@ -31,9 +35,9 @@ class CategoryController extends SchwarzesBrettController
         Navigation::activateItem('/schwarzesbrettplugin/show/all');
 
         $this->categories = $this->is_admin
-                          ? SBCategory::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC')
-                          : SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
-        $this->newest = SBArticle::findNewest($this->newest_limit);
+                          ? Category::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC')
+                          : Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
+        $this->newest = Article::findNewest($this->newest_limit);
 
         $this->inject_rss();
     }
@@ -44,7 +48,7 @@ class CategoryController extends SchwarzesBrettController
 
         $this->inject_rss($category_id);
 
-        $this->category = SBCategory::find($category_id);
+        $this->category = Category::find($category_id);
         $this->articles = $this->is_admin
                         ? $this->category->articles
                         : $this->category->visible_articles;
@@ -62,10 +66,10 @@ class CategoryController extends SchwarzesBrettController
 
     public function visit_action($id = null)
     {
-        SBCategory::visitAll($id);
+        Category::visitAll($id);
 
         if ($id) {
-            $category = SBCategory::find($id);
+            $category = Category::find($id);
             $message = sprintf(_('Thema "%s" wurde als besucht markiert.'), $category->titel);
         } else {
             $message = _('Alle Themen wurden als besucht markiert');
@@ -83,7 +87,7 @@ class CategoryController extends SchwarzesBrettController
     {
         PageLayout::setTitle(_('Thema erstellen'));
 
-        $this->category = new SBCategory();
+        $this->category = new Category();
 
         $this->render_action('edit');
     }
@@ -92,7 +96,7 @@ class CategoryController extends SchwarzesBrettController
     {
         PageLayout::setTitle(_('Thema bearbeiten'));
 
-        $this->category = SBCategory::find($id);
+        $this->category = Category::find($id);
     }
 
     public function store_action($id = null)
@@ -101,8 +105,8 @@ class CategoryController extends SchwarzesBrettController
 
         if (Request::isPost() && check_ticket(Request::get('studip_ticket'))) {
             $category = $id
-                      ? SBCategory::find($id)
-                      : new SBCategory();
+                      ? Category::find($id)
+                      : new Category();
 
             $category->titel        = trim(Request::get('titel'));
             $category->beschreibung = trim(Request::get('beschreibung'));
@@ -127,7 +131,7 @@ class CategoryController extends SchwarzesBrettController
 
     public function delete_action($id)
     {
-        $category = SBCategory::find($id);
+        $category = Category::find($id);
         $title = $category->titel;
         $count = count($category->articles);
         $category->delete();
@@ -152,13 +156,13 @@ class CategoryController extends SchwarzesBrettController
 
             $this->ids         = $ids;
             $this->category_id = $id;
-            $this->categories  = SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci');
+            $this->categories  = Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci');
             $this->render_template('category/bulk-move.php', $this->layout);
         } elseif (Request::submitted('moved')) {
             $category_id = Request::option('category_id');
             
             if ($category_id !== $id) {
-                $articles = SBArticle::findMany($ids);
+                $articles = Article::findMany($ids);
                 foreach ($articles as $article) {
                     $article->thema_id = $category_id;
                     $article->store();
@@ -172,7 +176,7 @@ class CategoryController extends SchwarzesBrettController
         } elseif (Request::submitted('delete')) {
             $deleted = 0;
 
-            $articles = SBArticle::findMany($ids);
+            $articles = Article::findMany($ids);
             foreach ($articles as $article) {
                 $deleted += (int)($article->delete() !== false);
             }

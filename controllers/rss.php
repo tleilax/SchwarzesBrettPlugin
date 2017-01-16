@@ -1,5 +1,8 @@
 <?php
-class RssController extends SchwarzesBrettController
+use SchwarzesBrett\Article;
+use SchwarzesBrett\Catgory;
+
+class RssController extends SchwarzesBrett\Controller
 {
     protected $allow_nobody = true;
 
@@ -21,14 +24,14 @@ class RssController extends SchwarzesBrettController
 
     public function index_action($category_id = null, $limit = 50)
     {
-        $this->articles = SBArticle::findPublishable($category_id);
+        $this->articles = Article::findPublishable($category_id);
         $this->articles = array_slice($this->articles, 0, $limit);
 
         $this->title       = _('Stud.IP Schwarzes Brett');
         $this->description = '';
         $this->link        = $this->url_for('category');
         if ($category_id !== null) {
-            $category = SBCategory::find($category_id);
+            $category = Category::find($category_id);
             $this->title       .= ' - ' . $category->titel;
             $this->description  = $category->beschreibung;
             $this->link         = $this->absolute_url_for('category/' . $category->id);

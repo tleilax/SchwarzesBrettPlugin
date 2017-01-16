@@ -1,17 +1,23 @@
 <?php
-class SBWatchlist extends SimpleORMap
+namespace SchwarzesBrett;
+
+use DBManager;
+use PDO;
+use SimpleORMap;
+
+class Watchlist extends SimpleORMap
 {
     protected static function configure($config = [])
     {
         $config['db_table'] = 'sb_watchlist';
 
         $config['has_one']['user'] = [
-            'class_name'  => 'SBUser',
+            'class_name'  => 'SchwarzesBrett\\User',
             'foreign_key' => 'user_id',
         ];
 
         $config['has_one']['article'] = [
-            'class_name'  => 'SBArticle',
+            'class_name'  => 'SchwarzesBrett\\Article',
             'foreign_key' => 'artikel_id',
         ];
 

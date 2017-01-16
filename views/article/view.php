@@ -35,7 +35,7 @@
     <? elseif (count(OpenGraphURL::$tempURLStorage)): ?>
         <div class="opengraph-area">
         <? foreach (OpenGraphURL::$tempURLStorage as $url):
-            $og = new SBOpenGraphURL($url);
+            $og = new SchwarzesBrett\OpenGraphURL($url);
             if (!$og->isNew()) {
                 echo $og->render();
             }

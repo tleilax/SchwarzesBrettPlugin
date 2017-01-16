@@ -1,14 +1,18 @@
 <?php
-class ArticleController extends SchwarzesBrettController
+use SchwarzesBrett\Article;
+use SchwarzesBrett\Category;
+use SchwarzesBrett\User;
+
+class ArticleController extends SchwarzesBrett\Controller
 {
     public function view_action($id)
     {
         $needle = Request::get('needle');
         if ($needle) {
-            SBArticle::markup($needle);
+            Article::markup($needle);
         }
 
-        $this->article = SBArticle::find($id);
+        $this->article = Article::find($id);
         if (!$this->article) {
             $this->set_status(404);
             $this->render_nothing();
@@ -31,8 +35,8 @@ class ArticleController extends SchwarzesBrettController
 
         PageLayout::setTitle(_('Meine Anzeigen'));
 
-        $articles = SBUser::get()->articles;
-        $this->categories = SBArticle::groupByCategory($articles);
+        $articles = User::get()->articles;
+        $this->categories = Article::groupByCategory($articles);
     }
 
     public function user_action()
@@ -40,7 +44,7 @@ class ArticleController extends SchwarzesBrettController
         Navigation::activateItem('/schwarzesbrettplugin/show/all');
 
         $username   = Request::get('username');
-        $this->user = SBUser::findByUsername($username);
+        $this->user = User::findByUsername($username);
 
         PageLayout::setTitle(sprintf(_('Alle Anzeigen von %s'), $this->user->getFullname()));
 
@@ -50,14 +54,14 @@ class ArticleController extends SchwarzesBrettController
                 return $article->visible;
             });
         }
-        $this->categories = SBArticle::groupByCategory($this->user->articles);
+        $this->categories = Article::groupByCategory($this->user->articles);
     }
 
     public function create_action($category_id = null)
     {
         PageLayout::setTitle(_('Anzeige erstellen'));
 
-        $this->article           = new SBArticle();
+        $this->article           = new Article();
         $this->article->thema_id = $category_id;
         $this->categories        = $this->getCategories();
 
@@ -69,7 +73,7 @@ class ArticleController extends SchwarzesBrettController
         PageLayout::setTitle(_('Anzeige bearbeiten'));
 
         $this->id         = $id;
-        $this->article    = SBArticle::find($id);
+        $this->article    = Article::find($id);
         $this->categories = $this->getCategories();
     }
 
@@ -79,8 +83,8 @@ class ArticleController extends SchwarzesBrettController
 
         if (Request::isPost() && $this->checkTicket()) {
             $article = $id
-                     ? SBArticle::find($id)
-                     : new SBArticle();
+                     ? Article::find($id)
+                     : new Article();
 
             $duration = max(1, min(Config::get()->BULLETIN_BOARD_DURATION, Request::int('duration')));
 
@@ -131,12 +135,12 @@ class ArticleController extends SchwarzesBrettController
 
     private function getCategories()
     {
-        return SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci');
+        return Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci');
     }
 
     public function delete_action($id)
     {
-        $article = SBArticle::find($id);
+        $article = Article::find($id);
         if (!$this->is_admin && $article->user_id !== $GLOBALS['user']->id) {
             throw new AccessDeniedException(_('Sie dürfen diese Anzeige nicht löschen.'));
         }
@@ -154,7 +158,7 @@ class ArticleController extends SchwarzesBrettController
             throw new Exception(_('Die Funktionen zum Anzeigen melden sind nicht aktiviert.'));
         }
 
-        $this->article = SBArticle::find($id);
+        $this->article = Article::find($id);
 
         if (Request::isPost()) {
             $reason = Request::get('reason');
@@ -190,7 +194,7 @@ class ArticleController extends SchwarzesBrettController
     {
         $GLOBALS['perm']->check('root');
 
-        $articles = SBArticle::findBySQL('expires < UNIX_TIMESTAMP()');
+        $articles = Article::findBySQL('expires < UNIX_TIMESTAMP()');
         foreach ($articles as $article) {
             $article->delete();
         }

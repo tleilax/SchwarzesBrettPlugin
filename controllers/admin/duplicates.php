@@ -1,5 +1,7 @@
 <?php
-class Admin_DuplicatesController extends SchwarzesBrettController
+use SchwarzesBrett\Article;
+
+class Admin_DuplicatesController extends SchwarzesBrett\Controller
 {
     public function before_filter(&$action, &$args)
     {
@@ -12,6 +14,6 @@ class Admin_DuplicatesController extends SchwarzesBrettController
     {
         Navigation::activateItem('/schwarzesbrettplugin/root/duplicates');
 
-        $this->duplicates = SBArticle::findDuplicates();
+        $this->duplicates = Article::findDuplicates();
     }
 }

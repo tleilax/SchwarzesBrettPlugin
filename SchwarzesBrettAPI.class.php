@@ -1,11 +1,15 @@
 <?php
+use SchwarzesBrett\Article;
+use SchwarzesBrett\Blacklist;
+use SchwarzesBrett\Category;
+
 /**
  * still a bit beta.
  */
 class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
 {
     protected static $mapping = array(
-        'user_id'              => ':SBCategory',
+        'user_id'              => ':SchwarzesBrett\\Category',
         'artikel_id'           => 'article_id',
         'thema_id'             => 'category_id',
         'titel'                => 'title',
@@ -35,14 +39,14 @@ class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
         $plugin = $this;
 
         $router->get('/schwarzes-brett/categories', function () use ($router, $plugin) {
-            $categories = SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
+            $categories = Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
             $categories = $plugin->flatten($categories);
 
             $router->render(compact('categories'));
         });
 
         $router->get('/schwarzes-brett/category/:id', function ($id) use ($router, $plugin) {
-            $category = SBCategory::find($id);
+            $category = Category::find($id);
             if (!$category) {
                 $router->halt(404);
             }
@@ -52,7 +56,7 @@ class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
         });
 
         $router->get('/schwarzes-brett/category/:id/articles', function ($id) use ($router, $plugin) {
-            $category = SBCategory::find($id);
+            $category = Category::find($id);
             if (!$category) {
                 $router->halt(404);
             }
@@ -69,14 +73,14 @@ class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
         });
 
         $router->post('/schwarzes-brett/articles', function () use ($router) {
-            if (SBBlacklist::find($GLOBALS['user']->id)) {
+            if (Blacklist::find($GLOBALS['user']->id)) {
                 $router->halt(403, 'You are blacklisted');
             }
             // TODO Create article
         });
 
         $router->get('/schwarzes-brett/article/:id', function ($id) use ($router, $plugin) {
-            $article = SBArticle::find($id);
+            $article = Article::find($id);
             if (!$article) {
                 $router->halt(404);
             }
@@ -86,7 +90,7 @@ class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
         });
 
         $router->post('/schwarzes-brett/article/:id', function ($id) use ($router, $plugin) {
-            $article = SBArticle::find($id);
+            $article = Article::find($id);
             if (!$article) {
                 $router->halt(404);
             }
@@ -97,7 +101,7 @@ class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
         });
 
         $router->delete('/schwarzes-brett/article/:id', function ($id) use ($router) {
-            $article = SBArticle::find($id);
+            $article = Article::find($id);
             if (!$article) {
                 $router->halt(404);
             }
@@ -109,7 +113,7 @@ class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
         });
 
         $router->post('/schwarzes-brett/article/:id/visit', function ($id) use ($router) {
-            $article = SBArticle::find($id);
+            $article = Article::find($id);
             if (!$article) {
                 $router->halt(404);
             }
@@ -128,7 +132,7 @@ class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
         }
         $type  = get_class($item);
         $array = $item->toArray();
-        
+
         foreach (self::$mapping as $key => $value) {
             list($value, $target) = explode(':', $value);
             $value = $value ?: false;
@@ -146,13 +150,11 @@ class SchwarzesBrettAPI extends StudIPPlugin implements APIPlugin
             } elseif (!$target || $target === $type) {
                 if ($value !== false) {
                     $array[$value] = $array[$key];
-                    unset($array[$key]);
-                } else {
-                    unset($array[$key]);
                 }
+                unset($array[$key]);
             }
         }
-        
+
         return $array;
     }
 }

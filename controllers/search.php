@@ -1,5 +1,7 @@
 <?php
-class SearchController extends SchwarzesBrettController
+use SchwarzesBrett\Article;
+
+class SearchController extends SchwarzesBrett\Controller
 {
     public function index_action()
     {
@@ -7,12 +9,12 @@ class SearchController extends SchwarzesBrettController
 
         $needle   = trim(Request::get('needle'));
         if (strlen($needle) >= 3) {
-            $articles = SBArticle::search($needle);
+            $articles = Article::search($needle);
         } else {
             $articles = array();
         }
 
         $this->needle     = $needle;
-        $this->categories = SBArticle::groupByCategory($articles);
+        $this->categories = Article::groupByCategory($articles);
     }
 }

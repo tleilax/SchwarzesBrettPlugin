@@ -1,5 +1,9 @@
 <?php
-class WatchlistController extends SchwarzesBrettController
+use SchwarzesBrett\Article;
+use SchwarzesBrett\User;
+use SchwarzesBrett\Watchlist;
+
+class WatchlistController extends SchwarzesBrett\Controller
 {
     public function before_filter(&$action, &$args)
     {
@@ -11,13 +15,13 @@ class WatchlistController extends SchwarzesBrettController
 
     public function index_action()
     {
-        $articles = SBUser::get()->watched_articles;
-        $this->categories = SBArticle::groupByCategory($articles);
+        $articles = User::get()->watched_articles;
+        $this->categories = Article::groupByCategory($articles);
     }
 
     public function add_action($article_id)
     {
-        $entry = new SBWatchlist([$GLOBALS['user']->id, $article_id]);
+        $entry = new Watchlist([$GLOBALS['user']->id, $article_id]);
         $entry->store();
 
         $this->flash['send_headers'] = ['X-Article-Watched', $article_id];
@@ -31,7 +35,7 @@ class WatchlistController extends SchwarzesBrettController
             $article_id = Request::optionArray('ids') ?: '';
         }
 
-        $entry = SBWatchlist::deleteBySQL('user_id = ? AND artikel_id IN (?)', [
+        $entry = Watchlist::deleteBySQL('user_id = ? AND artikel_id IN (?)', [
             $GLOBALS['user']->id,
             (array)$article_id
         ]);

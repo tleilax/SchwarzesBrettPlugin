@@ -1,5 +1,9 @@
 <?php
-class SchwarzesBrettCronjob extends CronJob
+namespace SchwarzesBrett;
+
+use CronJob as GlobalCronjob;
+
+class Cronjob extends GlobalCronjob
 {
     public static function getName()
     {
@@ -13,12 +17,14 @@ class SchwarzesBrettCronjob extends CronJob
 
     public function setUp()
     {
-        require_once __DIR__ . '/../bootstrap.inc.php';
+        require_once __DIR__ . '/../models/Article.php';
+        require_once __DIR__ . '/../models/Visit.php';
+        require_once __DIR__ . '/../models/Watchlist.php';
     }
 
     public function execute($last_result, $parameters = array())
     {
-        $articles = SBArticle::findBySQL('expires < UNIX_TIMESTAMP()');
+        $articles = Article::findBySQL('expires < UNIX_TIMESTAMP()');
 
         foreach ($articles as $article) {
             $article->delete();
@@ -30,7 +36,7 @@ class SchwarzesBrettCronjob extends CronJob
 
         // Do big garbage collection with a chance of 5%
         if (mt_rand() / PHP_INT_MAX >= 0.95) {
-            SBVisit::gc();
+            Visit::gc();
         }
     }
 }

@@ -1,7 +1,24 @@
 <?php
+namespace SchwarzesBrett;
+
+use AccessDeniedException;
+use ActionsWidget;
+use Config;
+use ExportWidget;
+use NotificationCenter;
+use PageLayout;
+use Request;
+use SearchWidget;
+use SelectElement;
+use SelectWidget;
+use Sidebar;
+use StudipController;
+use Trails_Flash;
+use URLHelper;
+
 require_once 'app/controllers/studip_controller.php'; 
 
-class SchwarzesBrettController extends StudipController
+class Controller extends StudipController
 {
     protected $allow_nobody = false;
     protected $utf8decode_xhr = true;
@@ -80,7 +97,7 @@ class SchwarzesBrettController extends StudipController
                 'href'  => $this->absolute_url_for('rss'),
             ));
         } else {
-            $category = SBCategory::find($category_id);
+            $category = Category::find($category_id);
             PageLayout::addHeadElement('link', array(
                 'rel'   => 'alternate',
                 'type'  => 'application/rss+xml',
@@ -104,7 +121,7 @@ class SchwarzesBrettController extends StudipController
         Sidebar::get()->addWidget($search);
 
         $actions = new ActionsWidget();
-        if ($category_id && count(SBCategory::find($category_id)->new_articles) > 0) {
+        if ($category_id && count(Category::find($category_id)->new_articles) > 0) {
             $actions->addLink(_('Dieses Thema als besucht markieren'),
                               $this->url_for('category/visit/' . $category_id),
                               'icons/blue/check-circle.svg')
@@ -116,7 +133,7 @@ class SchwarzesBrettController extends StudipController
                               'icons/blue/accept.svg')
                     ->asDialog();
         }
-        if (!SBUser::get()->isBlacklisted()) {
+        if (!User::get()->isBlacklisted()) {
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
             $actions->addLink(_('Neue Anzeige erstellen'),
                               $this->url_for('article/create/' . ($category_id ?: '')),
@@ -160,7 +177,7 @@ class SchwarzesBrettController extends StudipController
         $widget = new SelectWidget(_('Kategorie'), $this->url_for('category/choose'), 'id');
         $widget->setSelection($selected);
 
-        $categories = SBCategory::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
+        $categories = Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
         foreach ($categories as $category) {
             $title = $category->titel;
             if ($count = count($category->visible_articles)) {

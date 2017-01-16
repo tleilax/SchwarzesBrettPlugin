@@ -1,5 +1,8 @@
 <?php
-class Admin_BlacklistController extends SchwarzesBrettController
+use SchwarzesBrett\Blacklist;
+use SchwarzesBrett\User;
+
+class Admin_BlacklistController extends SchwarzesBrett\Controller
 {
     public function before_filter(&$action, &$args)
     {
@@ -16,7 +19,7 @@ class Admin_BlacklistController extends SchwarzesBrettController
             CSRFProtection::verifyUnsafeRequest();
         }
 
-        $this->users = SBBlacklist::findBySQL('1');
+        $this->users = Blacklist::findBySQL('1');
     }
 
     public function remove_action($id)
@@ -30,7 +33,7 @@ class Admin_BlacklistController extends SchwarzesBrettController
                 $ids = array($id);
             }
 
-            $users = SBBlacklist::findMany($ids);
+            $users = Blacklist::findMany($ids);
             foreach ($users as $user) {
                 $user->delete();
             }
@@ -51,10 +54,10 @@ class Admin_BlacklistController extends SchwarzesBrettController
         if ($this->checkTicket()) {
             // Find user
             $user_id = Request::option('user_id');
-            $user    = SBUser::find($user_id);
+            $user    = User::find($user_id);
 
             // Add user to blacklist
-            $item = new SBBlacklist();
+            $item = new Blacklist();
             $item->user_id = $user->id;
             $item->store();
 

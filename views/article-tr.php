@@ -7,7 +7,7 @@
     <td>
         <a href="<?= $controller->url_for('article/view/' . $article->id, compact('needle', 'return_to')) ?>"
             class="article <?= $article->new ? 'unseen' : 'seen' ?>" data-dialog>
-            <?= SBArticle::markup($needle, htmlReady($article->titel)) ?>
+            <?= SchwarzesBrett\Article::markup($needle, htmlReady($article->titel)) ?>
         </a>
     </td>
     <td>

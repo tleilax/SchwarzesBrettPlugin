@@ -1,5 +1,5 @@
 <?php
-class Admin_SettingsController extends SchwarzesBrettController
+class Admin_SettingsController extends SchwarzesBrett\Controller
 {
     public function before_filter(&$action, &$args)
     {

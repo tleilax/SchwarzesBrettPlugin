@@ -60,6 +60,8 @@ class SBArticle extends SimpleORMap
             },
         ];
 
+        $config['default_values']['duration'] = Config::Get()->BULLETIN_BOARD_DURATION;
+
         parent::configure($config);
     }
 

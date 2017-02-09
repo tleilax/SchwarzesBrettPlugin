@@ -13,9 +13,7 @@ class SchwarzesBrettCronjob extends CronJob
 
     public function setUp()
     {
-        require_once __DIR__ . '/../models/SBArticle.php';
-        require_once __DIR__ . '/../models/SBVisit.php';
-        require_once __DIR__ . '/../models/SBWatchlist.php';
+        require_once __DIR__ . '/../bootstrap.inc.php';
     }
 
     public function execute($last_result, $parameters = array())

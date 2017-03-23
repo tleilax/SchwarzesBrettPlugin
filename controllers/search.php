@@ -7,7 +7,12 @@ class SearchController extends SchwarzesBrett\Controller
     {
         Navigation::activateItem('/schwarzesbrettplugin/show/all');
 
-        $needle   = trim(Request::get('needle'));
+        if (Request::int('reset-search')) {
+            $this->redirect('category');
+            return;
+        }
+
+        $needle = trim(Request::get('needle'));
         if (strlen($needle) >= 3) {
             $articles = Article::search($needle);
         } else {

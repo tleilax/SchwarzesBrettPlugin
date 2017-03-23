@@ -42,7 +42,7 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
         if ($GLOBALS['perm']->have_perm('user')) {
             $this->buildMenu();
 
-            NotificationCenter::addObserver($this, 'onDelete', 'UserWillDelete');
+            NotificationCenter::addObserver($this, 'onDelete', 'UserDidDelete');
         }
     }
 

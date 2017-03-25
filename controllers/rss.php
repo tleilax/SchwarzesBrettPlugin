@@ -1,6 +1,6 @@
 <?php
 use SchwarzesBrett\Article;
-use SchwarzesBrett\Catgory;
+use SchwarzesBrett\Category;
 
 class RssController extends SchwarzesBrett\Controller
 {

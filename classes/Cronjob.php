@@ -18,6 +18,7 @@ class Cronjob extends GlobalCronjob
     public function setUp()
     {
         require_once __DIR__ . '/../models/Article.php';
+        require_once __DIR__ . '/../models/Category.php';
         require_once __DIR__ . '/../models/Visit.php';
         require_once __DIR__ . '/../models/Watchlist.php';
     }

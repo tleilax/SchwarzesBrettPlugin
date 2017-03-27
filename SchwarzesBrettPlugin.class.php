@@ -21,6 +21,7 @@
  */
 
 use SchwarzesBrett\Article;
+use SchwarzesBrett\Blacklist;
 use SchwarzesBrett\Category;
 use SchwarzesBrett\OpenGraphURL;
 use SchwarzesBrett\User;

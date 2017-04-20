@@ -24,12 +24,12 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
     public function settings_action()
     {
         PageLayout::setTitle(_('Einstellung für das Schwarze Brett Widget'));
-        
+
         if (Request::isPost()) {
             $selection = Request::getArray('categories');
             $count     = Request::int('count');
             $this->storeConfig($selection, $count);
-            
+
             if (Request::isXhr()) {
                 header('X-Location: ' . URLHelper::getLink('dispatch.php/start'));
             } else {
@@ -37,11 +37,11 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
             }
             return;
         }
-        
+
         if (Request::isXhr()) {
             header('X-Title: ' . PageLayout::getTitle());
         }
-        
+
         $template = $this->getTemplate('widget/settings.php', true);
         $template->url        = PluginEngine::getLink($this, array(), 'settings');
         $template->categories = Category::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC');
@@ -53,8 +53,9 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
     {
         $navigation = array();
 
-        $nav = new Navigation('', PluginEngine::getLink($this, array(), 'settings'));
-        $nav->setImage(Icon::create('admin', 'clickable', tooltip2(_('Einstellungen')) + array('data-dialog' => '')));
+        $nav = new Navigation('', PluginEngine::getLink($this, [], 'settings'));
+        $nav->setImage(Icon::create('admin', 'clickable', tooltip2(_('Einstellungen'))));
+        $nav->setLinkAttributes(['data-dialog' => '']);
         $navigation[] = $nav;
 
         return $navigation;
@@ -83,7 +84,7 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
         }
         return $template;
     }
-    
+
     protected function getConfig()
     {
         return isset($GLOBALS['user']->cfg->SCHWARZESBRETT_WIDGET_SETTINGS)

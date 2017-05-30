@@ -24,6 +24,7 @@ use SchwarzesBrett\Article;
 use SchwarzesBrett\Blacklist;
 use SchwarzesBrett\Category;
 use SchwarzesBrett\OpenGraphURL;
+use SchwarzesBrett\Plugin;
 use SchwarzesBrett\User;
 use SchwarzesBrett\Visit;
 use SchwarzesBrett\Watchlist;
@@ -33,7 +34,7 @@ require_once 'bootstrap.inc.php';
 /**
  * SchwarzesBrettPlugin Hauptklasse
  */
-class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, HomepagePlugin, Loggable
+class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugin, Loggable
 {
     public function __construct()
     {
@@ -116,6 +117,8 @@ class SchwarzesBrettPlugin extends StudIPPlugin implements SystemPlugin, Homepag
 
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
+
+        $this->legacyAssets();
 
         if (Config::get()->BULLETIN_BOARD_MEDIA_PROXY) {
             OpenGraphURL::setProxyURL(PluginEngine::getURL($this, [], 'proxy', true));

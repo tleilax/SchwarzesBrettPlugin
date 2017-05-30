@@ -1,8 +1,9 @@
 <?php
 use SchwarzesBrett\Article;
 use SchwarzesBrett\Category;
+use SchwarzesBrett\Plugin;
 
-class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
+class SchwarzesBrettWidget extends Plugin implements PortalPlugin
 {
     public function getPluginName()
     {
@@ -13,6 +14,8 @@ class SchwarzesBrettWidget extends StudIPPlugin implements PortalPlugin
     {
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
+
+        $this->legacyAssets();
 
         $widget = $GLOBALS['template_factory']->open('shared/string');
         $widget->content = $this->getContent();

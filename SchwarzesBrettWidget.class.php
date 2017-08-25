@@ -81,6 +81,7 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
 
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views');
         $template = $factory->open($template);
+        $template->_ = function ($string) { return $this->_($string); };
         $template->controller = PluginEngine::getPlugin('SchwarzesBrettPlugin');
         if ($layout && !Request::isXhr()) {
             $template->set_layout($GLOBALS['template_factory']->open('layouts/base.php'));

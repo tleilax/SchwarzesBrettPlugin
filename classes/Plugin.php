@@ -2,10 +2,12 @@
 namespace SchwarzesBrett;
 
 use PageLayout;
-use StudIPPlugin;
+use UOL\Plugin as StudIPPlugin;
 
 abstract class Plugin extends StudIPPlugin
 {
+    const GETTEXT_DOMAIN = 'schwarzes-brett';
+
     protected function legacyAssets()
     {
         // OpenGraphURLCollection was introduced in Stud.IP 3.4 which is the

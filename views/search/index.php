@@ -1,13 +1,13 @@
 <table class="default">
-    <caption><?= sprintf(_('Suchergebnisse für "%s"'), $needle) ?></caption>
+    <caption><?= sprintf($_('Suchergebnisse für "%s"'), $needle) ?></caption>
 <? if (!$categories): ?>
     <tbody>
         <tr>
             <td>
             <? if (strlen($needle) >= 3): ?>
-                <?= MessageBox::info(_('Es wurden keine passenden Anzeigen gefunden.')) ?>
+                <?= MessageBox::info($_('Es wurden keine passenden Anzeigen gefunden.')) ?>
             <? else: ?>
-                <?= MessageBox::info(_('Der eingegebene Suchbegriff ist zu kurz. Geben Sie bitte mindestens drei Zeichen ein.')) ?>
+                <?= MessageBox::info($_('Der eingegebene Suchbegriff ist zu kurz. Geben Sie bitte mindestens drei Zeichen ein.')) ?>
             <? endif; ?>
             </td>
         </tr>
@@ -26,5 +26,5 @@
         <?= $this->render_partial('article-tr', compact('article', 'needle')) ?>
     <? endforeach; ?>
     </tbody>
-<? endforeach; ?>    
+<? endforeach; ?>
 </table>

@@ -12,10 +12,12 @@
         </li>
     <? endforeach; ?>
     </ul>
-    
+
     <div data-dialog-button>
-        <?= Studip\Button::createAccept(_('Verschieben'), 'moved') ?>
-        <?= Studip\LinkButton::createCancel(_('Abbrechen'),
-                                            $controller->url_for('category/view/' . $category_id)) ?>
+        <?= Studip\Button::createAccept($_('Verschieben'), 'moved') ?>
+        <?= Studip\LinkButton::createCancel(
+            $_('Abbrechen'),
+            $controller->url_for('category/view/' . $category_id)
+        ) ?>
     </div>
 </form>

@@ -51,24 +51,24 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
     protected function buildMenu()
     {
         // Hauptmenüpunkt
-        $nav = new Navigation(_('Schwarzes Brett'), $this->url_for('category'));
-        $nav->setImage('icons/lightblue/billboard.svg', tooltip2(_('Schwarzes Brett')));
+        $nav = new Navigation($this->_('Schwarzes Brett'), $this->url_for('category'));
+        $nav->setImage('icons/lightblue/billboard.svg', tooltip2($this->_('Schwarzes Brett')));
         if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
             $nav->setBadgeNumber(Article::countNew());
         }
         Navigation::addItem('/schwarzesbrettplugin', $nav);
 
         // Untermenü
-        $nav = new Navigation(_('Schwarzes Brett'), $this->url_for('category'));
+        $nav = new Navigation($this->_('Schwarzes Brett'), $this->url_for('category'));
         Navigation::addItem('/schwarzesbrettplugin/show', $nav);
 
-        $nav = new Navigation(_('Übersicht'), $this->url_for('category'));
+        $nav = new Navigation($this->_('Übersicht'), $this->url_for('category'));
         Navigation::addItem('/schwarzesbrettplugin/show/all', $nav);
 
-        $nav = new Navigation(_('Merkliste'), $this->url_for('watchlist'));
+        $nav = new Navigation($this->_('Merkliste'), $this->url_for('watchlist'));
         Navigation::addItem('/schwarzesbrettplugin/show/watchlist', $nav);
 
-        $title = _('Meine Anzeigen');
+        $title = $this->_('Meine Anzeigen');
         $count = count(User::Get()->articles);
         if ($count > 0) {
             $title .= sprintf(' (%u)', $count);
@@ -78,20 +78,20 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
 
         //zusatzpunkte für root
         if ($GLOBALS['perm']->have_perm('root')) {
-            $nav = new Navigation(_('Administration'), $this->url_for('admin/settings'));
+            $nav = new Navigation($this->_('Administration'), $this->url_for('admin/settings'));
             Navigation::addItem('/schwarzesbrettplugin/root', $nav);
 
-            $nav = new Navigation(_('Grundeinstellungen'), $this->url_for('admin/settings'));
+            $nav = new Navigation($this->_('Grundeinstellungen'), $this->url_for('admin/settings'));
             Navigation::addItem('/schwarzesbrettplugin/root/settings', $nav);
 
-            $nav = new Navigation(_('Benutzer-Blacklist'), $this->url_for('admin/blacklist'));
+            $nav = new Navigation($this->_('Benutzer-Blacklist'), $this->url_for('admin/blacklist'));
             Navigation::addItem('/schwarzesbrettplugin/root/blacklist', $nav);
 
-            $nav = new Navigation(_('Doppelte Einträge suchen'), $this->url_for('admin/duplicates'));
+            $nav = new Navigation($this->_('Doppelte Einträge suchen'), $this->url_for('admin/duplicates'));
             Navigation::addItem('/schwarzesbrettplugin/root/duplicates', $nav);
 
             if (!$this->hasActiveCronjob() && $expired = Article::countBySQL('expires < UNIX_TIMESTAMP()')) {
-                $title = sprintf(_('Datenbank bereinigen') . ' (' . _('%u alte Einträge') . ')', $expired);
+                $title = sprintf($this->_('Datenbank bereinigen') . ' (' . $this->_('%u alte Einträge') . ')', $expired);
                 $nav = new Navigation($title, $this->url_for('article/purge'));
                 Navigation::addItem('/schwarzesbrettplugin/root/gc', $nav);
             }
@@ -100,7 +100,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
 
     public function getPluginname()
     {
-        return _('Schwarzes Brett');
+        return $this->_('Schwarzes Brett');
     }
 
     protected function hasActiveCronjob()
@@ -113,7 +113,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
 
     public function perform($unconsumed_path)
     {
-        PageLayout::setTitle(_('Schwarzes Brett'));
+        PageLayout::setTitle($this->_('Schwarzes Brett'));
 
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
@@ -128,13 +128,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
             $unconsumed_path = 'category/list';
         }
 
-        $dispatcher = new Trails_Dispatcher(
-            $this->getPluginPath(),
-            rtrim(PluginEngine::getLink($this, array('cid' => null), null, true), '/'),
-            'category'
-        );
-        $dispatcher->plugin = $this;
-        $dispatcher->dispatch($unconsumed_path);
+        parent::perform($unconsumed_path);
     }
 
     public function url_for($to)
@@ -202,8 +196,8 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         $user  = User::find($user_id);
 
         $title = $own_profile
-               ? _('Meine aktuellen Anzeigen im Schwarzen Brett')
-               : sprintf(_('Aktuelle Anzeigen von %s im Schwarzen Brett'), $user->getFullname());
+               ? $this->_('Meine aktuellen Anzeigen im Schwarzen Brett')
+               : sprintf($this->_('Aktuelle Anzeigen von %s im Schwarzen Brett'), $user->getFullname());
 
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views/');
         $template = $factory->open('homepage/plugin.php');
@@ -218,7 +212,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
     {
         $replaces = [
             '%title'               => $event->info,
-            '%category(%affected)' => _('Unbekannt'),
+            '%category(%affected)' => $this->_('Unbekannt'),
             '%user(%coaffected)'   => '',
         ];
 

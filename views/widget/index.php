@@ -1,7 +1,7 @@
 <section class="contentbox schwarzesbrett-widget">
     <section>
     <? if (empty($articles)): ?>
-        <p style="text-align: center;"><?= _('Momentan liegen keine Anzeigen vor.') ?></p>
+        <p style="text-align: center;"><?= $_('Momentan liegen keine Anzeigen vor.') ?></p>
     <? else: ?>
         <ul class="sb-articles">
         <? foreach ($articles as $article): ?>
@@ -11,4 +11,3 @@
     <? endif; ?>
     </section>
 </section>
-

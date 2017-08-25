@@ -16,7 +16,7 @@ class RssController extends SchwarzesBrett\Controller
         parent::before_filter($action, $args);
 
         if (!$this->rss_enabled) {
-            throw new Exception(_('RSS-Exporte sind nicht aktiviert.'));
+            throw new Exception($this->_('RSS-Exporte sind nicht aktiviert.'));
         }
 
         $this->set_layout(null);
@@ -27,7 +27,7 @@ class RssController extends SchwarzesBrett\Controller
         $this->articles = Article::findPublishable($category_id);
         $this->articles = array_slice($this->articles, 0, $limit);
 
-        $this->title       = _('Stud.IP Schwarzes Brett');
+        $this->title       = $this->_('Stud.IP Schwarzes Brett');
         $this->description = '';
         $this->link        = $this->url_for('category');
         if ($category_id !== null) {

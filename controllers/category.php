@@ -20,7 +20,9 @@ class CategoryController extends SchwarzesBrett\Controller
         parent::before_filter($action, $args);
 
         if (User::Get()->isBlacklisted()) {
-            PageLayout::postMessage(MessageBox::info(_('Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')));
+            PageLayout::postInfo(
+                $this->_('Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')
+            );
         }
     }
 
@@ -70,9 +72,12 @@ class CategoryController extends SchwarzesBrett\Controller
 
         if ($id) {
             $category = Category::find($id);
-            $message = sprintf(_('Thema "%s" wurde als besucht markiert.'), $category->titel);
+            $message = sprintf(
+                $this->_('Thema "%s" wurde als besucht markiert.'),
+                $category->titel
+            );
         } else {
-            $message = _('Alle Themen wurden als besucht markiert');
+            $message = $this->_('Alle Themen wurden als besucht markiert');
         }
         if (Request::isXhr()) {
             $this->response->add_header('X-Dialog-Close', 1);
@@ -85,7 +90,7 @@ class CategoryController extends SchwarzesBrett\Controller
 
     public function create_action()
     {
-        PageLayout::setTitle(_('Thema erstellen'));
+        PageLayout::setTitle($this->_('Thema erstellen'));
 
         $this->category = new Category();
 
@@ -94,7 +99,7 @@ class CategoryController extends SchwarzesBrett\Controller
 
     public function edit_action($id)
     {
-        PageLayout::setTitle(_('Thema bearbeiten'));
+        PageLayout::setTitle($this->_('Thema bearbeiten'));
 
         $this->category = Category::find($id);
     }
@@ -121,8 +126,8 @@ class CategoryController extends SchwarzesBrett\Controller
             $category->store();
 
             $message = $id === null
-                     ? _('Das Thema wurde angelegt.')
-                     : _('Das Thema wurde gespeichert.');
+                     ? $this->_('Das Thema wurde angelegt.')
+                     : $this->_('Das Thema wurde gespeichert.');
             PageLayout::postMessage(MessageBox::success($message));
         }
 
@@ -136,7 +141,7 @@ class CategoryController extends SchwarzesBrett\Controller
         $count = count($category->articles);
         $category->delete();
 
-        $message = sprintf(_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelöscht.'),
+        $message = sprintf($this->_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelöscht.'),
                            $title, $count);
         PageLayout::postMessage(MessageBox::success($message));
 
@@ -152,7 +157,7 @@ class CategoryController extends SchwarzesBrett\Controller
         $ids = Request::optionArray('ids');
 
         if (Request::submitted('move')) {
-            PageLayout::setTitle(_('Neue Kategorie'));
+            PageLayout::setTitle($this->_('Neue Kategorie'));
 
             $this->ids         = $ids;
             $this->category_id = $id;
@@ -160,7 +165,7 @@ class CategoryController extends SchwarzesBrett\Controller
             $this->render_template('category/bulk-move.php', $this->layout);
         } elseif (Request::submitted('moved')) {
             $category_id = Request::option('category_id');
-            
+
             if ($category_id !== $id) {
                 $articles = Article::findMany($ids);
                 foreach ($articles as $article) {
@@ -168,7 +173,7 @@ class CategoryController extends SchwarzesBrett\Controller
                     $article->store();
                 }
 
-                $message = sprintf(_('%u Artikel wurde(n) verschoben.'), count($ids));
+                $message = sprintf($this->_('%u Artikel wurde(n) verschoben.'), count($ids));
                 PageLayout::postMessage(MessageBox::success($message));
             }
 
@@ -181,7 +186,7 @@ class CategoryController extends SchwarzesBrett\Controller
                 $deleted += (int)($article->delete() !== false);
             }
 
-            $message = sprintf(_('%u Artikel wurde(n) gelöscht.'), $deleted);
+            $message = sprintf($this->_('%u Artikel wurde(n) gelöscht.'), $deleted);
             PageLayout::postMessage(MessageBox::success($message));
 
             $this->redirect('category/view/' . $id);

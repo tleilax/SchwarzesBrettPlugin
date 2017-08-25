@@ -4,9 +4,9 @@ class ProxyController extends StudipController
     CONST CACHE_GC_PROPABILITY = 1;
     const CACHE_DURATION = 604800; // 1 week = 7 * 24 * 60 * 60
 
-    protected static $echo_headers = array(
+    protected static $echo_headers = [
         'ETag', 'Cache-Control', 'Last-Modified', 'Expires',
-    );
+    ];
     protected static $cache = null;
 
     public function index_action()

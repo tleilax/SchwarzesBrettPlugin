@@ -23,7 +23,7 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
         if (($ticket = Request::get('studip_ticket')) && check_ticket($ticket)) {
             $config  = Config::get();
             $options = $this->getOptions();
-            
+
             foreach ($options as $key => $option) {
                 if (in_array($option['type'], words('number checkbox'))) {
                     $value = Request::int($option['key']);
@@ -33,8 +33,8 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
 
                 $config->store($key, $value);
             }
-            
-            PageLayout::postMessage(MessageBox::success(_('Die Einstellungen wurden gespeichert.')));
+
+            PageLayout::postSuccess($this->_('Die Einstellungen wurden gespeichert.'));
         }
 
         $this->redirect('admin/settings');
@@ -57,58 +57,58 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
 
     protected function getOptions()
     {
-        $options = array();
+        $options = [];
 
-        $options['BULLETIN_BOARD_DURATION'] = array(
+        $options['BULLETIN_BOARD_DURATION'] = [
             'key'  => 'duration',
             'type' => 'number',
-        );
+        ];
 
-        $options['BULLETIN_BOARD_DISPLAY_BADGE'] = array(
+        $options['BULLETIN_BOARD_DISPLAY_BADGE'] = [
             'key'  => 'displayBadge',
             'type' => 'checkbox',
-        );
+        ];
 
-        $options['BULLETIN_BOARD_ANNOUNCEMENTS'] = array(
+        $options['BULLETIN_BOARD_ANNOUNCEMENTS'] = [
             'key'  => 'announcements',
             'type' => 'number',
-        );
+        ];
 
-        $options['BULLETIN_BOARD_ENABLE_BLAME'] = array(
+        $options['BULLETIN_BOARD_ENABLE_BLAME'] = [
             'key'       => 'enableBlame',
             'type'      => 'checkbox',
             'activates' => 'BULLETIN_BOARD_BLAME_RECIPIENTS',
-        );
+        ];
 
-        $options['BULLETIN_BOARD_BLAME_RECIPIENTS'] = array(
+        $options['BULLETIN_BOARD_BLAME_RECIPIENTS'] = [
             'key'  => 'blameRecipients',
             'type' => 'text',
-        );
+        ];
 
-        $options['BULLETIN_BOARD_BAD_WORDS'] = array(
+        $options['BULLETIN_BOARD_BAD_WORDS'] = [
             'key'  => 'badWords',
             'type' => 'text',
-        );
+        ];
 
-        $options['BULLETIN_BOARD_ENABLE_RSS'] = array(
+        $options['BULLETIN_BOARD_ENABLE_RSS'] = [
             'key'  => 'enableRss',
             'type' => 'checkbox',
-        );
+        ];
 
-        $options['BULLETIN_BOARD_MEDIA_PROXY'] = array(
+        $options['BULLETIN_BOARD_MEDIA_PROXY'] = [
             'key'  => 'enableMediaProxy',
             'type' => 'checkbox',
-        );
-        $options['BULLETIN_BOARD_MEDIA_PROXY_CACHED'] = array(
+        ];
+        $options['BULLETIN_BOARD_MEDIA_PROXY_CACHED'] = [
             'key'  => 'cacheMediaProxy',
             'type' => 'checkbox',
-        );
+        ];
 
-        $options['BULLETIN_BOARD_RULES'] = array(
+        $options['BULLETIN_BOARD_RULES'] = [
             'key'  => 'rules',
             'type' => 'textarea',
-        );
-        
+        ];
+
         foreach ($options as $key => $data) {
             $options[$key]['description'] = $this->getConfig($key, 'description');
             $options[$key]['value']       = $this->getConfig($key, 'value');
@@ -116,17 +116,17 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
 
         return $options;
     }
-    
+
     protected function getVisibility($requested_role)
     {
         $plugin_id = $this->dispatcher->plugin->getPluginId();
-        
+
         $role_persistence = new RolePersistence();
         $plugin_roles     = $role_persistence->getAssignedPluginRoles($plugin_id);
         $role_test        = array_filter($plugin_roles, function ($role) use ($requested_role) {
             return $role->getRolename() === $requested_role;
         });
-        
+
         return count($role_test) > 0;
     }
 }

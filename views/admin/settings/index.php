@@ -17,8 +17,8 @@
         </colgroup>
         <thead>
             <tr>
-                <th><?= _('Einstellung') ?></th>
-                <th><?= _('Wert') ?></th>
+                <th><?= $_('Einstellung') ?></th>
+                <th><?= $_('Wert') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -60,12 +60,14 @@
         <tfoot>
             <tr>
                 <td colspan="2">
-                    <?= Studip\Button::createAccept(_('Speichern')) ?>
+                    <?= Studip\Button::createAccept($_('Speichern')) ?>
                 </td>
         </tfoot>
     </table>
 </form>
 
 <? if (!$visible_for_nobody): ?>
-    <?= MessageBox::info(_('Hinweise'), array(_('Bei Aktivierung der RSS Feeds muss das Plugin für nobody freigegeben werden, damit die Feeds ohne Login abgerufen werden können.'))) ?>
+    <?= MessageBox::info($_('Hinweise'), [
+        $_('Bei Aktivierung der RSS Feeds muss das Plugin für nobody freigegeben werden, damit die Feeds ohne Login abgerufen werden können.'),
+    ]) ?>
 <? endif; ?>

@@ -27,20 +27,20 @@
                               'default_subject' => 'Re: ' . $article->titel,
                               'default_body'    => '[quote]' . $article->beschreibung . '[/quote]',
                           )) ?>" data-dialog>
-            <?= Icon::create('chat', 'clickable', tooltip2(_('Antworten'))) ?>
+            <?= Icon::create('chat', 'clickable', tooltip2($_('Antworten'))) ?>
         </a>
         <? if ($blame_enabled): ?>
             <a href="<?= $controller->url_for('article/blame/' . $article->id) ?>" data-dialog>
-                <?= Icon::create('exclaim', 'clickable', tooltip2(_('Anzeige melden'))) ?>
+                <?= Icon::create('exclaim', 'clickable', tooltip2($_('Anzeige melden'))) ?>
             </a>
         <? endif; ?>
     <? endif; ?>
     <? if ($article->user_id === $GLOBALS['user']->id || $is_admin): ?>
         <a href="<?= $controller->url_for('article/edit/' . $article->id) ?>" data-dialog>
-            <?= Icon::create('edit', 'clickable', tooltip2(_('Anzeige bearbeiten'))) ?>
+            <?= Icon::create('edit', 'clickable', tooltip2($_('Anzeige bearbeiten'))) ?>
         </a>
-        <a href="<?= $controller->url_for('article/delete/' . $article->id, $return_to ? compact('return_to') : array()) ?>" data-confirm="<?= _('Wollen Sie diese Anzeige wirklich löschen?') ?>">
-            <?= Icon::create('trash', 'clickable', tooltip2(_('Anzeige löschen'))) ?>
+        <a href="<?= $controller->url_for('article/delete/' . $article->id, $return_to ? compact('return_to') : array()) ?>" data-confirm="<?= $_('Wollen Sie diese Anzeige wirklich löschen?') ?>">
+            <?= Icon::create('trash', 'clickable', tooltip2($_('Anzeige löschen'))) ?>
         </a>
     <? endif; ?>
     </td>

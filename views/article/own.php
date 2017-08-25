@@ -1,9 +1,9 @@
 <? if (empty($categories)): ?>
-    <?= MessageBox::info(_('Sie haben momentan keine eigenen Anzeigen.')) ?>
+    <?= MessageBox::info($_('Sie haben momentan keine eigenen Anzeigen.')) ?>
 <? return; endif; ?>
 
 <table class="default">
-    <caption class="hide-in-dialog"><?= _('Meine Anzeigen') ?></caption>
+    <caption class="hide-in-dialog"><?= $_('Meine Anzeigen') ?></caption>
 <? foreach ($categories as $id => $category): ?>
     <tbody class="sb-articles">
         <tr>

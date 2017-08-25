@@ -33,7 +33,7 @@ class ArticleController extends SchwarzesBrett\Controller
             return;
         }
 
-        PageLayout::setTitle(_('Meine Anzeigen'));
+        PageLayout::setTitle($this->_('Meine Anzeigen'));
 
         $articles = User::get()->articles;
         $this->categories = Article::groupByCategory($articles);
@@ -46,7 +46,10 @@ class ArticleController extends SchwarzesBrett\Controller
         $username   = Request::get('username');
         $this->user = User::findByUsername($username);
 
-        PageLayout::setTitle(sprintf(_('Alle Anzeigen von %s'), $this->user->getFullname()));
+        PageLayout::setTitle(sprintf(
+            $this->_('Alle Anzeigen von %s'),
+            $this->user->getFullname()
+        ));
 
         $articles = $this->user->articles->toArray();
         if ($this->user->id !== $GLOBALS['user']->id && !$this->is_admin) {
@@ -59,7 +62,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
     public function create_action($category_id = null)
     {
-        PageLayout::setTitle(_('Anzeige erstellen'));
+        PageLayout::setTitle($this->_('Anzeige erstellen'));
 
         $this->article           = new Article();
         $this->article->thema_id = $category_id;
@@ -70,7 +73,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
     public function edit_action($id = null)
     {
-        PageLayout::setTitle(_('Anzeige bearbeiten'));
+        PageLayout::setTitle($this->_('Anzeige bearbeiten'));
 
         $this->id         = $id;
         $this->article    = Article::find($id);
@@ -117,7 +120,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
                     $mail = new StudipMail();
                     $mail->addRecipient(Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS)
-                         ->setSubject(_('Anzeige enthält unzulässige Begriffe'))
+                         ->setSubject($this->_('Anzeige enthält unzulässige Begriffe'))
                          ->setBodyText($mailbody)
                          ->setBodyHtml(formatReady($mailbody))
                          ->send();
@@ -125,8 +128,8 @@ class ArticleController extends SchwarzesBrett\Controller
             }
 
             $message = $id === null
-                     ? _('Die Anzeige wurde erstellt.')
-                     : _('Die Anzeige wurde gespeichert.');
+                     ? $this->_('Die Anzeige wurde erstellt.')
+                     : $this->_('Die Anzeige wurde gespeichert.');
             PageLayout::postMessage(MessageBox::success($message));
         }
 
@@ -142,12 +145,12 @@ class ArticleController extends SchwarzesBrett\Controller
     {
         $article = Article::find($id);
         if (!$this->is_admin && $article->user_id !== $GLOBALS['user']->id) {
-            throw new AccessDeniedException(_('Sie dürfen diese Anzeige nicht löschen.'));
+            throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht löschen.'));
         }
 
         $article->delete();
 
-        PageLayout::postMessage(MessageBox::success(_('Die Anzeige wurde gelöscht.')));
+        PageLayout::postMessage(MessageBox::success($this->_('Die Anzeige wurde gelöscht.')));
 
         $this->redirect(Request::get('return_to') ?: $this->url_for('category'));
     }
@@ -155,7 +158,7 @@ class ArticleController extends SchwarzesBrett\Controller
     public function blame_action($id)
     {
         if (!$this->blame_enabled) {
-            throw new Exception(_('Die Funktionen zum Anzeigen melden sind nicht aktiviert.'));
+            throw new Exception($this->_('Die Funktionen zum Anzeigen melden sind nicht aktiviert.'));
         }
 
         $this->article = Article::find($id);
@@ -173,19 +176,19 @@ class ArticleController extends SchwarzesBrett\Controller
 
             $mail = new StudipMail();
             $mail->addRecipient(Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS)
-                 ->setSubject(_('Anzeige wurde gemeldet') . ': ' . $article->titel)
+                 ->setSubject($this->_('Anzeige wurde gemeldet') . ': ' . $article->titel)
                  ->setReplyToEmail($GLOBALS['user']->email)
                  ->setBodyText($mailbody)
                  ->setBodyHtml(formatReady($mailbody))
                  ->send();
 
-            PageLayout::postMessage(MessageBox::info(_('Die Anzeige wurde den Administratoren gemeldet.')));
+            PageLayout::postMessage(MessageBox::info($this->_('Die Anzeige wurde den Administratoren gemeldet.')));
 
             $this->redirect('category/' . $this->article->category->id);
             return;
         }
 
-        PageLayout::setTitle(sprintf(_('Anzeige "%s" von %s melden'),
+        PageLayout::setTitle(sprintf($this->_('Anzeige "%s" von %s melden'),
                                      $this->article->titel,
                                      $this->article->user->getFullname()));
     }
@@ -200,8 +203,8 @@ class ArticleController extends SchwarzesBrett\Controller
         }
 
         $message = count($articles) > 0
-                 ? MessageBox::success(sprintf(_('Es wurden %u Anzeigen aus der Datenbank gelöscht.'), count($articles)))
-                 : MessageBox::info(_('Es gibt keine Artikel in der Datenbank, die gelöscht werden können.'));
+                 ? MessageBox::success(sprintf($this->_('Es wurden %u Anzeigen aus der Datenbank gelöscht.'), count($articles)))
+                 : MessageBox::info($this->_('Es gibt keine Artikel in der Datenbank, die gelöscht werden können.'));
 
         PageLayout::postMessage($message);
 

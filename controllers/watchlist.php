@@ -10,7 +10,7 @@ class WatchlistController extends SchwarzesBrett\Controller
         parent::before_filter($action, $args);
 
         Navigation::activateItem('/schwarzesbrettplugin/show/watchlist');
-        PageLayout::setTitle(_('Gemerkte Anzeigen'));
+        PageLayout::setTitle($this->_('Gemerkte Anzeigen'));
     }
 
     public function index_action()

@@ -1,5 +1,5 @@
 <? if (empty($categories)): ?>
-    <?= MessageBox::info(_('Keine Anzeigen vorhanden.')) ?>
+    <?= MessageBox::info($_('Keine Anzeigen vorhanden.')) ?>
 <? return; endif; ?>
 
 <table class="default sb-homepage-plugin">

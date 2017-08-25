@@ -30,7 +30,7 @@ class Admin_BlacklistController extends SchwarzesBrett\Controller
             if ($id === 'bulk') {
                 $ids = Request::optionArray('user_id');
             } else {
-                $ids = array($id);
+                $ids = [$id];
             }
 
             $users = Blacklist::findMany($ids);
@@ -39,8 +39,8 @@ class Admin_BlacklistController extends SchwarzesBrett\Controller
             }
 
             $message = count($ids) === 1
-                     ? _('Der Nutzer wurde von der schwarzen Liste entfernt.')
-                     : sprintf(_('%u Nutzer wurden von der schwarzen Liste entfernt.'), count($ids));
+                     ? $this->_('Der Nutzer wurde von der schwarzen Liste entfernt.')
+                     : sprintf($this->_('%u Nutzer wurden von der schwarzen Liste entfernt.'), count($ids));
             PageLayout::postMessage(MessageBox::success($message));
         }
 
@@ -67,19 +67,19 @@ class Admin_BlacklistController extends SchwarzesBrett\Controller
                 $article->store();
             }
 
-            $msg = _('Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde '
+            $msg = $this->_('Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde '
                     .'Ihr Zugang zum Schwarzen Brett gesperrt.');
             $msg .= ' ';
-            $msg .= _('Sie können keine weiteren Anzeigen erstellen.');
+            $msg .= $this->_('Sie können keine weiteren Anzeigen erstellen.');
             $msg .= PHP_EOL . PHP_EOL;
-            $msg .= _('Bei Fragen wenden Sie sich bitte an die Systemadministratoren.');
+            $msg .= $this->_('Bei Fragen wenden Sie sich bitte an die Systemadministratoren.');
 
-            $subject = _('Schwarzes Brett: Sie wurden gesperrt.');
+            $subject = $this->_('Schwarzes Brett: Sie wurden gesperrt.');
 
             $messaging = new messaging();
             $messaging->insert_message($msg, $item->user->username, '____%system%____', false, false, 1, false, $subject);
 
-            PageLayout::postMessage(MessageBox::success(_('Der Nutzer wurde auf die schwarze Liste gesetzt.')));
+            PageLayout::postSuccess($this->_('Der Nutzer wurde auf die schwarze Liste gesetzt.'));
         }
 
         $this->redirect('admin/blacklist');

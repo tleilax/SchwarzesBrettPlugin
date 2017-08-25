@@ -1,5 +1,5 @@
 <? if (empty($duplicates)): ?>
-    <?= MessageBox::info(_('Es scheint keine doppelten Einträge zu geben.')) ?>
+    <?= MessageBox::info($_('Es scheint keine doppelten Einträge zu geben.')) ?>
 <? return; endif; ?>
 
 <table class="default" id="duplicates">

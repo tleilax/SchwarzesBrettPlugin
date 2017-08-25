@@ -1,10 +1,10 @@
 <? if (empty($categories)): ?>
-    <?= MessageBox::info(_('Keine Anzeigen vorhanden.')) ?>
+    <?= MessageBox::info($_('Keine Anzeigen vorhanden.')) ?>
 <? return; endif; ?>
 
 <table class="default">
     <caption class="hide-in-dialog">
-        <?= sprintf(_('Alle Anzeigen von %s'), $user->getFullname()) ?>
+        <?= sprintf($_('Alle Anzeigen von %s'), $user->getFullname()) ?>
     </caption>
 <? foreach ($categories as $id => $category): ?>
     <tbody class="sb-articles">

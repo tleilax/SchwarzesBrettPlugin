@@ -5,6 +5,7 @@ use AccessDeniedException;
 use ActionsWidget;
 use Config;
 use ExportWidget;
+use Icon;
 use NotificationCenter;
 use PageLayout;
 use Request;
@@ -12,11 +13,9 @@ use SearchWidget;
 use SelectElement;
 use SelectWidget;
 use Sidebar;
-use StudipController;
+use UOL\StudipController;
 use Trails_Flash;
 use URLHelper;
-
-require_once 'app/controllers/studip_controller.php'; 
 
 class Controller extends StudipController
 {
@@ -27,7 +26,7 @@ class Controller extends StudipController
     public function before_filter(&$action, &$args)
     {
         $this->flash = Trails_Flash::instance();
-        
+
         parent::before_filter($action, $args);
 
         if (!$this->allow_nobody) {
@@ -51,15 +50,6 @@ class Controller extends StudipController
 
         // Setup sidebar
         $this->setup_sidebar(get_class($this), $action, $args);
-    }
-
-    public function after_filter($action, $args)
-    {
-        if (Request::isXhr() && $title = PageLayout::getTitle()) {
-            $this->response->add_header('X-Title', $title);
-        }
-
-        parent::after_filter($action, $args);
     }
 
     public function redirect($to)
@@ -90,20 +80,20 @@ class Controller extends StudipController
         }
 
         if ($category_id === null) {
-            PageLayout::addHeadElement('link', array(
+            PageLayout::addHeadElement('link', [
                 'rel'   => 'alternate',
                 'type'  => 'application/rss+xml',
-                'title' => _('RSS-Feed'),
+                'title' => $this->_('RSS-Feed'),
                 'href'  => $this->absolute_url_for('rss'),
-            ));
+            ]);
         } else {
             $category = Category::find($category_id);
-            PageLayout::addHeadElement('link', array(
+            PageLayout::addHeadElement('link', [
                 'rel'   => 'alternate',
                 'type'  => 'application/rss+xml',
-                'title' => _('RSS-Feed') . ': ' . $category->titel,
+                'title' => $this->_('RSS-Feed') . ': ' . $category->titel,
                 'href'  => $this->absolute_url_for('rss/' . $category->id),
-            ));
+            ]);
         }
     }
 
@@ -114,53 +104,65 @@ class Controller extends StudipController
                      : false;
 
         $search = new SearchWidget($this->url_for('search'));
-        $search->addNeedle(_('Suchbegriff'), 'needle', true);
+        $search->addNeedle($this->_('Suchbegriff'), 'needle', true);
         if ($category_id) {
-            $search->addFilter(_('Nur in dieser Kategorie'), 'restrict[' . $category_id . ']');
+            $search->addFilter($this->_('Nur in dieser Kategorie'), 'restrict[' . $category_id . ']');
         }
         Sidebar::get()->addWidget($search);
 
         $actions = new ActionsWidget();
         if ($category_id && count(Category::find($category_id)->new_articles) > 0) {
-            $actions->addLink(_('Dieses Thema als besucht markieren'),
-                              $this->url_for('category/visit/' . $category_id),
-                              'icons/blue/check-circle.svg')
-                    ->asDialog();
+            $actions->addLink(
+                $this->_('Dieses Thema als besucht markieren'),
+                $this->url_for('category/visit/' . $category_id),
+                Icon::create('check-circle.svg')
+            )->asDialog();
         }
         if (!$category_id /* TODO || $newArticles*/) {
-            $actions->addLink(_('Alle Themen als besucht markieren'),
-                              $this->url_for('category/visit'),
-                              'icons/blue/accept.svg')
-                    ->asDialog();
+            $actions->addLink(
+                $this->_('Alle Themen als besucht markieren'),
+                $this->url_for('category/visit'),
+                Icon::create('accept')
+            )->asDialog();
         }
         if (!User::get()->isBlacklisted()) {
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
-            $actions->addLink(_('Neue Anzeige erstellen'),
-                              $this->url_for('article/create/' . ($category_id ?: '')),
-                              'icons/blue/add/billboard.svg')->asDialog();
+            $actions->addLink(
+                $this->_('Neue Anzeige erstellen'),
+                $this->url_for('article/create/' . ($category_id ?: '')),
+                Icon::create('billboard+add')
+            )->asDialog();
         }
         if ($this->is_admin) {
-            $actions->addLink(_('Neues Thema anlegen'),
-                              $this->url_for('category/create'),
-                              'icons/blue/add/folder-empty.svg')->asDialog();
+            $actions->addLink(
+                $this->_('Neues Thema anlegen'),
+                $this->url_for('category/create'),
+                Icon::create('folder-empty+add')
+            )->asDialog();
         }
         if ($category_id && $this->is_admin) {
-            $actions->addLink(_('Dieses Thema bearbeiten'),
-                              $this->url_for('category/edit/' . $category_id),
-                              'icons/blue/edit.svg')->asDialog();
-            $actions->addLink(_('Dieses Thema löschen'),
-                              $this->url_for('category/delete/' . $category_id),
-                              'icons/blue/trash.svg',
-                              array('data-confirm' => _('Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen löschen?')));
+            $actions->addLink(
+                $this->_('Dieses Thema bearbeiten'),
+                $this->url_for('category/edit/' . $category_id),
+                Icon::create('edit')
+            )->asDialog();
+            $actions->addLink(
+                $this->_('Dieses Thema löschen'),
+                $this->url_for('category/delete/' . $category_id),
+                Icon::create('trash'),
+                ['data-confirm' => $this->_('Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen löschen?')]
+            );
         }
 
         Sidebar::get()->addWidget($actions);
 
         if ($this->rss_enabled) {
             $export = new ExportWidget();
-            $export->addLink($category_id ? _('RSS-Feed dieser Kategorie') : _('RSS-Feed'),
-                             $this->url_for('rss/' . $category_id),
-                             'icons/blue/rss.svg');
+            $export->addLink(
+                $category_id ? $this->_('RSS-Feed dieser Kategorie') : $this->_('RSS-Feed'),
+                $this->url_for('rss/' . $category_id),
+                Icon::create('rss')
+            );
             Sidebar::get()->addWidget($export);
         }
 
@@ -174,7 +176,7 @@ class Controller extends StudipController
     {
         $selected = $this->temp_storage;
 
-        $widget = new SelectWidget(_('Kategorie'), $this->url_for('category/choose'), 'id');
+        $widget = new SelectWidget($this->_('Kategorie'), $this->url_for('category/choose'), 'id');
         $widget->setSelection($selected);
 
         $categories = Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');

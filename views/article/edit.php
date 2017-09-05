@@ -46,7 +46,7 @@ $expired_test = function ($duration, $now = null) {
 
         <fieldset>
             <label for="description"><?= $_('Inhalt') ?></label>
-            <textarea name="beschreibung" id="description" class="add_toolbar"><?= htmlready($article->beschreibung) ?></textarea>
+            <textarea name="beschreibung" id="description" class="add_toolbar wysiwyg"><?= htmlready($article->beschreibung) ?></textarea>
         </fieldset>
 
         <fieldset>

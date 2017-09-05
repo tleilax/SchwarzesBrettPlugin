@@ -30,7 +30,7 @@
                         <?= htmlReady($option['description']) ?>
                     </label><br>
 
-                    <textarea name="<?= htmlReady($option['key']) ?>" class="add_toolbar"><?= htmlReady($option['value']) ?></textarea>
+                    <textarea name="<?= htmlReady($option['key']) ?>" class="add_toolbar wysiwyg"><?= htmlReady($option['value']) ?></textarea>
                 </td>
             </tr>
         <? else: ?>

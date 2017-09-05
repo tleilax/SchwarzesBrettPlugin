@@ -41,7 +41,7 @@
                 <?= $_('Kurzhinweis') ?>
                 <?= tooltipIcon($_('Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese Kategorie ausgewählt wird.')) ?>
             </label>
-            <textarea name="disclaimer" id="disclaimer" class="add_toolbar" style="min-height: 4em"><?= htmlReady($category->disclaimer) ?></textarea>
+            <textarea name="disclaimer" id="disclaimer" class="add_toolbar wysiwyg" style="min-height: 4em"><?= htmlReady($category->disclaimer) ?></textarea>
         </fieldset>
 
         <fieldset>
@@ -49,7 +49,7 @@
                 <?= $_('Regeln') ?>
                 <?= tooltipIcon($_('Die Regeln werden oberhalb einer Kategorie in deren Übersicht angezeigt.')) ?>
             </label>
-            <textarea class="add_toolbar" name="terms" id="terms"><?= htmlReady($category->terms) ?></textarea>
+            <textarea class="add_toolbar wysiwyg" name="terms" id="terms"><?= htmlReady($category->terms) ?></textarea>
         </fieldset>
 
         <fieldset>

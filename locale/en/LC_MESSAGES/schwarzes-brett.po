@@ -1,0 +1,462 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2017-09-08T10:19:39+02:00\n"
+"PO-Revision-Date: 2017-09-08T10:19:39+02:00\n"
+"Language: \n"
+
+msgid "RSS-Feed"
+msgstr "RSS feed"
+
+msgid "Suchbegriff"
+msgstr "Search terms"
+
+msgid "Nur in dieser Kategorie"
+msgstr "Only in this category"
+
+msgid "Dieses Thema als besucht markieren"
+msgstr "Mark topic as visited"
+
+msgid "Alle Themen als besucht markieren"
+msgstr "Mark all topics as visited"
+
+msgid "Neue Anzeige erstellen"
+msgstr "Create new view"
+
+msgid "Neues Thema anlegen"
+msgstr "Create new topic"
+
+msgid "Dieses Thema bearbeiten"
+msgstr "Edit this topic"
+
+msgid "Dieses Thema löschen"
+msgstr "Delete this topic"
+
+msgid "Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen löschen?"
+msgstr "Are you sure you want to delete this topic, including all the ads it contains?"
+
+msgid "RSS-Feed dieser Kategorie"
+msgstr "RSS feed of this category"
+
+msgid "Kategorie"
+msgstr "Category"
+
+msgid "Schwarzes Brett-Cronjob"
+msgstr "Notice board cron job"
+
+msgid "Cronjob für das Schwarze Brett, der abgelaufene Anzeigen entfernt."
+msgstr "Cron job for the notice board which removes expired ads."
+
+msgid "Der Nutzer wurde von der schwarzen Liste entfernt."
+msgstr "The user was removed from the blacklist."
+
+msgid "%u Nutzer wurden von der schwarzen Liste entfernt."
+msgstr "%u users were removed from the blacklist."
+
+msgid "Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde Ihr Zugang zum Schwarzen Brett gesperrt."
+msgstr "Your access to the notice board has been blocked due to repeated violations of the terms of use."
+
+msgid "Sie können keine weiteren Anzeigen erstellen."
+msgstr "You cannot create any more ads."
+
+msgid "Bei Fragen wenden Sie sich bitte an die Systemadministratoren."
+msgstr "If you have any questions, please contact the system administrators."
+
+msgid "Schwarzes Brett: Sie wurden gesperrt."
+msgstr "Noticeboard: Your access has been blocked."
+
+msgid "Der Nutzer wurde auf die schwarze Liste gesetzt."
+msgstr "The user has been added to the blacklist."
+
+msgid "Die Einstellungen wurden gespeichert."
+msgstr "Settings saved."
+
+msgid "Meine Anzeigen"
+msgstr "My ads"
+
+msgid "Alle Anzeigen von %s"
+msgstr "All ads by %s"
+
+msgid "Anzeige erstellen"
+msgstr "Create ads"
+
+msgid "Anzeige bearbeiten"
+msgstr "Edit ads"
+
+msgid "Anzeige enthält unzulässige Begriffe"
+msgstr "Ad includes banned terms"
+
+msgid "Die Anzeige wurde erstellt."
+msgstr "The ad has been created."
+
+msgid "Die Anzeige wurde gespeichert."
+msgstr "The ad has been saved."
+
+msgid "Sie dürfen diese Anzeige nicht löschen."
+msgstr "You are not authorized to delete this ad."
+
+msgid "Die Anzeige wurde gelöscht."
+msgstr "The ad has been deleted."
+
+msgid "Die Funktionen zum Anzeigen melden sind nicht aktiviert."
+msgstr "The report ad functions are not activated."
+
+msgid "Anzeige wurde gemeldet"
+msgstr "Ad has been reported"
+
+msgid "Die Anzeige wurde den Administratoren gemeldet."
+msgstr "The ad has been reported to the administrators."
+
+msgid "Anzeige \"%s\" von %s melden"
+msgstr "Report ad \"%s\" from %s"
+
+msgid "Es wurden %u Anzeigen aus der Datenbank gelöscht."
+msgstr "%u ads have been deleted from the database."
+
+msgid "Es gibt keine Artikel in der Datenbank, die gelöscht werden können."
+msgstr "There are no items in the database that can be deleted."
+
+msgid "Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator."
+msgstr "You have been blocked and cannot create ads. Please contact the system administrator."
+
+msgid "Thema \"%s\" wurde als besucht markiert."
+msgstr "Topic \"%s\" has been marked as visited."
+
+msgid "Alle Themen wurden als besucht markiert"
+msgstr "All topics have been marked as visited"
+
+msgid "Thema erstellen"
+msgstr "Create topic"
+
+msgid "Thema bearbeiten"
+msgstr "Edit topic"
+
+msgid "Das Thema wurde angelegt."
+msgstr "The topic has been created."
+
+msgid "Das Thema wurde gespeichert."
+msgstr "The topic has been saved."
+
+msgid "Das Thema \"%s\" und alle %u darin enthaltenen Anzeigen wurde gelöscht."
+msgstr "The topic \"%s\" and all %u ads contained in it have been deleted."
+
+msgid "Neue Kategorie"
+msgstr "New category"
+
+msgid "%u Artikel wurde(n) verschoben."
+msgstr "%u item(s) moved."
+
+msgid "%u Artikel wurde(n) gelöscht."
+msgstr "%u item(s) deleted."
+
+msgid "RSS-Exporte sind nicht aktiviert."
+msgstr "RSS exports are not activated."
+
+msgid "Stud.IP Schwarzes Brett"
+msgstr "Stud.IP notice board"
+
+msgid "Gemerkte Anzeigen"
+msgstr "Bookmarked ads"
+
+msgid "Einträge für Themen-RSS werden angelegt"
+msgstr "Entries for topic RSS have been created"
+
+msgid "Config-Eintrag für die Anzeige der ungesehenen Anzeigen in der Navigation anlegen"
+msgstr "Config entry for the display of the unseen ads in the navigation"
+
+msgid "Schwarzes Brett"
+msgstr "Notice board:"
+
+msgid "Übersicht"
+msgstr "Overview"
+
+msgid "Merkliste"
+msgstr "Clipboard"
+
+msgid "Administration"
+msgstr "Administration"
+
+msgid "Grundeinstellungen"
+msgstr "Basic settings"
+
+msgid "Benutzer-Blacklist"
+msgstr "User blacklist"
+
+msgid "Doppelte Einträge suchen"
+msgstr "Search for duplicate entries"
+
+msgid "Datenbank bereinigen"
+msgstr "Clean up database"
+
+msgid "%u alte Einträge"
+msgstr "%u old entries"
+
+msgid "Meine aktuellen Anzeigen im Schwarzen Brett"
+msgstr "My current ads on the notice board"
+
+msgid "Aktuelle Anzeigen von %s im Schwarzen Brett"
+msgstr "Recent ads from %s on the notice board"
+
+msgid "Unbekannt"
+msgstr "Unknown"
+
+msgid "Einstellung für das Schwarze Brett Widget"
+msgstr "Setting for the notice board widget"
+
+msgid "Einstellungen"
+msgstr "Settings"
+
+msgid "Benutzer auf die schwarze Liste setzen"
+msgstr "Add user to blacklist"
+
+msgid "Hinzufügen"
+msgstr "Add"
+
+msgid "Es befinden sich keine Benutzer auf der schwarzen Liste."
+msgstr "There are no users on the blacklist."
+
+msgid "%u Nutzer"
+msgstr "%u user"
+
+msgid "Personen auf der schwarzen Liste"
+msgstr "Users on the blacklist"
+
+msgid "Benutzer"
+msgstr "User"
+
+msgid "Benutzer von der schwarzen Liste entfernen"
+msgstr "Remove user from the blacklist"
+
+msgid "Alle markierten"
+msgstr "All selected"
+
+msgid "Entfernen"
+msgstr "Remove"
+
+msgid "Es scheint keine doppelten Einträge zu geben."
+msgstr "There are no duplicate entries."
+
+msgid "Einstellung"
+msgstr "Setting"
+
+msgid "Wert"
+msgstr "Value"
+
+msgid "Speichern"
+msgstr "Save"
+
+msgid "Hinweise"
+msgstr "Information"
+
+msgid "Bei Aktivierung der RSS Feeds muss das Plugin für nobody freigegeben werden, damit die Feeds ohne Login abgerufen werden können."
+msgstr "When the RSS feeds are activated, access must be granted to the user nobody, so that the feeds can be retrieved without login."
+
+msgid "Grund"
+msgstr "Degrees"
+
+msgid "Bitte geben Sie einen aussagekräftigen Grund ein, weshalb diese Anzeige nicht den Regeln entspricht."
+msgstr "Please provide a meaningful reason why this ad does not comply with the rules."
+
+msgid "Anzeige melden"
+msgstr "Report ad"
+
+msgid "Abbrechen"
+msgstr "Cancel"
+
+msgid "%u Tag"
+msgstr "%u day"
+
+msgid "bis zum %d.%m.%Y"
+msgstr "Until %d %m.%Y"
+
+msgid "Thema"
+msgstr "Topic"
+
+msgid "Kategorie auswählen"
+msgstr "Choose category"
+
+msgid "Titel"
+msgstr "Title"
+
+msgid "Inhalt"
+msgstr "Content"
+
+msgid "Laufzeit"
+msgstr "Display period"
+
+msgid "Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht."
+msgstr "After this deadline, the ad will be deleted automatically."
+
+msgid "Sichtbar"
+msgstr "Visible"
+
+msgid "Diese Anzeige darf im RSS-Feed veröffentlich werden."
+msgstr "This advert may be published in the RSS feed."
+
+msgid "Folgende Anzeige enthält diese unzulässigen Begriffe"
+msgstr "The following ad contains these banned terms."
+
+msgid "Autor"
+msgstr "Author"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Anzeige anzeigen"
+msgstr "Display ad"
+
+msgid "Anzeige löschen"
+msgstr "Delete ad"
+
+msgid "Folgende Anzeige wurde gemeldet"
+msgstr "The following ad has been reported."
+
+msgid "Gemeldet von"
+msgstr "Reported by"
+
+msgid "Antworten"
+msgstr "Responses"
+
+msgid "Sie haben momentan keine eigenen Anzeigen."
+msgstr "You do not have any own ads at this time."
+
+msgid "Keine Anzeigen vorhanden."
+msgstr "No ads available."
+
+msgid "%u weitere Anzeige"
+msgstr "%u further ads"
+
+msgid "%u mal gesehen"
+msgstr "Seen %u times"
+
+msgid "Nicht merken"
+msgstr "Ignore"
+
+msgid "Merken"
+msgstr "Bookmark"
+
+msgid "Verstoß melden"
+msgstr "Report a violation"
+
+msgid "Bearbeiten"
+msgstr "Edit"
+
+msgid "Löschen"
+msgstr "Delete"
+
+msgid "Wollen Sie diesen Artikel wirklich löschen?"
+msgstr "Are you sure you want to delete this item?"
+
+msgid "Wollen Sie diese Anzeige wirklich löschen?"
+msgstr "Are you sure you want to delete this ad?"
+
+msgid "Verschieben"
+msgstr "Move"
+
+msgid "Thema anlegen"
+msgstr "Create topic"
+
+msgid "Beschreibung"
+msgstr "Title and description"
+
+msgid "Berechtigung"
+msgstr "Permission"
+
+msgid "Diese Berechtigung bezieht sich auf die Benutzer, die einen Artikel erstellen dürfen."
+msgstr "This permission applies to the users who are allowed to create an item."
+
+msgid "Betrachten können alle Benutzer!"
+msgstr "All users can view items!"
+
+msgid "Kurzhinweis"
+msgstr "Short description"
+
+msgid "Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese Kategorie ausgewählt wird."
+msgstr "The short description is displayed when you create an ad in this category."
+
+msgid "Regeln"
+msgstr "Regulations and background"
+
+msgid "Die Regeln werden oberhalb einer Kategorie in deren Übersicht angezeigt."
+msgstr "The rules are displayed in the overview above a category."
+
+msgid "Regeln in Anzeige"
+msgstr "Rules in ads"
+
+msgid "Die Regeln werden zusätzlich unterhalb einer Anzeige angezeigt."
+msgstr "The rules are also displayed below an ad."
+
+msgid "Veröffentlichung"
+msgstr "Publication"
+
+msgid "Anzeigen dieses Thema dürfen im RSS-Feed veröffentlich werden."
+msgstr "Ads in this topic may be published in the RSS feed."
+
+msgid "Themenübersicht"
+msgstr "Topic overview"
+
+msgid "Die %u neuesten Anzeigen"
+msgstr "The %u most recent ads"
+
+msgid "%u Anzeigen"
+msgstr "%U ads"
+
+msgid "Datum"
+msgstr "Date"
+
+msgid "Besucher"
+msgstr "Visitors"
+
+msgid "Aktionen"
+msgstr "Actions"
+
+msgid "Dieses Thema enthält noch keine Anzeigen."
+msgstr "This topic does not contain any ads."
+
+msgid "Sollen die Anzeigen wirklich gelöscht werden?"
+msgstr "Are you sure you want to delete these ads?"
+
+msgid "Wollen Sie dieses Thema wirklich löschen?"
+msgstr "Are you sure you want to delete this topic?"
+
+msgid "Thema löschen"
+msgstr "Delete topic"
+
+msgid "RSS-Feed zu dieser Kategorie abrufen"
+msgstr "View RSS feed for this category"
+
+msgid "Suchergebnisse für \"%s\""
+msgstr "Search results for \"%s\""
+
+msgid "Es wurden keine passenden Anzeigen gefunden."
+msgstr "No matching resources were found."
+
+msgid "Der eingegebene Suchbegriff ist zu kurz. Geben Sie bitte mindestens drei Zeichen ein."
+msgstr "The search term is too short. Please enter at least three characters."
+
+msgid "Sie haben sich momentan keine Anzeigen gemerkt."
+msgstr "You have not bookmarked any ads at the moment."
+
+msgid "Markierte Einträge entfernen"
+msgstr "Remove selected entries"
+
+msgid "Möchten Sie die markierten Einträge wirklich von der Merkliste löschen?"
+msgstr "Are you sure you want to delete the selected entries from the bookmark list?"
+
+msgid "Momentan liegen keine Anzeigen vor."
+msgstr "Currently there are no ads."
+
+msgid "Zeige mir"
+msgstr "Show me"
+
+msgid "Anzeigen"
+msgstr "ads"
+
+msgid "Aus den folgenden Themen"
+msgstr "from the following topics"

@@ -26,7 +26,7 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
 
     public function settings_action()
     {
-        PageLayout::setTitle(_('Einstellung für das Schwarze Brett Widget'));
+        PageLayout::setTitle($this->_('Einstellung für das Schwarze Brett Widget'));
 
         if (Request::isPost()) {
             $selection = Request::getArray('categories');
@@ -57,7 +57,7 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
         $navigation = array();
 
         $nav = new Navigation('', PluginEngine::getLink($this, [], 'settings'));
-        $nav->setImage(Icon::create('admin', 'clickable', tooltip2(_('Einstellungen'))));
+        $nav->setImage(Icon::create('admin', 'clickable', tooltip2($this->_('Einstellungen'))));
         $nav->setLinkAttributes(['data-dialog' => '']);
         $navigation[] = $nav;
 

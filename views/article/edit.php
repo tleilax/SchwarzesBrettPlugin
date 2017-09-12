@@ -1,6 +1,6 @@
 <?php
-$format_duration = function ($duration, $now = null) {
-    $formatted  = sprintf(ngettext('%u Tag', '%u Tage', $duration), $duration);
+$format_duration = function ($duration, $now = null) use ($_, $_n) {
+    $formatted  = sprintf($_n('%u Tag', '%u Tage', $duration), $duration);
     $formatted .= ' - ';
     $formatted .= strftime($_('bis zum %d.%m.%Y'), strtotime('+' . $duration . ' days', $now ?: time()));
 

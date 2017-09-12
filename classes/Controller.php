@@ -46,7 +46,7 @@ class Controller extends StudipController
 
         $this->_n = function ($string0, $tring1, $n) use ($dispatcher) {
             return call_user_func_array(
-                [$dispatcher->plugin, '_n'],
+                [$dispatcher->current_plugin, '_n'],
                 func_get_args()
             );
         };

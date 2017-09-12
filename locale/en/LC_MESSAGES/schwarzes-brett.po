@@ -171,7 +171,7 @@ msgid "Config-Eintrag für die Anzeige der ungesehenen Anzeigen in der Navigation
 msgstr "Config entry for the display of the unseen ads in the navigation"
 
 msgid "Schwarzes Brett"
-msgstr "Notice board:"
+msgstr "Notice board"
 
 msgid "Übersicht"
 msgstr "Overview"

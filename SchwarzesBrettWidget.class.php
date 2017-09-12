@@ -7,7 +7,7 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
 {
     public function getPluginName()
     {
-        return _('Schwarzes Brett');
+        return $this->_('Schwarzes Brett');
     }
 
     public function getPortalTemplate()

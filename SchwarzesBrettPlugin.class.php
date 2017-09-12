@@ -201,6 +201,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
 
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views/');
         $template = $factory->open('homepage/plugin.php');
+        $template->_ = function ($string) { return $this->_($string); };
         $template->title       = $title;
         $template->icon_url    = Icon::create('billboard', 'info')->asImagePath();
         $template->categories  = Article::groupByCategory($own_profile ? $user->articles : $user->visible_articles);

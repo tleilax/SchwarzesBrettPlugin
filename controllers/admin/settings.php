@@ -119,7 +119,7 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
 
     protected function getVisibility($requested_role)
     {
-        $plugin_id = $this->dispatcher->plugin->getPluginId();
+        $plugin_id = $this->plugin->getPluginId();
 
         $role_persistence = new RolePersistence();
         $plugin_roles     = $role_persistence->getAssignedPluginRoles($plugin_id);

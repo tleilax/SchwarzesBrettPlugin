@@ -29,7 +29,7 @@ use SchwarzesBrett\User;
 use SchwarzesBrett\Visit;
 use SchwarzesBrett\Watchlist;
 
-require_once 'bootstrap.inc.php';
+require_once __DIR__ . '/bootstrap.inc.php';
 
 /**
  * SchwarzesBrettPlugin Hauptklasse

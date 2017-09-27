@@ -91,13 +91,12 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
 
     protected function getConfig()
     {
-        return isset($GLOBALS['user']->cfg->SCHWARZESBRETT_WIDGET_SETTINGS)
-             ? unserialize($GLOBALS['user']->cfg->SCHWARZESBRETT_WIDGET_SETTINGS)
-             : array('selected' => false, 'count' => Config::get()->ENTRIES_PER_PAGE);
+        return $GLOBALS['user']->cfg->SCHWARZESBRETT_WIDGET_SETTINGS
+            ?: ['selected' => false, 'count' => Config::get()->ENTRIES_PER_PAGE];
     }
 
     protected function storeConfig($selected, $count)
     {
-        $GLOBALS['user']->cfg->store('SCHWARZESBRETT_WIDGET_SETTINGS', serialize(compact(words('selected count'))));
+        $GLOBALS['user']->cfg->store('SCHWARZESBRETT_WIDGET_SETTINGS', compact(['selected', 'count']));
     }
 }

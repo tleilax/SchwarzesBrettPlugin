@@ -89,5 +89,5 @@
             ['data-confirm' => $_('Wollen Sie diesen Artikel wirklich löschen?')]
         ) ?>
     <? endif; ?>
-    </div>
+    </footer>
 </article>

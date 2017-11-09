@@ -11,7 +11,7 @@
 --
 [<?= $_('Anzeige anzeigen') ?>]<?= $controller->absolute_url_for('article/view/' . $article->id) ?>
  | [<?= $_('Anzeige bearbeiten') ?>]<?= $controller->absolute_url_for('article/edit/' . $article->id) ?>
- | [<?= $_('Anzeige löschen') ?>]<?= $controller->absolute_url_for('article/delete/' . $article->id) ?>
+ | [<?= $_('Anzeige lÃ¶schen') ?>]<?= $controller->absolute_url_for('article/delete/' . $article->id) ?>
  | [<?= $_('Antworten') ?>]<?= $controller->absolute_url_for('dispatch.php/messages/write', [
     'rec_uname'      => $GLOBALS['user']->username,
     'messagesubject' => rawurlencode($article->titel),

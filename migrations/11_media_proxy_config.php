@@ -3,7 +3,7 @@ class MediaProxyConfig extends Migration
 {
     public function description ()
     {
-        return 'Config-Einträge für den Media-Proxy werden angelegt';
+        return 'Config-EintrÃ¤ge fÃ¼r den Media-Proxy werden angelegt';
     }
 
     public function up ()

@@ -10,7 +10,7 @@
 
         <fieldset>
             <label for="reason"><?= $_('Grund') ?>:</label>
-            <textarea required name="reason" id="reason" placeholder="<?= $_('Bitte geben Sie einen aussagekräftigen Grund ein, weshalb diese Anzeige nicht den Regeln entspricht.') ?>"></textarea>
+            <textarea required name="reason" id="reason" placeholder="<?= $_('Bitte geben Sie einen aussagekrÃ¤ftigen Grund ein, weshalb diese Anzeige nicht den Regeln entspricht.') ?>"></textarea>
         </fieldset>
 
     </fieldset>

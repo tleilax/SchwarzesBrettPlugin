@@ -68,6 +68,6 @@
 
 <? if (!$visible_for_nobody): ?>
     <?= MessageBox::info($_('Hinweise'), [
-        $_('Bei Aktivierung der RSS Feeds muss das Plugin für nobody freigegeben werden, damit die Feeds ohne Login abgerufen werden können.'),
+        $_('Bei Aktivierung der RSS Feeds muss das Plugin fÃ¼r nobody freigegeben werden, damit die Feeds ohne Login abgerufen werden kÃ¶nnen.'),
     ]) ?>
 <? endif; ?>

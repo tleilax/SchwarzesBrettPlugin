@@ -26,8 +26,8 @@
                     <input type="checkbox"
                            data-proxyfor="#watchlist tbody :checkbox"
                            data-activates="#watchlist tfoot button">
-                    <?= Studip\Button::create($_('Markierte Einträge entfernen'), 'delete', [
-                        'data-confirm' => $_('Möchten Sie die markierten Einträge wirklich von der Merkliste löschen?'),
+                    <?= Studip\Button::create($_('Markierte EintrÃ¤ge entfernen'), 'delete', [
+                        'data-confirm' => $_('MÃ¶chten Sie die markierten EintrÃ¤ge wirklich von der Merkliste lÃ¶schen?'),
                     ]) ?>
                 </td>
             </tr>

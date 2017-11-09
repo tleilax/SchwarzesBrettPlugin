@@ -67,10 +67,10 @@ class Admin_BlacklistController extends SchwarzesBrett\Controller
                 $article->store();
             }
 
-            $msg = $this->_('Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde '
+            $msg = $this->_('Aufgrund von wiederholten VerstÃ¶ÃŸen gegen die Nutzungsordnung wurde '
                     .'Ihr Zugang zum Schwarzen Brett gesperrt.');
             $msg .= ' ';
-            $msg .= $this->_('Sie können keine weiteren Anzeigen erstellen.');
+            $msg .= $this->_('Sie kÃ¶nnen keine weiteren Anzeigen erstellen.');
             $msg .= PHP_EOL . PHP_EOL;
             $msg .= $this->_('Bei Fragen wenden Sie sich bitte an die Systemadministratoren.');
 

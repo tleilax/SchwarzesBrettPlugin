@@ -12,7 +12,7 @@ class Cronjob extends GlobalCronjob
 
     public static function getDescription()
     {
-        return _('Cronjob für das Schwarze Brett, der abgelaufene Anzeigen entfernt.');
+        return _('Cronjob fÃ¼r das Schwarze Brett, der abgelaufene Anzeigen entfernt.');
     }
 
     public function setUp()

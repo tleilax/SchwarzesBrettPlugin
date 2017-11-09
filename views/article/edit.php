@@ -22,7 +22,7 @@ $expired_test = function ($duration, $now = null) {
         <fieldset>
             <label for="category_id"><?= $_('Thema') ?>:</label>
             <select required name="thema_id" id="category_id" class="has-disclaimer">
-                <option value="">- <?= $_('Kategorie auswählen') ?> -</option>
+                <option value="">- <?= $_('Kategorie auswÃ¤hlen') ?> -</option>
             <? foreach ($categories as $category): ?>
                 <option value="<?= $category->id ?>" <? if ($category->id === $article->thema_id) echo 'selected'; ?>>
                     <?= htmlReady($category->titel) ?>
@@ -52,7 +52,7 @@ $expired_test = function ($duration, $now = null) {
         <fieldset>
             <label for="duration">
                 <?= $_('Laufzeit') ?>
-                <small><?= $_('Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht.') ?></small>
+                <small><?= $_('Nach Ablauf dieser Frist wird die Anzeige automatisch gelÃ¶scht.') ?></small>
             </label>
             <select name="duration" id="duration">
             <? for ($i = 1; $i <= Config::Get()->BULLETIN_BOARD_DURATION; $i += 1): ?>
@@ -79,7 +79,7 @@ $expired_test = function ($duration, $now = null) {
             <label for="publishable">
                 <input type="checkbox" name="publishable" id="publishable" value="1"
                        <? if ($article->publishable || $article->isNew())  echo 'checked'; ?>>
-                 <?= $_('Diese Anzeige darf im RSS-Feed veröffentlich werden.') ?>
+                 <?= $_('Diese Anzeige darf im RSS-Feed verÃ¶ffentlich werden.') ?>
             </label>
         </fieldset>
     <? endif; ?>

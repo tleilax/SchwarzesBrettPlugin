@@ -194,10 +194,10 @@ class Controller extends StudipController
                 Icon::create('edit')
             )->asDialog();
             $actions->addLink(
-                $this->_('Dieses Thema lˆschen'),
+                $this->_('Dieses Thema l√∂schen'),
                 $this->url_for('category/delete/' . $category_id),
                 Icon::create('trash'),
-                ['data-confirm' => $this->_('Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen lˆschen?')]
+                ['data-confirm' => $this->_('Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen l√∂schen?')]
             );
         }
 

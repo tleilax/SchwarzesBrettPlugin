@@ -26,7 +26,7 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
 
     public function settings_action()
     {
-        PageLayout::setTitle($this->_('Einstellung f¸r das Schwarze Brett Widget'));
+        PageLayout::setTitle($this->_('Einstellung f√ºr das Schwarze Brett Widget'));
 
         if (Request::isPost()) {
             $selection = Request::getArray('categories');

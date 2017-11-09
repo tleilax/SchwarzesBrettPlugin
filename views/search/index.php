@@ -1,5 +1,5 @@
 <table class="default">
-    <caption><?= sprintf($_('Suchergebnisse für "%s"'), $needle) ?></caption>
+    <caption><?= sprintf($_('Suchergebnisse fÃ¼r "%s"'), $needle) ?></caption>
 <? if (!$categories): ?>
     <tbody>
         <tr>

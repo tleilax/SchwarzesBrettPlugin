@@ -3,7 +3,7 @@
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
     <?= QuickSearch::get('user_id', new StandardSearch('user_id'))->withButton()->render() ?>
-    <?= Studip\Button::create($_('Hinzufügen')) ?>
+    <?= Studip\Button::create($_('HinzufÃ¼gen')) ?>
 </form>
 
 <? if (count($users) === 0) : ?>

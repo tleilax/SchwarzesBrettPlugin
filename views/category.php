@@ -14,8 +14,8 @@
         <a href="<?= $controller->url_for('category/edit/' . $category->id) ?>" data-dialog>
             <?= Icon::create('edit', 'clickable', tooltip2($_('Thema bearbeiten'))) ?>
         </a>
-        <a href="<?= $controller->url_for('category/delete/' . $category->id) ?>" data-confirm="<?= $_('Wollen Sie dieses Thema wirklich löschen?') ?>">
-            <?= Icon::create('trash', 'clickable', tooltip2($_('Thema löschen'))) ?>
+        <a href="<?= $controller->url_for('category/delete/' . $category->id) ?>" data-confirm="<?= $_('Wollen Sie dieses Thema wirklich lÃ¶schen?') ?>">
+            <?= Icon::create('trash', 'clickable', tooltip2($_('Thema lÃ¶schen'))) ?>
         </a>
     <? endif; ?>
     <? if ($rss_enabled): ?>

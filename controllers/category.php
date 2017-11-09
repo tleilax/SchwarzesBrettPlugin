@@ -21,7 +21,7 @@ class CategoryController extends SchwarzesBrett\Controller
 
         if (User::Get()->isBlacklisted()) {
             PageLayout::postInfo(
-                $this->_('Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')
+                $this->_('Sie wurden gesperrt und kÃ¶nnen daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')
             );
         }
     }
@@ -141,7 +141,7 @@ class CategoryController extends SchwarzesBrett\Controller
         $count = count($category->articles);
         $category->delete();
 
-        $message = sprintf($this->_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelöscht.'),
+        $message = sprintf($this->_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelÃ¶scht.'),
                            $title, $count);
         PageLayout::postMessage(MessageBox::success($message));
 
@@ -186,7 +186,7 @@ class CategoryController extends SchwarzesBrett\Controller
                 $deleted += (int)($article->delete() !== false);
             }
 
-            $message = sprintf($this->_('%u Artikel wurde(n) gelöscht.'), $deleted);
+            $message = sprintf($this->_('%u Artikel wurde(n) gelÃ¶scht.'), $deleted);
             PageLayout::postMessage(MessageBox::success($message));
 
             $this->redirect('category/view/' . $id);

@@ -71,7 +71,7 @@
 
         <? if ($blame_enabled): ?>
             <?= Studip\LinkButton::create(
-                $_('Verstoß melden'),
+                $_('VerstoÃŸ melden'),
                 $controller->url_for('article/blame/' . $article->id),
                 ['data-dialog' => '']
             ) ?>
@@ -84,9 +84,9 @@
             ['data-dialog' => '']
         ) ?>
         <?= Studip\LinkButton::create(
-            $_('Löschen'),
+            $_('LÃ¶schen'),
             $controller->url_for("article/delete/{$article->id}", ['return_to' => Request::get('return_to')]),
-            ['data-confirm' => $_('Wollen Sie diesen Artikel wirklich löschen?')]
+            ['data-confirm' => $_('Wollen Sie diesen Artikel wirklich lÃ¶schen?')]
         ) ?>
     <? endif; ?>
     </footer>

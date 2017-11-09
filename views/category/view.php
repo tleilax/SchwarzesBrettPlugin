@@ -45,7 +45,7 @@
 <? if (count($articles) === 0): ?>
         <tr class="nohover">
             <td colspan="<?= 5 + (int)($GLOBALS['user']->perms === 'root') ?>" style="text-align: center;">
-                <?= $_('Dieses Thema enthält noch keine Anzeigen.') ?><br>
+                <?= $_('Dieses Thema enthÃ¤lt noch keine Anzeigen.') ?><br>
                 <?= Studip\LinkButton::create(
                     $_('Anzeige erstellen'),
                     $controller->url_for('article/create'),
@@ -70,8 +70,8 @@
                 <?= Studip\Button::create($_('Verschieben'), 'move', [
                     'data-dialog' => 'size=auto',
                 ]) ?>
-                <?= Studip\Button::create($_('Löschen'), 'delete', [
-                        'onclick' => "return confirm('" . $_('Sollen die Anzeigen wirklich gelöscht werden?') . "');",
+                <?= Studip\Button::create($_('LÃ¶schen'), 'delete', [
+                        'onclick' => "return confirm('" . $_('Sollen die Anzeigen wirklich gelÃ¶scht werden?') . "');",
                 ]) ?>
             </td>
         </tr>

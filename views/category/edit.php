@@ -24,8 +24,8 @@
         <fieldset>
             <label for="perm">
                 <?= $_('Berechtigung') ?>
-                <?= tooltipIcon($_('Diese Berechtigung bezieht sich auf die Benutzer, die einen Artikel erstellen dürfen.') . ' ' .
-                                $_('Betrachten können alle Benutzer!')) ?>
+                <?= tooltipIcon($_('Diese Berechtigung bezieht sich auf die Benutzer, die einen Artikel erstellen dÃ¼rfen.') . ' ' .
+                                $_('Betrachten kÃ¶nnen alle Benutzer!')) ?>
             </label>
             <select name="thema_perm" id="perm">
             <? foreach (words('autor tutor dozent admin root') as $perm): ?>
@@ -39,7 +39,7 @@
         <fieldset>
             <label for="dislaimer">
                 <?= $_('Kurzhinweis') ?>
-                <?= tooltipIcon($_('Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese Kategorie ausgewählt wird.')) ?>
+                <?= tooltipIcon($_('Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese Kategorie ausgewÃ¤hlt wird.')) ?>
             </label>
             <textarea name="disclaimer" id="disclaimer" class="add_toolbar wysiwyg" style="min-height: 4em"><?= htmlReady($category->disclaimer) ?></textarea>
         </fieldset>
@@ -47,7 +47,7 @@
         <fieldset>
             <label for="terms">
                 <?= $_('Regeln') ?>
-                <?= tooltipIcon($_('Die Regeln werden oberhalb einer Kategorie in deren Übersicht angezeigt.')) ?>
+                <?= tooltipIcon($_('Die Regeln werden oberhalb einer Kategorie in deren Ãœbersicht angezeigt.')) ?>
             </label>
             <textarea class="add_toolbar wysiwyg" name="terms" id="terms"><?= htmlReady($category->terms) ?></textarea>
         </fieldset>
@@ -59,7 +59,7 @@
                         <? if ($category->display_terms_in_article) echo 'checked'; ?>>
 
                 <?= $_('Regeln in Anzeige') ?>
-                <?= tooltipIcon($_('Die Regeln werden zusätzlich unterhalb einer Anzeige angezeigt.')) ?>
+                <?= tooltipIcon($_('Die Regeln werden zusÃ¤tzlich unterhalb einer Anzeige angezeigt.')) ?>
             </label>
         </fieldset>
 
@@ -77,8 +77,8 @@
             <input type="hidden" name="publishable" value="0">
             <label for="publishable">
                 <input type="checkbox" name="publishable" id="publishable" value="1" <? if ($category->publishable || $category->isNew())  echo 'checked'; ?>>
-                <?= $_('Veröffentlichung') ?>
-                <?= tooltipIcon($_('Anzeigen dieses Thema dürfen im RSS-Feed veröffentlich werden.')) ?>
+                <?= $_('VerÃ¶ffentlichung') ?>
+                <?= tooltipIcon($_('Anzeigen dieses Thema dÃ¼rfen im RSS-Feed verÃ¶ffentlich werden.')) ?>
             </label>
         </fieldset>
     <? endif; ?>

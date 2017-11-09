@@ -39,8 +39,8 @@
         <a href="<?= $controller->url_for('article/edit/' . $article->id) ?>" data-dialog>
             <?= Icon::create('edit', 'clickable', tooltip2($_('Anzeige bearbeiten'))) ?>
         </a>
-        <a href="<?= $controller->url_for('article/delete/' . $article->id, $return_to ? compact('return_to') : array()) ?>" data-confirm="<?= $_('Wollen Sie diese Anzeige wirklich löschen?') ?>">
-            <?= Icon::create('trash', 'clickable', tooltip2($_('Anzeige löschen'))) ?>
+        <a href="<?= $controller->url_for('article/delete/' . $article->id, $return_to ? compact('return_to') : array()) ?>" data-confirm="<?= $_('Wollen Sie diese Anzeige wirklich lÃ¶schen?') ?>">
+            <?= Icon::create('trash', 'clickable', tooltip2($_('Anzeige lÃ¶schen'))) ?>
         </a>
     <? endif; ?>
     </td>

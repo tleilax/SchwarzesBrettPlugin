@@ -120,7 +120,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
                     $mail = new StudipMail();
                     $mail->addRecipient(Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS)
-                         ->setSubject($this->_('Anzeige enthält unzulässige Begriffe'))
+                         ->setSubject($this->_('Anzeige enthÃ¤lt unzulÃ¤ssige Begriffe'))
                          ->setBodyText($mailbody)
                          ->setBodyHtml(formatReady($mailbody))
                          ->send();
@@ -145,12 +145,12 @@ class ArticleController extends SchwarzesBrett\Controller
     {
         $article = Article::find($id);
         if (!$this->is_admin && $article->user_id !== $GLOBALS['user']->id) {
-            throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht löschen.'));
+            throw new AccessDeniedException($this->_('Sie dÃ¼rfen diese Anzeige nicht lÃ¶schen.'));
         }
 
         $article->delete();
 
-        PageLayout::postMessage(MessageBox::success($this->_('Die Anzeige wurde gelöscht.')));
+        PageLayout::postMessage(MessageBox::success($this->_('Die Anzeige wurde gelÃ¶scht.')));
 
         $this->redirect(Request::get('return_to') ?: $this->url_for('category'));
     }
@@ -203,8 +203,8 @@ class ArticleController extends SchwarzesBrett\Controller
         }
 
         $message = count($articles) > 0
-                 ? MessageBox::success(sprintf($this->_('Es wurden %u Anzeigen aus der Datenbank gelöscht.'), count($articles)))
-                 : MessageBox::info($this->_('Es gibt keine Artikel in der Datenbank, die gelöscht werden können.'));
+                 ? MessageBox::success(sprintf($this->_('Es wurden %u Anzeigen aus der Datenbank gelÃ¶scht.'), count($articles)))
+                 : MessageBox::info($this->_('Es gibt keine Artikel in der Datenbank, die gelÃ¶scht werden kÃ¶nnen.'));
 
         PageLayout::postMessage($message);
 

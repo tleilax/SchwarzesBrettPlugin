@@ -1,9 +1,8 @@
-<h3><?= $_('Benutzer auf die schwarze Liste setzen') ?></h3>
 <form method="post" action="<?= $controller->url_for('admin/blacklist/add') ?>" class="sb-search-form">
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
     <?= QuickSearch::get('user_id', new StandardSearch('user_id'))->withButton()->render() ?>
-    <?= Studip\Button::create($_('Hinzufügen')) ?>
+    <?= Studip\Button::create($_('Benutzer auf die schwarze Liste setzen')) ?>
 </form>
 
 <? if (count($users) === 0) : ?>
@@ -43,7 +42,7 @@
                     <input type="checkbox" name="user_id[]" value="<?= $user->id ?>">
                 </td>
                 <td>
-                    <a href="<?= URLHelper::getLink('dispatch.php/profile', array('username' => $user->user->username)) ?>">
+                    <a href="<?= URLHelper::getLink('dispatch.php/profile', ['username' => $user->user->username]) ?>">
                         <?= Avatar::getAvatar($user->id)->getImageTag(Avatar::SMALL) ?>
                         <?= htmlReady($user->user->getFullname()) ?>
                     </a>
@@ -52,7 +51,7 @@
                 <td class="actions">
                     <?= Icon::create('trash')->asInput(
                         tooltip2($_('Benutzer von der schwarzen Liste entfernen')) +
-                        ['formaction' => $controller->url_for('admin/blacklist/remove/' . $user->id)]
+                        ['formaction' => $controller->url_for("admin/blacklist/remove/{$user->id}")]
                     ) ?>
                 </td>
             </tr>

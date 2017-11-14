@@ -7,28 +7,28 @@
     <tbody>
         <tr>
             <th colspan="3">
-                <a href="<?= URLHelper::getLink('dispatch.php/profile?username=' . User::find($user_id)->username) ?>">
+                <a href="<?= URLHelper::getLink('dispatch.php/profile', ['username' => User::find($user_id)->username]) ?>">
                     <?= Avatar::getAvatar($user_id)->getImageTag(Avatar::SMALL) ?>
                     <?= User::find($user_id)->getFullname() ?>
                 </a>
             </th>
         </tr>
-    <? $last = array('desc' => $articles[0]->beschreibung, 'title' => $articles[0]->titel); ?>
+    <? $last = ['desc' => $articles[0]->beschreibung, 'title' => $articles[0]->titel]; ?>
     <? foreach ($articles as $article): ?>
         <tr <? if ($last['desc'] !== $article->beschreibung && $last['title'] !== $article->titel) echo 'class="divider"'; ?>>
             <td>
-                <a href="<?= $controller->url_for('article/view/' . $article->id . '?return_to=' . $controller->url_for('admin/duplicates')) ?>" data-dialog>
+                <a href="<?= $controller->url_for("article/view/{$article->id}", ['return_to' => $controller->url_for('admin/duplicates')]) ?>" data-dialog>
                     <?= htmlReady($article->titel) ?>
                 </a>
             </td>
             <td>
-                <a href="<?= $controller->url_for('article/view/' . $article->id . '?return_to=' . $controller->url_for('admin/duplicates')) ?>" data-dialog>
+                <a href="<?= $controller->url_for("article/view/{$article->id}", ['return_to' => $controller->url_for('admin/duplicates')]) ?>" data-dialog>
                     <?= htmlReady($article->category->titel) ?>
                 </a>
             </td>
             <td><?= strftime('%x %X', $article->mkdate) ?></td>
         </tr>
-        <? $last = array('desc' => $article->beschreibung, 'title' => $article->titel); ?>
+        <? $last = ['desc' => $article->beschreibung, 'title' => $article->titel]; ?>
     <? endforeach; ?>
     </tbody>
 <? endforeach; ?>

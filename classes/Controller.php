@@ -20,7 +20,6 @@ use URLHelper;
 class Controller extends StudipController
 {
     protected $allow_nobody = false;
-    protected $utf8decode_xhr = true;
     protected $temp_storage;
 
     /**
@@ -138,8 +137,8 @@ class Controller extends StudipController
             PageLayout::addHeadElement('link', [
                 'rel'   => 'alternate',
                 'type'  => 'application/rss+xml',
-                'title' => $this->_('RSS-Feed') . ': ' . $category->titel,
-                'href'  => $this->absolute_url_for('rss/' . $category->id),
+                'title' => "{$this->_('RSS-Feed')}: {$category->titel}",
+                'href'  => $this->absolute_url_for("rss/{$category->id}"),
             ]);
         }
     }
@@ -153,7 +152,7 @@ class Controller extends StudipController
         $search = new SearchWidget($this->url_for('search'));
         $search->addNeedle($this->_('Suchbegriff'), 'needle', true);
         if ($category_id) {
-            $search->addFilter($this->_('Nur in dieser Kategorie'), 'restrict[' . $category_id . ']');
+            $search->addFilter($this->_('Nur in dieser Kategorie'), "restrict[{$category_id}]");
         }
         Sidebar::get()->addWidget($search);
 
@@ -161,7 +160,7 @@ class Controller extends StudipController
         if ($category_id && count(Category::find($category_id)->new_articles) > 0) {
             $actions->addLink(
                 $this->_('Dieses Thema als besucht markieren'),
-                $this->url_for('category/visit/' . $category_id),
+                $this->url_for("category/visit/{$category_id}"),
                 Icon::create('check-circle.svg')
             )->asDialog();
         }
@@ -176,7 +175,7 @@ class Controller extends StudipController
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
             $actions->addLink(
                 $this->_('Neue Anzeige erstellen'),
-                $this->url_for('article/create/' . ($category_id ?: '')),
+                $this->url_for("article/create/{$category_id ?: ''}"),
                 Icon::create('billboard+add')
             )->asDialog();
         }
@@ -190,12 +189,12 @@ class Controller extends StudipController
         if ($category_id && $this->is_admin) {
             $actions->addLink(
                 $this->_('Dieses Thema bearbeiten'),
-                $this->url_for('category/edit/' . $category_id),
+                $this->url_for("category/edit/{$category_id}"),
                 Icon::create('edit')
             )->asDialog();
             $actions->addLink(
                 $this->_('Dieses Thema löschen'),
-                $this->url_for('category/delete/' . $category_id),
+                $this->url_for("category/delete/{$category_id}"),
                 Icon::create('trash'),
                 ['data-confirm' => $this->_('Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen löschen?')]
             );
@@ -207,7 +206,7 @@ class Controller extends StudipController
             $export = new ExportWidget();
             $export->addLink(
                 $category_id ? $this->_('RSS-Feed dieser Kategorie') : $this->_('RSS-Feed'),
-                $this->url_for('rss/' . $category_id),
+                $this->url_for("rss/{$category_id}"),
                 Icon::create('rss')
             );
             Sidebar::get()->addWidget($export);
@@ -226,11 +225,11 @@ class Controller extends StudipController
         $widget = new SelectWidget($this->_('Kategorie'), $this->url_for('category/choose'), 'id');
         $widget->setSelection($selected);
 
-        $categories = Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
+        $categories = Category::findByVisible(1, 'ORDER BY titel ASC');
         foreach ($categories as $category) {
             $title = $category->titel;
             if ($count = count($category->visible_articles)) {
-                $title .= ' (' . $count . ')';
+                $title .= " ({$count})";
             }
             $widget->addElement(new SelectElement($category->id, $title, $category->id == $selected));
         }

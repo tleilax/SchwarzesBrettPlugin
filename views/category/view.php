@@ -1,5 +1,5 @@
 <? if ($GLOBALS['user']->perms === 'root'): ?>
-<form action="<?= $controller->url_for('category/bulk/' . $category->id) ?>" method="post">
+<form action="<?= $controller->url_for("category/bulk/{$category->id}") ?>" method="post">
 <? endif; ?>
 <? if ($category->terms): ?>
     <div class="category-disclaimer">
@@ -48,17 +48,17 @@
                 <?= $_('Dieses Thema enthält noch keine Anzeigen.') ?><br>
                 <?= Studip\LinkButton::create(
                     $_('Anzeige erstellen'),
-                    $controller->url_for('article/create'),
+                    $controller->url_for("article/create/{$category->id}"),
                     ['data-dialog' => '']
                 ) ?>
             </td>
         </tr>
 <? else: ?>
     <? foreach ($articles as $article): ?>
-        <?= $this->render_partial('article-tr.php', compact('article') + array(
-                'return_to' => $controller->url_for('category/view/' . $category->id),
-                'checkbox'  => $GLOBALS['user']->perms === 'root',
-        )) ?>
+        <?= $this->render_partial('article-tr.php', compact('article') + [
+            'return_to' => $controller->url_for("category/view/{$category->id}"),
+            'checkbox'  => $GLOBALS['user']->perms === 'root',
+        ]) ?>
     <? endforeach; ?>
 <? endif; ?>
     </tbody>

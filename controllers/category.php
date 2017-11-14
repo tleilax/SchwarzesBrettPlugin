@@ -28,7 +28,7 @@ class CategoryController extends SchwarzesBrett\Controller
 
     public function index_action($category_id = null)
     {
-        $url = $this->url_for('category/view/' . $category_id);
+        $url = $this->url_for("category/view/{$category_id}");
         $this->redirect($url);
     }
 
@@ -37,8 +37,8 @@ class CategoryController extends SchwarzesBrett\Controller
         Navigation::activateItem('/schwarzesbrettplugin/show/all');
 
         $this->categories = $this->is_admin
-                          ? Category::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC')
-                          : Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
+                          ? Category::findBySQL('1 ORDER BY titel ASC')
+                          : Category::findByVisible(1, 'ORDER BY titel ASC');
         $this->newest = Article::findNewest($this->newest_limit);
 
         $this->inject_rss();
@@ -62,7 +62,7 @@ class CategoryController extends SchwarzesBrett\Controller
         if (!$id) {
             $this->redirect('category/list');
         } else {
-            $this->redirect('category/view/' . $id);
+            $this->redirect("category/view/{$id}");
         }
     }
 
@@ -83,8 +83,8 @@ class CategoryController extends SchwarzesBrett\Controller
             $this->response->add_header('X-Dialog-Close', 1);
             $this->render_nothing();
         } else {
-            PageLayout::postMessage(MessageBox::success($message));
-            $this->redirect('category/view/' . $id);
+            PageLayout::postSuccess($message);
+            $this->redirect("category/view/{$id}");
         }
     }
 
@@ -128,10 +128,10 @@ class CategoryController extends SchwarzesBrett\Controller
             $message = $id === null
                      ? $this->_('Das Thema wurde angelegt.')
                      : $this->_('Das Thema wurde gespeichert.');
-            PageLayout::postMessage(MessageBox::success($message));
+            PageLayout::postSuccess($message);
         }
 
-        $this->redirect('category/view/' . $id);
+        $this->redirect("category/view/{$id}");
     }
 
     public function delete_action($id)
@@ -143,7 +143,7 @@ class CategoryController extends SchwarzesBrett\Controller
 
         $message = sprintf($this->_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelöscht.'),
                            $title, $count);
-        PageLayout::postMessage(MessageBox::success($message));
+        PageLayout::postSuccess($message);
 
         $this->redirect('category/list');
     }
@@ -161,7 +161,7 @@ class CategoryController extends SchwarzesBrett\Controller
 
             $this->ids         = $ids;
             $this->category_id = $id;
-            $this->categories  = Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci');
+            $this->categories  = Category::findByVisible(1, 'ORDER BY titel ASC');
             $this->render_template('category/bulk-move.php', $this->layout);
         } elseif (Request::submitted('moved')) {
             $category_id = Request::option('category_id');
@@ -174,10 +174,10 @@ class CategoryController extends SchwarzesBrett\Controller
                 }
 
                 $message = sprintf($this->_('%u Artikel wurde(n) verschoben.'), count($ids));
-                PageLayout::postMessage(MessageBox::success($message));
+                PageLayout::postSuccess($message);
             }
 
-            $this->redirect('category/view/' . $id);
+            $this->redirect("category/view/{$id}");
         } elseif (Request::submitted('delete')) {
             $deleted = 0;
 
@@ -187,9 +187,9 @@ class CategoryController extends SchwarzesBrett\Controller
             }
 
             $message = sprintf($this->_('%u Artikel wurde(n) gelöscht.'), $deleted);
-            PageLayout::postMessage(MessageBox::success($message));
+            PageLayout::postSuccess($message);
 
-            $this->redirect('category/view/' . $id);
+            $this->redirect("category/view/{$id}");
         }
     }
 }

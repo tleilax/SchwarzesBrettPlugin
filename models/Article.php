@@ -12,7 +12,7 @@ use StudipLog;
 class Article extends SimpleORMap
 {
     private static $watched = [];
-    
+
     public static function configure($config = [])
     {
         $config['db_table'] = 'sb_artikel';
@@ -77,9 +77,9 @@ class Article extends SimpleORMap
 
     public static function countNew($category_id = null)
     {
-        $cache_hash = '/schwarzes-brett/counts/new/' . $GLOBALS['user']->id;
+        $cache_hash = "/schwarzes-brett/counts/new/{$GLOBALS['user']->id}";
         if ($category_id) {
-            $cache_hash .= '/' . $category_id;
+            $cache_hash .= "/{$category_id}";
         }
 
         $cache = StudipCacheFactory::getCache();
@@ -109,28 +109,30 @@ class Article extends SimpleORMap
 
     public static function findValidByCategoryId($category_id)
     {
-        return self::findBySQL("thema_id = :category_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id));
+        return self::findBySQL("thema_id = :category_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", [':category_id' => $category_id]);
     }
 
     public static function findValidByUserId($user_id)
     {
-        return self::findBySQL("user_id = :user_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':user_id' => $user_id));
+        return self::findBySQL("user_id = :user_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", [':user_id' => $user_id]);
     }
 
     public static function findVisibleByUserId($user_id)
     {
-        return self::findBySQL("user_id = :user_id AND visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':user_id' => $user_id));
+        return self::findBySQL("user_id = :user_id AND visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", [':user_id' => $user_id]);
     }
 
     public static function findVisibleByCategoryId($category_id)
     {
-        return self::findBySQL("thema_id = :category_id AND (visible = 1 OR user_id = :user_id) AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));
+        return self::findBySQL("thema_id = :category_id AND (visible = 1 OR user_id = :user_id) AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", [':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id]);
     }
 
     public static function findNewByCategoryId($category_id)
     {
-        $visit = Visit::findOneBySQL("object_id = :category_id AND user_id = :user_id AND type = 'thema'",
-                                       array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));
+        $visit = Visit::findOneBySQL(
+            "object_id = :category_id AND user_id = :user_id AND type = 'thema'",
+            [':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id]
+        );
         $last_visit = $visit
                     ? $visit->last_visitdate
                     : 0;
@@ -157,11 +159,11 @@ class Article extends SimpleORMap
     public static function findNewest($limit, $categories = false)
     {
         $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC LIMIT ' . (int)$limit;
-        $params = array();
+        $params = [];
 
         if ($categories !== false && !empty($categories)) {
             $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() AND thema_id IN (:categories) ORDER BY mkdate DESC LIMIT ' . (int)$limit;
-            $params = array(':categories' => $categories);
+            $params = [':categories' => $categories];
         }
 
         return self::findBySQL($query, $params);
@@ -190,7 +192,7 @@ class Article extends SimpleORMap
 
     public function visit()
     {
-        $visit = Visit::find(array($this->id, $GLOBALS['user']->id));
+        $visit = Visit::find([$this->id, $GLOBALS['user']->id]);
         if (!$visit) {
             $visit = new Visit();
             $visit->object_id = $this->id;
@@ -221,7 +223,7 @@ class Article extends SimpleORMap
                   ORDER BY dupe_count DESC";
         $statement = DBManager::get()->query($query);
 
-        $duplicates = array();
+        $duplicates = [];
         while ($ids = $statement->fetchColumn()) {
             $ids = explode(',', $ids);
 
@@ -229,7 +231,7 @@ class Article extends SimpleORMap
             $user_id  = $articles[0]->user_id;
 
             if (!isset($duplicates[$user_id])) {
-                $duplicates[$user_id] = array();
+                $duplicates[$user_id] = [];
             }
 
             foreach ($articles as $article) {
@@ -281,14 +283,14 @@ class Article extends SimpleORMap
 
     public static function groupByCategory($articles)
     {
-        $categories = array();
+        $categories = [];
         foreach ($articles as $article) {
             $category = $article->category;
             if (!isset($categories[$category->id])) {
-                $categories[$category->id] = array(
+                $categories[$category->id] = [
                     'titel'    => $category->titel,
-                    'articles' => array(),
-                );
+                    'articles' => [],
+                ];
             }
             $categories[$category->id]['articles'][] = $article;
         }
@@ -311,7 +313,7 @@ class Article extends SimpleORMap
         }, $needle);
 
         if ($subject) {
-            return preg_replace_callback('/' . $needle . '/', $replacer, $subject);
+            return preg_replace_callback("/{$needle}/", $replacer, $subject);
         } else {
             StudipFormat::addStudipMarkup('sb-highlight', $needle, false, function ($markup, $matches, $contents) use ($replacer) {
                 return $replacer($matches);

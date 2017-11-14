@@ -4,15 +4,12 @@
     column-rule: @rule;
 }
 
-.button {
-    min-width: 80px !important;
-}
-
 #layout_content > h2:first-of-type {
     margin-top: 0;
 }
 
-.sb-categories, .sb-articles {
+.sb-categories,
+.sb-articles {
     list-style: none;
     margin: 0 0 1em;
     padding: 0;
@@ -111,10 +108,10 @@
 
 .sb-category caption small {
     &:before {
-        content: " ";
+        content: "“";
     }
     &:after {
-        content: " ";
+        content: "”";
     }
     font-size: 0.8em;
     font-weight: normal;
@@ -145,7 +142,7 @@
     }
 }
 
-.studip_form, #bb-config {
+#bb-config {
     input[type=text], input[type=number], textarea, select {
         .box-sizing(border-box);
         width: 100%;
@@ -157,9 +154,6 @@
     .ui-dialog & fieldset {
         padding-top: initial;
     }
-}
-.ui-dialog .hide-in-dialog {
-    display: none;
 }
 #duplicates .divider td {
     box-shadow: inset 0 -28px 0 0 rgb(255, 255, 255),

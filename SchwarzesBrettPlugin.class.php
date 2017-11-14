@@ -52,7 +52,10 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
     {
         // Hauptmenüpunkt
         $nav = new Navigation($this->_('Schwarzes Brett'), $this->url_for('category'));
-        $nav->setImage('icons/lightblue/billboard.svg', tooltip2($this->_('Schwarzes Brett')));
+        $nav->setImage(
+            Icon::create('billboard', Icon::ROLE_NAVIGATION),
+            tooltip2($this->_('Schwarzes Brett'))
+        );
         if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
             $nav->setBadgeNumber(Article::countNew());
         }
@@ -91,7 +94,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
             Navigation::addItem('/schwarzesbrettplugin/root/duplicates', $nav);
 
             if (!$this->hasActiveCronjob() && $expired = Article::countBySQL('expires < UNIX_TIMESTAMP()')) {
-                $title = sprintf($this->_('Datenbank bereinigen') . ' (' . $this->_('%u alte Einträge') . ')', $expired);
+                $title = sprintf("{$this->_('Datenbank bereinigen')} ({$this->_('%u alte Einträge')})", $expired);
                 $nav = new Navigation($title, $this->url_for('article/purge'));
                 Navigation::addItem('/schwarzesbrettplugin/root/gc', $nav);
             }
@@ -117,8 +120,6 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
 
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
-
-        $this->legacyAssets();
 
         if (Config::get()->BULLETIN_BOARD_MEDIA_PROXY) {
             OpenGraphURL::setProxyURL(PluginEngine::getURL($this, [], 'proxy', true));
@@ -220,7 +221,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         if ($category = Category::find($event->affected_range_id)) {
             $replaces['%category(%affected)'] = sprintf(
                 '<a href="%s">%s</a>',
-                URLHelper::getLink('plugins.php/schwarzesbrettplugin/category/view/' . $category->id),
+                URLHelper::getLink("plugins.php/schwarzesbrettplugin/category/view/{$category->id}"),
                 htmlReady($category->titel)
             );
         }
@@ -229,7 +230,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
             $user = User::find($event->coaffected_range_id);
             $replaces['%user(%coaffected)'] = sprintf(
                 ' von <a href="%s">%s</a>',
-                URLHelper::getLink('dispatch.php/profile?username=' . $user->username),
+                URLHelper::getLink('dispatch.php/profile', ['username' => $user->username]),
                 htmlReady($user->getFullName())
             );
         }

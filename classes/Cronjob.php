@@ -23,7 +23,7 @@ class Cronjob extends GlobalCronjob
         require_once __DIR__ . '/../models/Watchlist.php';
     }
 
-    public function execute($last_result, $parameters = array())
+    public function execute($last_result, $parameters = [])
     {
         $articles = Article::findBySQL('expires < UNIX_TIMESTAMP()');
 

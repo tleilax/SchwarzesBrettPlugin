@@ -13,6 +13,7 @@ class Admin_BlacklistController extends SchwarzesBrett\Controller
 
     public function index_action()
     {
+        PageLayout::setTitle("{$this->_('Schwarzes Brett')} - {$this->_('Benutzer-Blacklist')}");
         Navigation::activateItem('/schwarzesbrettplugin/root/blacklist');
 
         if (Request::isPost()) {
@@ -41,7 +42,7 @@ class Admin_BlacklistController extends SchwarzesBrett\Controller
             $message = count($ids) === 1
                      ? $this->_('Der Nutzer wurde von der schwarzen Liste entfernt.')
                      : sprintf($this->_('%u Nutzer wurden von der schwarzen Liste entfernt.'), count($ids));
-            PageLayout::postMessage(MessageBox::success($message));
+            PageLayout::postSuccess($message);
         }
 
         $this->redirect('admin/blacklist');

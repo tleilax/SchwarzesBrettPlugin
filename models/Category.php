@@ -6,29 +6,29 @@ use SimpleORMap;
 
 class Category extends SimpleORMap
 {
-    public static function configure($config = array())
+    public static function configure($config = [])
     {
         $config['db_table'] = 'sb_themen';
-        $config['has_many']['articles'] = array(
+        $config['has_many']['articles'] = [
             'class_name' => 'SchwarzesBrett\\Article',
             'assoc_func' => 'findValidByCategoryId',
             'assoc_foreign_key' => 'thema_id',
-        );
-        $config['has_many']['visible_articles'] = array(
+        ];
+        $config['has_many']['visible_articles'] = [
             'class_name' => 'SchwarzesBrett\\Article',
             'assoc_func' => 'findVisibleByCategoryId',
             'assoc_foreign_key' => 'thema_id',
-        );
-        $config['has_many']['new_articles'] = array(
+        ];
+        $config['has_many']['new_articles'] = [
             'class_name' => 'SchwarzesBrett\\Article',
             'assoc_func' => 'findNewByCategoryId',
             'assoc_foreign_key' => 'thema_id',
-        );
-        $config['additional_fields']['new'] = array(
+        ];
+        $config['additional_fields']['new'] = [
             'get' => function ($object) {
                 return count($object->new_articles) > 0;
             }
-        );
+        ];
 
         parent::configure($config);
     }

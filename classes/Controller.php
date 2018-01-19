@@ -175,7 +175,7 @@ class Controller extends StudipController
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
             $actions->addLink(
                 $this->_('Neue Anzeige erstellen'),
-                $this->url_for("article/create/{$category_id ?: ''}"),
+                $this->url_for('article/create/' . ($category_id ?: '')),
                 Icon::create('billboard+add')
             )->asDialog();
         }

@@ -29,7 +29,7 @@ class AddCronjob extends Migration
         return str_replace(
             realpath($GLOBALS['STUDIP_BASE_PATH'] . '/'),
             '',
-            realpath(__DIR__ . '/../classes/Cronjob.class.php')
+            realpath(__DIR__ . '/../classes/Cronjob.php')
         );
     }
 }

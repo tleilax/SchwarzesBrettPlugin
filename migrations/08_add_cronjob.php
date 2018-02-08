@@ -26,7 +26,10 @@ class AddCronjob extends Migration
 
     private function getCronjobFilename()
     {
-        return str_replace(realpath($GLOBALS['STUDIP_BASE_PATH'] . '/'), '',
-                           realpath(__DIR__ . '/../classes/SchwarzesBrett_Cronjob.class.php'));
+        return str_replace(
+            realpath($GLOBALS['STUDIP_BASE_PATH'] . '/'),
+            '',
+            realpath(__DIR__ . '/../classes/Cronjob.class.php')
+        );
     }
 }

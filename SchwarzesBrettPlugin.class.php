@@ -214,7 +214,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
     {
         $replaces = [
             '%title'               => $event->info,
-            '%category(%affected)' => $this->_('Unbekannt'),
+            '%category(%affected)' => dgettext(self::GETTEXT_DOMAIN, 'Unbekannt'),
             '%user(%coaffected)'   => '',
         ];
 

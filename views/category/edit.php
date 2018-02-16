@@ -75,6 +75,27 @@
         </label>
     <? endif; ?>
 
+        <? if (count(UserDomain::getUserDomains())) : ?>
+            <label>
+                <?= $_('Nutzerdomänen') ?>
+                <div>
+                    <select multiple name="domains[]" class="select2_multiple">
+                        <? $domains = explode(",", $category->domains) ?>
+                        <option value="all"<?= in_array("all", $domains) ? " selected" : "" ?>><?= $_("Alle") ?></option>
+                        <option value="null"<?= in_array("null", $domains) ? " selected" : "" ?>><?= $_("Nulldomäne") ?></option>
+                        <? foreach (UserDomain::getUserDomains() as $domain) : ?>
+                            <option value="<?= $domain->getID() ?>"<?= in_array($domain->getID(), $domains) ? " selected" : "" ?>><?= htmlReady($domain->getName()) ?></option>
+                        <? endforeach ?>
+                    </select>
+                </div>
+            </label>
+            <script>
+                $(document).ready(function() {
+                    $('.select2_multiple').select2();
+                });
+            </script>
+        <? endif ?>
+
         <div data-dialog-button>
             <?= Studip\Button::createAccept($_('Speichern')) ?>
             <?= Studip\LinkButton::createCancel(

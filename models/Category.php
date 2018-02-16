@@ -3,6 +3,7 @@ namespace SchwarzesBrett;
 
 use DBManager;
 use SimpleORMap;
+use UserDomain;
 
 class Category extends SimpleORMap
 {
@@ -44,5 +45,30 @@ class Category extends SimpleORMap
         $statement->bindValue(':user_id', $user_id ?: $GLOBALS['user']->id);
         $statement->bindValue(':category_id', $category_id);
         $statement->execute();
+    }
+
+    public function isVisible($user_id = null)
+    {
+        $user_id || $user_id = $GLOBALS['user']->id;
+        if (!$GLOBALS['perm']->have_perm($this->perm, $user_id)) {
+            return false;
+        }
+        if ($GLOBALS['perm']->have_perm("root", $user_id)) {
+            return true;
+        } elseif ($this->domains === "all") {
+            return true;
+        } else {
+            $domains = explode(",", $this->domains);
+            $mydomains = UserDomain::getUserDomainsForUser($user_id);
+            if (!$mydomains && in_array("null", $domains)) {
+                return true;
+            }
+            foreach ($mydomains as $mydomain) {
+                if (in_array($mydomain->getID(), $domains)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

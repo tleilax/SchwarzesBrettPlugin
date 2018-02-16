@@ -123,6 +123,9 @@ class CategoryController extends SchwarzesBrett\Controller
             $category->user_id      = $category->user_id ?: $GLOBALS['user']->id;
             $category->display_terms_in_article =
                 Request::int('display_terms_in_article');
+            $category->domains      = in_array("all", Request::getArray("domains")) || !Request::getArray("domains")
+                ? "all"
+                : implode(",", Request::getArray("domains"));
             $category->store();
 
             $message = $id === null

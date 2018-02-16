@@ -5,7 +5,9 @@
     <? else: ?>
         <ul class="sb-articles">
         <? foreach ($articles as $article): ?>
-            <?= $this->render_partial('article-li.php', compact('article')) ?>
+            <? if ($article->category->isVisible()) : ?>
+                <?= $this->render_partial('article-li.php', compact('article')) ?>
+            <? endif ?>
         <? endforeach; ?>
         </ul>
     <? endif; ?>

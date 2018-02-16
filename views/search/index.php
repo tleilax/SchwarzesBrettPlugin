@@ -23,7 +23,9 @@
             </th>
         </tr>
     <? foreach ($category['articles'] as $article): ?>
-        <?= $this->render_partial('article-tr.php', compact('article', 'needle')) ?>
+        <? if ($article->category->isVisible()) : ?>
+            <?= $this->render_partial('article-tr.php', compact('article', 'needle')) ?>
+        <? endif ?>
     <? endforeach; ?>
     </tbody>
 <? endforeach; ?>

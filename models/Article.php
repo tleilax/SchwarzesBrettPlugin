@@ -179,6 +179,7 @@ class Article extends SimpleORMap
                     AND a.visible = 1
                     AND t.visible = 1
                     AND a.publishable = 1
+                    AND a.domains = 'all'
                     AND t.publishable = 1";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':category_id', $category_id);

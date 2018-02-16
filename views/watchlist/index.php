@@ -16,7 +16,9 @@
                 </th>
             </tr>
         <? foreach ($category['articles'] as $article): ?>
-            <?= $this->render_partial('article-tr', compact('article') + ['checkbox'  => true]) ?>
+            <? if ($article->category->isVisible()) : ?>
+                <?= $this->render_partial('article-tr', compact('article') + ['checkbox'  => true]) ?>
+            <? endif ?>
         <? endforeach; ?>
         </tbody>
     <? endforeach; ?>

@@ -3,7 +3,7 @@ class DisplayBadge extends Migration
 {
     public function description ()
     {
-        return _('Config-Eintrag für die Anzeige der ungesehenen Anzeigen in der Navigation anlegen');
+        return _('Config-Eintrag fÃ¼r die Anzeige der ungesehenen Anzeigen in der Navigation anlegen');
     }
 
     public function up ()

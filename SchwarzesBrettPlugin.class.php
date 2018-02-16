@@ -50,19 +50,22 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
 
     protected function buildMenu()
     {
-        // Hauptmenüpunkt
+        // HauptmenÃ¼punkt
         $nav = new Navigation($this->_('Schwarzes Brett'), $this->url_for('category'));
-        $nav->setImage('icons/lightblue/billboard.svg', tooltip2($this->_('Schwarzes Brett')));
+        $nav->setImage(
+            Icon::create('billboard', Icon::ROLE_NAVIGATION),
+            tooltip2($this->_('Schwarzes Brett'))
+        );
         if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
             $nav->setBadgeNumber(Article::countNew());
         }
         Navigation::addItem('/schwarzesbrettplugin', $nav);
 
-        // Untermenü
+        // UntermenÃ¼
         $nav = new Navigation($this->_('Schwarzes Brett'), $this->url_for('category'));
         Navigation::addItem('/schwarzesbrettplugin/show', $nav);
 
-        $nav = new Navigation($this->_('Übersicht'), $this->url_for('category'));
+        $nav = new Navigation($this->_('Ãœbersicht'), $this->url_for('category'));
         Navigation::addItem('/schwarzesbrettplugin/show/all', $nav);
 
         $nav = new Navigation($this->_('Merkliste'), $this->url_for('watchlist'));
@@ -76,7 +79,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         $nav = new Navigation($title, $this->url_for('article/own'));
         Navigation::addItem('/schwarzesbrettplugin/show/own', $nav);
 
-        //zusatzpunkte für root
+        //zusatzpunkte fÃ¼r root
         if ($GLOBALS['perm']->have_perm('root')) {
             $nav = new Navigation($this->_('Administration'), $this->url_for('admin/settings'));
             Navigation::addItem('/schwarzesbrettplugin/root', $nav);
@@ -87,11 +90,11 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
             $nav = new Navigation($this->_('Benutzer-Blacklist'), $this->url_for('admin/blacklist'));
             Navigation::addItem('/schwarzesbrettplugin/root/blacklist', $nav);
 
-            $nav = new Navigation($this->_('Doppelte Einträge suchen'), $this->url_for('admin/duplicates'));
+            $nav = new Navigation($this->_('Doppelte EintrÃ¤ge suchen'), $this->url_for('admin/duplicates'));
             Navigation::addItem('/schwarzesbrettplugin/root/duplicates', $nav);
 
             if (!$this->hasActiveCronjob() && $expired = Article::countBySQL('expires < UNIX_TIMESTAMP()')) {
-                $title = sprintf($this->_('Datenbank bereinigen') . ' (' . $this->_('%u alte Einträge') . ')', $expired);
+                $title = sprintf("{$this->_('Datenbank bereinigen')} ({$this->_('%u alte EintrÃ¤ge')})", $expired);
                 $nav = new Navigation($title, $this->url_for('article/purge'));
                 Navigation::addItem('/schwarzesbrettplugin/root/gc', $nav);
             }
@@ -117,8 +120,6 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
 
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
-
-        $this->legacyAssets();
 
         if (Config::get()->BULLETIN_BOARD_MEDIA_PROXY) {
             OpenGraphURL::setProxyURL(PluginEngine::getURL($this, [], 'proxy', true));
@@ -220,7 +221,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         if ($category = Category::find($event->affected_range_id)) {
             $replaces['%category(%affected)'] = sprintf(
                 '<a href="%s">%s</a>',
-                URLHelper::getLink('plugins.php/schwarzesbrettplugin/category/view/' . $category->id),
+                URLHelper::getLink("plugins.php/schwarzesbrettplugin/category/view/{$category->id}"),
                 htmlReady($category->titel)
             );
         }
@@ -229,7 +230,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
             $user = User::find($event->coaffected_range_id);
             $replaces['%user(%coaffected)'] = sprintf(
                 ' von <a href="%s">%s</a>',
-                URLHelper::getLink('dispatch.php/profile?username=' . $user->username),
+                URLHelper::getLink('dispatch.php/profile', ['username' => $user->username]),
                 htmlReady($user->getFullName())
             );
         }

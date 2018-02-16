@@ -23,7 +23,7 @@ class Blame extends Migration
         $statement->bindValue(':config_id', 'BULLETIN_BOARD_ENABLE_BLAME');
         $statement->bindValue(':value', '1');
         $statement->bindValue(':type', 'boolean');
-        $statement->bindValue(':comment', 'Blame Funktion aktivieren (Nutzer können Anzeigen melden)');
+        $statement->bindValue(':comment', 'Blame Funktion aktivieren (Nutzer kÃ¶nnen Anzeigen melden)');
         $statement->execute();
     }
 

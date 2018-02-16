@@ -7,10 +7,10 @@ $format_duration = function ($duration, $now = null) use ($_, $_n) {
     return $formatted;
 };
 $expired_test = function ($duration, $now = null) {
-    return strtotime('+' . $duration . ' days', $now ?: time()) <= time();
+    return strtotime("+{$duration} days", $now ?: time()) <= time();
 };
 ?>
-<form method="post" action="<?= $controller->url_for('article/store/' . $article->id . '?return_to=' . Request::get('return_to')) ?>" class="studip_form">
+<form method="post" action="<?= $controller->url_for("article/store/{$article->id}", ['return_to' => Request::get('return_to')]) ?>" class="default">
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
 
@@ -19,42 +19,43 @@ $expired_test = function ($duration, $now = null) {
             <?= $article->isNew() ? $_('Anzeige erstellen') : $_('Anzeige bearbeiten') ?>
         </legend>
 
-        <fieldset>
-            <label for="category_id"><?= $_('Thema') ?>:</label>
-            <select required name="thema_id" id="category_id" class="has-disclaimer">
-                <option value="">- <?= $_('Kategorie auswählen') ?> -</option>
+        <label>
+            <?= $_('Thema') ?>
+
+            <select required name="thema_id" class="has-disclaimer">
+                <option value="">- <?= $_('Kategorie auswÃ¤hlen') ?> -</option>
             <? foreach ($categories as $category): ?>
                 <option value="<?= $category->id ?>" <? if ($category->id === $article->thema_id) echo 'selected'; ?>>
                     <?= htmlReady($category->titel) ?>
                 </option>
             <? endforeach; ?>
             </select>
-    <? foreach ($categories as $category): ?>
-        <? if ($category->disclaimer): ?>
-            <div class="category-disclaimer" id="disclaimer-<?= $category->id ?>"
-                   <? if ($category->id !== $article->thema_id) echo 'style="display: none;"'; ?>>
-                <?= formatReady($category->disclaimer) ?>
-            </div>
-        <? endif; ?>
-    <? endforeach; ?>
-        </fieldset>
+        <? foreach ($categories as $category): ?>
+            <? if ($category->disclaimer): ?>
+                <div class="category-disclaimer" id="disclaimer-<?= $category->id ?>"
+                     <? if ($category->id !== $article->thema_id) echo 'style="display: none;"'; ?>>
+                    <?= formatReady($category->disclaimer) ?>
+                </div>
+            <? endif; ?>
+        <? endforeach; ?>
+        </label>
 
-        <fieldset>
-            <label for="title"><?= $_('Titel') ?></label>
-            <input required type="text" name="titel" id="title" value="<?= htmlready($article->titel) ?>">
-        </fieldset>
+        <label>
+            <?= $_('Titel') ?>
+            <input required type="text" name="titel"
+                   value="<?= htmlready($article->titel) ?>">
+        </label>
 
-        <fieldset>
-            <label for="description"><?= $_('Inhalt') ?></label>
-            <textarea name="beschreibung" id="description" class="add_toolbar wysiwyg"><?= htmlready($article->beschreibung) ?></textarea>
-        </fieldset>
+        <label>
+            <?= $_('Inhalt') ?>
+            <textarea name="beschreibung" class="add_toolbar wysiwyg"><?= htmlready($article->beschreibung) ?></textarea>
+        </label>
 
-        <fieldset>
-            <label for="duration">
-                <?= $_('Laufzeit') ?>
-                <small><?= $_('Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht.') ?></small>
-            </label>
-            <select name="duration" id="duration">
+        <label>
+            <?= $_('Laufzeit') ?>
+            <small><?= $_('Nach Ablauf dieser Frist wird die Anzeige automatisch gelÃ¶scht.') ?></small>
+
+            <select name="duration">
             <? for ($i = 1; $i <= Config::Get()->BULLETIN_BOARD_DURATION; $i += 1): ?>
                 <option value="<?= $i ?>" <? if (($article->duration ?: Config::Get()->BULLETIN_BOARD_DURATION) == $i) echo 'selected'; ?>
                         <? if ($expired_test($i, $article->mkdate)) echo 'disabled'; ?>>
@@ -62,26 +63,22 @@ $expired_test = function ($duration, $now = null) {
                 </option>
             <? endfor; ?>
             </select>
-        </fieldset>
+        </label>
 
-        <fieldset>
-            <input type="hidden" name="visible" value="0">
-            <label for="visibility">
-                <input type="checkbox" name="visible" id="visibility" value="1"
-                       <? if ($article->visible || $article->isNew()) echo 'checked'; ?>>
-                <?= $_('Sichtbar') ?>
-            </label>
-        </fieldset>
+        <input type="hidden" name="visible" value="0">
+        <label>
+            <input type="checkbox" name="visible" value="1"
+                   <? if ($article->visible || $article->isNew()) echo 'checked'; ?>>
+            <?= $_('Sichtbar') ?>
+        </label>
 
     <? if ($rss_enabled): ?>
-        <fieldset>
-            <input type="hidden" name="publishable" value="0">
-            <label for="publishable">
-                <input type="checkbox" name="publishable" id="publishable" value="1"
-                       <? if ($article->publishable || $article->isNew())  echo 'checked'; ?>>
-                 <?= $_('Diese Anzeige darf im RSS-Feed veröffentlich werden.') ?>
-            </label>
-        </fieldset>
+        <input type="hidden" name="publishable" value="0">
+        <label>
+            <input type="checkbox" name="publishable" value="1"
+                   <? if ($article->publishable || $article->isNew())  echo 'checked'; ?>>
+             <?= $_('Diese Anzeige darf im RSS-Feed verÃ¶ffentlich werden.') ?>
+        </label>
     <? endif; ?>
 
         <div data-dialog-button>

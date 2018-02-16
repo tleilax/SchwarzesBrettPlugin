@@ -1,4 +1,4 @@
-<h2><?= $_('Themenübersicht') ?></h2>
+<h2><?= $_('ThemenÃ¼bersicht') ?></h2>
 <ul class="sb-categories">
 <? foreach ($categories as $category): ?>
     <?= $this->render_partial('category.php', compact('category')) ?>

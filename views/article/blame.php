@@ -1,4 +1,4 @@
-<form method="post" action="<?= $controller->url_for('article/blame/' . $article->id) ?>" class="studip_form" data-dialog>
+<form method="post" action="<?= $controller->url_for("article/blame/{$article->id}") ?>" class="default" data-dialog>
     <fieldset>
         <legend class="hide-in-dialog">
             <?= htmlReady(sprintf(
@@ -8,17 +8,18 @@
             )) ?>
         </legend>
 
-        <fieldset>
-            <label for="reason"><?= $_('Grund') ?>:</label>
-            <textarea required name="reason" id="reason" placeholder="<?= $_('Bitte geben Sie einen aussagekräftigen Grund ein, weshalb diese Anzeige nicht den Regeln entspricht.') ?>"></textarea>
-        </fieldset>
+        <label>
+            <?= $_('Grund') ?>
 
+            <textarea required name="reason" placeholder="<?= $_('Bitte geben Sie einen aussagekrÃ¤ftigen Grund ein, weshalb diese Anzeige nicht den Regeln entspricht.') ?>"></textarea>
+        </label>
     </fieldset>
+
     <footer data-dialog-button>
         <?= Studip\Button::createAccept($_('Anzeige melden'), 'submit') ?>
         <?= Studip\LinkButton::createCancel(
             $_('Abbrechen'),
-            $controller->url_for('article/' . $article->id)
+            $controller->url_for("article/{$article->id}")
         ) ?>
     </footer>
 </form>

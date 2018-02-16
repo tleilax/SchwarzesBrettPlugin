@@ -6,7 +6,7 @@ use SimpleORMAP;
 
 class Visit extends SimpleORMAP
 {
-    public static function configure($config = array())
+    public static function configure($config = [])
     {
         $config['db_table'] = 'sb_visits';
 

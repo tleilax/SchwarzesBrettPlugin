@@ -28,12 +28,12 @@ class AddRules extends Migration
     private function getRules()
     {
         $rules  = '!!!Allgemeine Hinweise:' . "\n";
-        $rules .= '- Sie können nur in Themen eine Anzeige erstellen, in denen Sie die nötigen Rechte haben.' . "\n";
+        $rules .= '- Sie kÃ¶nnen nur in Themen eine Anzeige erstellen, in denen Sie die nÃ¶tigen Rechte haben.' . "\n";
         $rules .= '- Mit der Suche werden sowohl Titel als auch Beschreibung aller Anzeigen durchsucht.' . "\n";
-        $rules .= '- Sie können Ihre eigenen Anzeigen jederzeit nachträglich %%bearbeiten%% oder %%löschen%%.' . "\n";
-        $rules .= '- Bitte stellen Sie Ihre Anzeigen in die richtige Kategorie ein. Damit das Schwarze Brett übersichtlich bleibt, %%löschen%% Sie bitte Ihre Anzeigen umgehend nach Abschluss/Verkauf.' . "\n";
+        $rules .= '- Sie kÃ¶nnen Ihre eigenen Anzeigen jederzeit nachtrÃ¤glich %%bearbeiten%% oder %%lÃ¶schen%%.' . "\n";
+        $rules .= '- Bitte stellen Sie Ihre Anzeigen in die richtige Kategorie ein. Damit das Schwarze Brett Ã¼bersichtlich bleibt, %%lÃ¶schen%% Sie bitte Ihre Anzeigen umgehend nach Abschluss/Verkauf.' . "\n";
         $rules .= '- **Bitte Artikel nur in %%eine%% Kategorie einstellen!**' . "\n";
-        $rules .= '- **Kommerzielle Angebote sind __nicht__ erlaubt (dazu gehören auch solche Anzeigen die einen Link enthalten, der dem Einstellenden eine Provision verspricht). Sie werden gelöscht!**' . "\n";
+        $rules .= '- **Kommerzielle Angebote sind __nicht__ erlaubt (dazu gehÃ¶ren auch solche Anzeigen die einen Link enthalten, der dem Einstellenden eine Provision verspricht). Sie werden gelÃ¶scht!**' . "\n";
 
         return $rules;
     }

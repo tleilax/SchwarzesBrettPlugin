@@ -32,7 +32,7 @@ class RouteMap extends GlobalRouteMap
      */
     public function getCategories()
     {
-        $categories = Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci ASC');
+        $categories = Category::findByVisible(1, 'ORDER BY titel ASC');
         $categories = $this->flatten($categories);
         return compact('categories');
     }

@@ -3,7 +3,7 @@ class AddCronjob extends Migration
 {
     public function description ()
     {
-        return 'Fügt den Cronjob zum Entfernen abgelaufener Anzeigen hinzu..';
+        return 'FÃ¼gt den Cronjob zum Entfernen abgelaufener Anzeigen hinzu..';
     }
 
     // Schedule removement of expired items every day at 3:00

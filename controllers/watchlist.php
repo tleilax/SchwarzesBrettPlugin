@@ -25,7 +25,7 @@ class WatchlistController extends SchwarzesBrett\Controller
         $entry->store();
 
         $this->flash['send_headers'] = ['X-Article-Watched', $article_id];
-        $this->redirect('article/view/' . $article_id);
+        $this->redirect("article/view/{$article_id}");
     }
 
     public function remove_action($article_id)
@@ -41,6 +41,6 @@ class WatchlistController extends SchwarzesBrett\Controller
         ]);
 
         $this->flash['send_headers'] = ['X-Article-Unwatched', $article_id];
-        $this->redirect($bulk ? 'watchlist' : ('article/view/' . $article_id));
+        $this->redirect($bulk ? 'watchlist' : "article/view/{$article_id}");
     }
 }

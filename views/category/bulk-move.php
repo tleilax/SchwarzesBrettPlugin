@@ -1,4 +1,4 @@
-<form action="<?= $controller->url_for('category/bulk/' . $category_id) ?>" method="post">
+<form action="<?= $controller->url_for("category/bulk/{$category_id}") ?>" method="post">
 <? foreach ($ids as $id): ?>
     <input type="hidden" name="ids[]" value="<?= htmlReady($id) ?>">
 <? endforeach; ?>
@@ -17,7 +17,7 @@
         <?= Studip\Button::createAccept($_('Verschieben'), 'moved') ?>
         <?= Studip\LinkButton::createCancel(
             $_('Abbrechen'),
-            $controller->url_for('category/view/' . $category_id)
+            $controller->url_for("category/view/{$category_id}")
         ) ?>
     </div>
 </form>

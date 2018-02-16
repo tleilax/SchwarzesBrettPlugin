@@ -12,8 +12,8 @@ class AddLogging extends Migration
 
         StudipLog::registerActionPlugin(
             'SB_ARTICLE_DELETED',
-            'Schwarzes Brett: Anzeige gelöscht',
-            '%user hat die Anzeige %user(%coaffected) mit dem Titel "%title" in der Kategorie %category(%affected) gelöscht',
+            'Schwarzes Brett: Anzeige gelÃ¶scht',
+            '%user hat die Anzeige %user(%coaffected) mit dem Titel "%title" in der Kategorie %category(%affected) gelÃ¶scht',
             'SchwarzesBrettPlugin'
         );
     }

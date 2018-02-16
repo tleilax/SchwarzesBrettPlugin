@@ -10,6 +10,7 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
 
     public function index_action()
     {
+        PageLayout::setTitle("{$this->_('Schwarzes Brett')} - {$this->_('Grundeinstellungen')}");
         Navigation::activateItem('/schwarzesbrettplugin/root/settings');
 
         $this->options            = $this->getOptions();

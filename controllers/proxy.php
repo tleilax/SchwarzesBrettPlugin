@@ -2,7 +2,7 @@
 class ProxyController extends StudipController
 {
     CONST CACHE_GC_PROPABILITY = 1;
-    const CACHE_DURATION = 604800; // 1 week = 7 * 24 * 60 * 60
+    const CACHE_DURATION = 7 * 24 * 60 * 60;
 
     protected static $echo_headers = [
         'ETag', 'Cache-Control', 'Last-Modified', 'Expires',
@@ -29,7 +29,7 @@ class ProxyController extends StudipController
         $cache_key = md5($url);
         $cached    = self::$cache->read($cache_key);
         if ($cached === false) {
-            $response = parse_link($url);
+            $response = FileManager::fetchURLMetadata($url);
             if ($response['response_code'] == 200) {
                 $response['content']       = file_get_contents($url);
                 $response['last-modified'] = gmdate('D, d M Y H:i:s') . ' GMT';

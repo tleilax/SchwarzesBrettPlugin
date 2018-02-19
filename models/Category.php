@@ -58,6 +58,7 @@ class Category extends SimpleORMap
         } elseif ($this->domains === "all") {
             return true;
         } else {
+
             $domains = explode(",", $this->domains);
             $mydomains = UserDomain::getUserDomainsForUser($user_id);
             if (!$mydomains && in_array("null", $domains)) {

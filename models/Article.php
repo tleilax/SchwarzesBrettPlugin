@@ -8,6 +8,7 @@ use SimpleORMap;
 use StudipCacheFactory;
 use StudipFormat;
 use StudipLog;
+use UserDomain;
 
 class Article extends SimpleORMap
 {
@@ -156,9 +157,10 @@ class Article extends SimpleORMap
         return self::findMany($ids);
     }
 
-    public static function findNewest($limit, $categories = false)
+    public static function findNewest($limit, $categories = false, $user_id = null)
     {
-        $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC LIMIT ' . (int)$limit;
+        $user_id || $user_id = $GLOBALS['user']->id;
+        $query = 'visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC LIMIT ' . (int)$limit;
         $params = [];
 
         if ($categories !== false && !empty($categories)) {
@@ -166,7 +168,18 @@ class Article extends SimpleORMap
             $params = [':categories' => $categories];
         }
 
-        return self::findBySQL($query, $params);
+        if ($GLOBALS['perm']->have_perm("root", $user_id)) {
+            return self::findBySQL($query, $params);
+        } else {
+            $mydomains = array_map(function ($domain) {
+                return $domain->getID();
+            }, UserDomain::getUserDomainsForUser($user_id));
+            $articles = self::findBySQL($query, $params);
+            return array_filter($articles, function ($article) use ($mydomains) {
+                return ($article->category['domains'] === "all")
+                    || (count(array_intersect($mydomains, explode(",", $article->category['domains']))));
+            });
+        }
     }
 
     public static function findPublishable($category_id = null)

@@ -112,6 +112,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
                     $url = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                     $template = $this->get_template_factory()->open('article/mail-bad-words.php');
+                    $template->_          = function ($s) { return $this->_($s); };
                     $template->controller = $this;
                     $template->article    = $article;
                     $template->bad_words  = $bad_words;
@@ -168,6 +169,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
             $url = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
             $template = $this->get_template_factory()->open('article/mail-blame.php');
+            $template->_          = function ($s) { return $this->_($s); };
             $template->controller = $this;
             $template->article    = $this->article;
             $template->reason     = $reason;

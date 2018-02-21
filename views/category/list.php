@@ -1,7 +1,9 @@
 <h2><?= $_('Themenübersicht') ?></h2>
 <ul class="sb-categories">
 <? foreach ($categories as $category): ?>
-    <?= $this->render_partial('category.php', compact('category')) ?>
+    <? if ($category->isVisible()): ?>
+        <?= $this->render_partial('category.php', compact('category')) ?>
+    <? endif ?>
 <? endforeach; ?>
 </ul>
 

@@ -75,6 +75,25 @@
         </label>
     <? endif; ?>
 
+    <? if (count(UserDomain::getUserDomains()) > 0): ?>
+        <label>
+            <?= $_('Nutzerdomänen') ?>
+            <?= tooltipIcon($_('Wählen Sie keine Domäne aus, ist diese Kategorie für alle Nutzer sichtbar')) ?>
+            <div>
+                <select multiple name="domains[]" class="select2_multiple" data-placeholder="<?= $_('Bitte wählen Sie ggf. die Domänen aus, für die diese Kategorie sichtbar sein soll') ?>">
+                    <option value="null" <? if (in_array('null', $category->domains)) echo 'selected'; ?>>
+                        <?= $_('Nulldomäne') ?>
+                    </option>
+                <? foreach (UserDomain::getUserDomains() as $domain): ?>
+                    <option value="<?= $domain->getID() ?>" <? if (in_array($domain->getID(), $category->domains)) echo 'selected'; ?>>
+                        <?= htmlReady($domain->getName()) ?>
+                    </option>
+                <? endforeach; ?>
+                </select>
+            </div>
+        </label>
+    <? endif; ?>
+
         <div data-dialog-button>
             <?= Studip\Button::createAccept($_('Speichern')) ?>
             <?= Studip\LinkButton::createCancel(

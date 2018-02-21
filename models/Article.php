@@ -8,6 +8,8 @@ use SimpleORMap;
 use StudipCacheFactory;
 use StudipFormat;
 use StudipLog;
+use StudipPDO;
+use UserDomain;
 
 class Article extends SimpleORMap
 {
@@ -32,8 +34,8 @@ class Article extends SimpleORMap
         $config['additional_fields']['views'] = [
             'get' => function ($object) {
                 $query = "SELECT COUNT(*)
-                          FROM sb_visits
-                          WHERE object_id = :id AND type = 'artikel'";
+                          FROM `sb_visits`
+                          WHERE `object_id` = :id AND `type` = 'artikel'";
                 $statement = DBManager::get()->prepare($query);
                 $statement->bindValue(':id', $object->id);
                 $statement->execute();
@@ -43,13 +45,17 @@ class Article extends SimpleORMap
         $config['additional_fields']['new'] = [
             'get' => function ($object) {
                 $query = "SELECT 1
-                          FROM sb_artikel AS a
-                          LEFT JOIN sb_visits AS v0 ON v0.object_id = a.artikel_id AND v0.user_id = :user_id
-                          LEFT JOIN sb_visits AS v1 ON a.thema_id = v1.object_id AND v1.user_id = :user_id
-                          WHERE a.artikel_id = :id
-                            AND (v0.object_id IS NOT NULL
-                             OR a.user_id = :user_id
-                             OR a.mkdate < v1.last_visitdate)";
+                          FROM `sb_artikel` AS a
+                          LEFT JOIN `sb_visits` AS v0
+                            ON v0.`object_id` = a.`artikel_id` AND v0.`user_id` = :user_id
+                          LEFT JOIN `sb_visits` AS v1
+                            ON a.`thema_id` = v1.`object_id` AND v1.`user_id` = :user_id
+                          WHERE a.`artikel_id` = :id
+                            AND (
+                                v0.`object_id` IS NOT NULL
+                                    OR a.`user_id` = :user_id
+                                    OR a.`mkdate` < v1.`last_visitdate`
+                            )";
                 $statement = DBManager::get()->prepare($query);
                 $statement->bindValue(':id', $object->id);
                 $statement->bindValue(':user_id', $GLOBALS['user']->id);
@@ -86,15 +92,20 @@ class Article extends SimpleORMap
         $count = $cache->read($cache_hash);
         if ($count === false) {
             $query = "SELECT COUNT(*)
-                      FROM sb_artikel AS a
-                      LEFT JOIN sb_visits AS v0 ON v0.object_id = a.artikel_id AND v0.user_id = :user_id
-                      LEFT JOIN sb_visits AS v1 ON v1.object_id = a.thema_id AND v1.user_id = :user_id
-                      WHERE expires > UNIX_TIMESTAMP()
-                         AND visible = 1
-                         AND a.user_id != :user_id
-                         AND v0.object_id IS NULL
-                         AND (v1.last_visitdate IS NULL OR a.mkdate > v1.last_visitdate)
-                         AND thema_id = IFNULL(:category_id, thema_id)";
+                      FROM `sb_artikel` AS a
+                      JOIN `sb_visible_topics` AS svt
+                        ON a.`thema_id` = svt.`thema_id`
+                           AND svt.`user_id` = :user_id
+                      LEFT JOIN `sb_visits` AS v0
+                        ON v0.`object_id` = a.`artikel_id` AND v0.`user_id` = :user_id
+                      LEFT JOIN `sb_visits` AS v1
+                        ON v1.`object_id` = a.`thema_id` AND v1.`user_id` = :user_id
+                      WHERE `expires` > UNIX_TIMESTAMP()
+                         AND `visible` = 1
+                         AND a.`user_id` != :user_id
+                         AND v0.`object_id` IS NULL
+                         AND (v1.`last_visitdate` IS NULL OR a.`mkdate` > v1.`last_visitdate`)
+                         AND `thema_id` = IFNULL(:category_id, `thema_id`)";
             $statement = DBManager::get()->prepare($query);
             $statement->bindValue(':user_id', $GLOBALS['user']->id);
             $statement->bindValue(':category_id', $category_id);
@@ -137,14 +148,20 @@ class Article extends SimpleORMap
                     ? $visit->last_visitdate
                     : 0;
 
-        $query = "SELECT a.artikel_id
-                  FROM sb_artikel AS a
-                  LEFT JOIN sb_visits AS v ON v.object_id = a.artikel_id AND v.user_id = :user_id
-                  WHERE v.object_id IS NULL
-                    AND a.thema_id = :category_id
-                    AND a.visible = 1
-                    AND a.mkdate > :last_visit
-                  ORDER BY mkdate DESC";
+        $query = "SELECT a.`artikel_id`
+                  FROM `sb_artikel` AS a
+                  LEFT JOIN `sb_visits` AS v
+                    ON v.`object_id` = a.`artikel_id` AND v.`user_id` = :user_id
+                  WHERE v.`object_id` IS NULL
+                    AND a.`visible` = 1
+                    AND a.`mkdate` > :last_visit
+                    AND a.`thema_id` = :category_id
+                    AND a.`thema_id` IN (
+                        SELECT `thema_id`
+                        FROM `sb_visible_topics`
+                        WHERE `user_id` = :user_id
+                    )
+                  ORDER BY `mkdate` DESC";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':user_id', $GLOBALS['user']->id);
         $statement->bindValue(':category_id', $category_id);
@@ -156,30 +173,51 @@ class Article extends SimpleORMap
         return self::findMany($ids);
     }
 
-    public static function findNewest($limit, $categories = false)
+    public static function findNewest($limit, $categories = false, $user_id = null)
     {
-        $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC LIMIT ' . (int)$limit;
-        $params = [];
+        $user_id = $user_id ?: $GLOBALS['user']->id;
 
-        if ($categories !== false && !empty($categories)) {
-            $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() AND thema_id IN (:categories) ORDER BY mkdate DESC LIMIT ' . (int)$limit;
-            $params = [':categories' => $categories];
+        $query = "SELECT a.*
+                  FROM sb_artikel AS a
+                  WHERE a.`visible` = 1
+                    AND a.`expires` > UNIX_TIMESTAMP()
+                    AND a.`thema_id` IN (:categories)
+                    AND a.`thema_id` IN (
+                        SELECT `thema_id`
+                        FROM `sb_visible_topics`
+                        WHERE `user_id` = :user_id
+                    )
+                  ORDER BY a.`mkdate` DESC
+                  LIMIT " . (int) $limit;
+        $statement = DBManager::get()->prepare($query);
+        $statement->bindValue(':user_id', $user_id ?: $GLOBAL['user']->id);
+        if ($categories === false) {
+            $statement->bindValue(':categories', 'thema_id', StudipPDO::PARAM_COLUMN);
+        } else {
+            $statement->bindValue(':categories', $categories);
         }
+        $statement->execute();
 
-        return self::findBySQL($query, $params);
+        $result = [];
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = self::buildExisting($row);
+        }
+        return $result;
     }
 
     public static function findPublishable($category_id = null)
     {
-        $query = "SELECT a.artikel_id
-                  FROM sb_artikel AS a
-                  JOIN sb_themen AS t USING (thema_id)
-                  WHERE thema_id = IFNULL(:category_id, thema_id)
-                    AND expires > UNIX_TIMESTAMP()
-                    AND a.visible = 1
-                    AND t.visible = 1
-                    AND a.publishable = 1
-                    AND t.publishable = 1";
+        $query = "SELECT DISTINCT a.`artikel_id`
+                  FROM `sb_artikel` AS a
+                  JOIN `sb_themen` AS t USING (`thema_id`)
+                  LEFT JOIN `sb_themen_userdomains` AS tu USING (`thema_id`)
+                  WHERE `thema_id` = IFNULL(:category_id, `thema_id`)
+                    AND `expires` > UNIX_TIMESTAMP()
+                    AND a.`visible` = 1
+                    AND t.`visible` = 1
+                    AND a.`publishable` = 1
+                    AND tu.`thema_id` IS NULL
+                    AND t.`publishable` = 1";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':category_id', $category_id);
         $statement->bindValue(':expire', Config::get()->BULLETIN_BOARD_DURATION * 24 * 60 * 60);
@@ -266,19 +304,27 @@ class Article extends SimpleORMap
 
     public static function search($needle)
     {
-        $query = "SELECT artikel_id
-                  FROM sb_artikel
-                  WHERE (visible = 1 OR user_id = :user_id)
-                    AND (titel LIKE CONCAT('%', :needle, '%')
-                     OR beschreibung LIKE CONCAT('%', :needle, '%'))";
+        $query = "SELECT a.*
+                  FROM `sb_artikel` AS a
+                  WHERE (a.`visible` = 1 OR a.`user_id` = :user_id)
+                    AND (
+                        a.`titel` LIKE CONCAT('%', :needle, '%')
+                        OR a.`beschreibung` LIKE CONCAT('%', :needle, '%')
+                    )
+                    AND a.`thema_id` IN (
+                        SELECT `thema_id`
+                        FROM `sb_visible_topics`
+                        WHERE `user_id` = :user_id
+                    )
+                    ORDER BY `mkdate` DESC";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':needle', $needle);
         $statement->bindValue(':user_id', $GLOBALS['user']->id);
         $statement->execute();
 
-        $article_ids = $statement->fetchAll(PDO::FETCH_COLUMN);
-
-        return Article::findMany($article_ids, 'ORDER BY mkdate DESC');
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            yield self::buildExisting($row);
+        }
     }
 
     public static function groupByCategory($articles)

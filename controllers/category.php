@@ -48,12 +48,17 @@ class CategoryController extends SchwarzesBrett\Controller
     {
         Navigation::activateItem('/schwarzesbrettplugin/show/all');
 
-        $this->inject_rss($category_id);
-
         $this->category = Category::find($category_id);
+
+        if (!$this->category->isVisible()) {
+            throw new AccessDeniedException();
+        }
+
         $this->articles = $this->is_admin
                         ? $this->category->articles
                         : $this->category->visible_articles;
+
+        $this->inject_rss($category_id);
     }
 
     public function choose_action()
@@ -94,6 +99,10 @@ class CategoryController extends SchwarzesBrett\Controller
 
         $this->category = new Category();
 
+        if (!$this->category->isVisible()) {
+            throw new AccessDeniedException();
+        }
+
         $this->render_action('edit');
     }
 
@@ -101,17 +110,23 @@ class CategoryController extends SchwarzesBrett\Controller
     {
         PageLayout::setTitle($this->_('Thema bearbeiten'));
 
+        if (!$this->is_admin) {
+            throw new AccessDeniedException();
+        }
+
         $this->category = Category::find($id);
     }
 
     public function store_action($id = null)
     {
+        if (!$this->is_admin) {
+            throw new AccessDeniedException();
+        }
+
         CSRFProtection::verifyUnsafeRequest();
 
         if (Request::isPost() && check_ticket(Request::get('studip_ticket'))) {
-            $category = $id
-                      ? Category::find($id)
-                      : new Category();
+            $category = new Category($id);
 
             $category->titel        = trim(Request::get('titel'));
             $category->beschreibung = trim(Request::get('beschreibung'));
@@ -121,8 +136,9 @@ class CategoryController extends SchwarzesBrett\Controller
             $category->terms        = trim(Request::get('terms'));
             $category->disclaimer   = trim(Request::get('disclaimer'));
             $category->user_id      = $category->user_id ?: $GLOBALS['user']->id;
-            $category->display_terms_in_article =
-                Request::int('display_terms_in_article');
+            $category->display_terms_in_article = Request::int('display_terms_in_article');
+
+            $category->domains = Request::getArray('domains');
             $category->store();
 
             $message = $id === null
@@ -136,6 +152,10 @@ class CategoryController extends SchwarzesBrett\Controller
 
     public function delete_action($id)
     {
+        if (!$this->is_admin) {
+            throw new AccessDeniedException();
+        }
+
         $category = Category::find($id);
         $title = $category->titel;
         $count = count($category->articles);
@@ -150,6 +170,10 @@ class CategoryController extends SchwarzesBrett\Controller
 
     public function bulk_action($id)
     {
+        if (!$this->is_admin) {
+            throw new AccessDeniedException();
+        }
+
         if (!Request::isPost()) {
             throw new MethodNotAllowedException();
         }

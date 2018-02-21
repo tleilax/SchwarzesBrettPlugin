@@ -27,6 +27,8 @@
     }).on('change', 'select.has-disclaimer', function () {
         var id = $(this).val();
         $(this).closest('form').find('.category-disclaimer').hide().filter('#disclaimer-' + id).show();
+    }).ready(function () {
+        $('.select2_multiple').select2();
     });
 
     // OpenGraph && toolbar

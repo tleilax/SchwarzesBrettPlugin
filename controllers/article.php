@@ -138,7 +138,9 @@ class ArticleController extends SchwarzesBrett\Controller
 
     private function getCategories()
     {
-        return Category::findByVisible(1, 'ORDER BY titel ASC');
+        return array_filter(Category::findByVisible(1, 'ORDER BY titel ASC'), function ($category) {
+            return $category->isVisible();
+        });
     }
 
     public function delete_action($id)

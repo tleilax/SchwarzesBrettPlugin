@@ -17,7 +17,7 @@
     <td>
         <a href="<?= URLHelper::getLink('dispatch.php/profile', ['username' => $article->user->username]) ?>">
             <?= Avatar::getAvatar($article->user->id)->getImageTag(Avatar::SMALL) ?>
-            <?= $article->user->getFullname() ?>
+            <?= htmlReady($article->user->getFullname()) ?>
         </a>
     </td>
     <td class="actions">

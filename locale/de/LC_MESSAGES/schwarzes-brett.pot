@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the SchwarzesBrettWidget package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: SchwarzesBrettWidget\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-21 19:17+0100\n"
+"POT-Creation-Date: 2018-03-01 13:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,640 +18,479 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: migrations/12_display_badge.php:6
 msgid ""
 "Config-Eintrag für die Anzeige der ungesehenen Anzeigen in der Navigation "
 "anlegen"
 msgstr ""
 
-#: migrations/07_rss2.php:6
 msgid "Einträge für Themen-RSS werden angelegt"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:54 SchwarzesBrettPlugin.class.php:57
-#: SchwarzesBrettPlugin.class.php:65 SchwarzesBrettPlugin.class.php:106
-#: SchwarzesBrettPlugin.class.php:119 SchwarzesBrettWidget.class.php:10
 msgid "Schwarzes Brett"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:68
 msgid "Übersicht"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:71
 msgid "Merkliste"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:74 controllers/article.php:36
-#: views/article/own.php:6
 msgid "Meine Anzeigen"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:84
 msgid "Administration"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:87
 msgid "Grundeinstellungen"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:90
 msgid "Benutzer-Blacklist"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:93
 msgid "Doppelte Einträge suchen"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:200
 msgid "Meine aktuellen Anzeigen im Schwarzen Brett"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:201
 #, php-format
 msgid "Aktuelle Anzeigen von %s im Schwarzen Brett"
 msgstr ""
 
-#: SchwarzesBrettPlugin.class.php:217
 msgid "Unbekannt"
 msgstr ""
 
-#: classes/Controller.php:132 classes/Controller.php:208
 msgid "RSS-Feed"
 msgstr ""
 
-#: classes/Controller.php:153
 msgid "Suchbegriff"
 msgstr ""
 
-#: classes/Controller.php:155
 msgid "Nur in dieser Kategorie"
 msgstr ""
 
-#: classes/Controller.php:162
 msgid "Dieses Thema als besucht markieren"
 msgstr ""
 
-#: classes/Controller.php:169
 msgid "Alle Themen als besucht markieren"
 msgstr ""
 
-#: classes/Controller.php:177
 msgid "Neue Anzeige erstellen"
 msgstr ""
 
-#: classes/Controller.php:184
 msgid "Neues Thema anlegen"
 msgstr ""
 
-#: classes/Controller.php:191
 msgid "Dieses Thema bearbeiten"
 msgstr ""
 
-#: classes/Controller.php:196
 msgid "Dieses Thema löschen"
 msgstr ""
 
-#: classes/Controller.php:199
 msgid ""
 "Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen "
 "löschen?"
 msgstr ""
 
-#: classes/Controller.php:208
 msgid "RSS-Feed dieser Kategorie"
 msgstr ""
 
-#: classes/Controller.php:225
 msgid "Kategorie"
 msgstr ""
 
-#: classes/Cronjob.php:10
 msgid "Schwarzes Brett-Cronjob"
 msgstr ""
 
-#: classes/Cronjob.php:15
 msgid "Cronjob für das Schwarze Brett, der abgelaufene Anzeigen entfernt."
 msgstr ""
 
-#: SchwarzesBrettWidget.class.php:27
 msgid "Einstellung für das Schwarze Brett Widget"
 msgstr ""
 
-#: SchwarzesBrettWidget.class.php:59
 msgid "Einstellungen"
 msgstr ""
 
-#: controllers/rss.php:19
 msgid "RSS-Exporte sind nicht aktiviert."
 msgstr ""
 
-#: controllers/rss.php:30
 msgid "Stud.IP Schwarzes Brett"
 msgstr ""
 
-#: controllers/category.php:24
 msgid ""
 "Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden "
 "Sie sich an den Systemadministrator."
 msgstr ""
 
-#: controllers/category.php:76
 #, php-format
 msgid "Thema \"%s\" wurde als besucht markiert."
 msgstr ""
 
-#: controllers/category.php:80
 msgid "Alle Themen wurden als besucht markiert"
 msgstr ""
 
-#: controllers/category.php:93
 msgid "Thema erstellen"
 msgstr ""
 
-#: controllers/category.php:102 views/category.php:15
-#: views/category/edit.php:10
 msgid "Thema bearbeiten"
 msgstr ""
 
-#: controllers/category.php:129
 msgid "Das Thema wurde angelegt."
 msgstr ""
 
-#: controllers/category.php:130
 msgid "Das Thema wurde gespeichert."
 msgstr ""
 
-#: controllers/category.php:144
 #, php-format
 msgid "Das Thema \"%s\" und alle %u darin enthaltenen Anzeigen wurde gelöscht."
 msgstr ""
 
-#: controllers/category.php:160
 msgid "Neue Kategorie"
 msgstr ""
 
-#: controllers/category.php:176
 #, php-format
 msgid "%u Artikel wurde(n) verschoben."
 msgstr ""
 
-#: controllers/category.php:189
 #, php-format
 msgid "%u Artikel wurde(n) gelöscht."
 msgstr ""
 
-#: controllers/admin/settings.php:38
 msgid "Die Einstellungen wurden gespeichert."
 msgstr ""
 
-#: controllers/admin/blacklist.php:43
 msgid "Der Nutzer wurde von der schwarzen Liste entfernt."
 msgstr ""
 
-#: controllers/admin/blacklist.php:44
 #, php-format
 msgid "%u Nutzer wurden von der schwarzen Liste entfernt."
 msgstr ""
 
-#: controllers/admin/blacklist.php:71
 msgid ""
 "Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde Ihr "
 "Zugang zum Schwarzen Brett gesperrt."
 msgstr ""
 
-#: controllers/admin/blacklist.php:74
 msgid "Sie können keine weiteren Anzeigen erstellen."
 msgstr ""
 
-#: controllers/admin/blacklist.php:76
 msgid "Bei Fragen wenden Sie sich bitte an die Systemadministratoren."
 msgstr ""
 
-#: controllers/admin/blacklist.php:78
 msgid "Schwarzes Brett: Sie wurden gesperrt."
 msgstr ""
 
-#: controllers/admin/blacklist.php:83
 msgid "Der Nutzer wurde auf die schwarze Liste gesetzt."
 msgstr ""
 
-#: controllers/watchlist.php:13 views/watchlist/index.php:8
 msgid "Gemerkte Anzeigen"
 msgstr ""
 
-#: controllers/article.php:50 views/article/user.php:7
 #, php-format
 msgid "Alle Anzeigen von %s"
 msgstr ""
 
-#: controllers/article.php:65 views/category/view.php:50
-#: views/article/edit.php:19
 msgid "Anzeige erstellen"
 msgstr ""
 
-#: controllers/article.php:76 views/article/mail-bad-words.php:11
-#: views/article/edit.php:19 views/article/mail-blame.php:13
-#: views/article-tr.php:40
 msgid "Anzeige bearbeiten"
 msgstr ""
 
-#: controllers/article.php:124
 msgid "Anzeige enthält unzulässige Begriffe"
 msgstr ""
 
-#: controllers/article.php:132
 msgid "Die Anzeige wurde erstellt."
 msgstr ""
 
-#: controllers/article.php:133
 msgid "Die Anzeige wurde gespeichert."
 msgstr ""
 
-#: controllers/article.php:149
 msgid "Sie dürfen diese Anzeige nicht löschen."
 msgstr ""
 
-#: controllers/article.php:154
 msgid "Die Anzeige wurde gelöscht."
 msgstr ""
 
-#: controllers/article.php:162
 msgid "Die Funktionen zum Anzeigen melden sind nicht aktiviert."
 msgstr ""
 
-#: controllers/article.php:187
 msgid "Die Anzeige wurde den Administratoren gemeldet."
 msgstr ""
 
-#: controllers/article.php:194 views/article/blame.php:5
 #, php-format
 msgid "Anzeige \"%s\" von %s melden"
 msgstr ""
 
-#: controllers/article.php:210
 #, php-format
 msgid "Es wurden %u Anzeigen aus der Datenbank gelöscht."
 msgstr ""
 
-#: controllers/article.php:211
 msgid "Es gibt keine Artikel in der Datenbank, die gelöscht werden können."
 msgstr ""
 
-#: views/category.php:17
 msgid "Wollen Sie dieses Thema wirklich löschen?"
 msgstr ""
 
-#: views/category.php:18
 msgid "Thema löschen"
 msgstr ""
 
-#: views/category.php:23
 msgid "RSS-Feed zu dieser Kategorie abrufen"
 msgstr ""
 
-#: views/widget/settings.php:3
 msgid "Zeige mir"
 msgstr ""
 
-#: views/widget/settings.php:13
 msgid "Anzeigen"
 msgstr ""
 
-#: views/widget/settings.php:18
 msgid "Aus den folgenden Themen"
 msgstr ""
 
-#: views/widget/settings.php:33 views/category/edit.php:79
-#: views/admin/settings/index.php:63 views/article/edit.php:85
 msgid "Speichern"
 msgstr ""
 
-#: views/widget/settings.php:34 views/category/edit.php:81
-#: views/category/bulk-move.php:19 views/article/blame.php:21
-#: views/article/edit.php:87
 msgid "Abbrechen"
 msgstr ""
 
-#: views/widget/index.php:4
 msgid "Momentan liegen keine Anzeigen vor."
 msgstr ""
 
-#: views/homepage/plugin.php:2 views/article/user.php:2
 msgid "Keine Anzeigen vorhanden."
 msgstr ""
 
-#: views/category/list.php:1
 msgid "Themenübersicht"
 msgstr ""
 
-#: views/category/list.php:10
 #, php-format
 msgid "Die %u neuesten Anzeigen"
 msgstr ""
 
-#: views/category/view.php:20
 #, php-format
 msgid "%u Anzeigen"
 msgstr ""
 
-#: views/category/view.php:33 views/category/edit.php:15
-#: views/article/mail-bad-words.php:5 views/article/edit.php:44
-#: views/article/mail-blame.php:7
 msgid "Titel"
 msgstr ""
 
-#: views/category/view.php:34
 msgid "Datum"
 msgstr ""
 
-#: views/category/view.php:36
 msgid "Besucher"
 msgstr ""
 
-#: views/category/view.php:40 views/article/mail-bad-words.php:4
-#: views/article/mail-blame.php:6
 msgid "Autor"
 msgstr ""
 
-#: views/category/view.php:41
 msgid "Aktionen"
 msgstr ""
 
-#: views/category/view.php:48
 msgid "Dieses Thema enthält noch keine Anzeigen."
 msgstr ""
 
-#: views/category/view.php:69 views/admin/blacklist/index.php:63
 msgid "Alle markierten"
 msgstr ""
 
-#: views/category/view.php:70 views/category/bulk-move.php:17
 msgid "Verschieben"
 msgstr ""
 
-#: views/category/view.php:73 views/article/view.php:76
 msgid "Löschen"
 msgstr ""
 
-#: views/category/view.php:74
 msgid "Sollen die Anzeigen wirklich gelöscht werden?"
 msgstr ""
 
-#: views/category/edit.php:8
 msgid "Thema anlegen"
 msgstr ""
 
-#: views/category/edit.php:21
 msgid "Beschreibung"
 msgstr ""
 
-#: views/category/edit.php:26
 msgid "Berechtigung"
 msgstr ""
 
-#: views/category/edit.php:27
 msgid ""
 "Diese Berechtigung bezieht sich auf die Benutzer, die einen Artikel "
 "erstellen dürfen."
 msgstr ""
 
-#: views/category/edit.php:28
 msgid "Betrachten können alle Benutzer!"
 msgstr ""
 
-#: views/category/edit.php:40
 msgid "Kurzhinweis"
 msgstr ""
 
-#: views/category/edit.php:41
 msgid ""
 "Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese "
 "Kategorie ausgewählt wird."
 msgstr ""
 
-#: views/category/edit.php:47
 msgid "Regeln"
 msgstr ""
 
-#: views/category/edit.php:48
 msgid ""
 "Die Regeln werden oberhalb einer Kategorie in deren Übersicht angezeigt."
 msgstr ""
 
-#: views/category/edit.php:58
 msgid "Regeln in Anzeige"
 msgstr ""
 
-#: views/category/edit.php:59
 msgid "Die Regeln werden zusätzlich unterhalb einer Anzeige angezeigt."
 msgstr ""
 
-#: views/category/edit.php:66 views/article/edit.php:72
 msgid "Sichtbar"
 msgstr ""
 
-#: views/category/edit.php:73
 msgid "Veröffentlichung"
 msgstr ""
 
-#: views/category/edit.php:74
 msgid "Anzeigen dieses Thema dürfen im RSS-Feed veröffentlich werden."
 msgstr ""
 
-#: views/admin/settings/index.php:20
 msgid "Einstellung"
 msgstr ""
 
-#: views/admin/settings/index.php:21
 msgid "Wert"
 msgstr ""
 
-#: views/admin/settings/index.php:70
 msgid "Hinweise"
 msgstr ""
 
-#: views/admin/settings/index.php:71
 msgid ""
 "Bei Aktivierung der RSS Feeds muss das Plugin für nobody freigegeben werden, "
 "damit die Feeds ohne Login abgerufen werden können."
 msgstr ""
 
-#: views/admin/blacklist/index.php:5
 msgid "Benutzer auf die schwarze Liste setzen"
 msgstr ""
 
-#: views/admin/blacklist/index.php:9
 msgid "Es befinden sich keine Benutzer auf der schwarzen Liste."
 msgstr ""
 
-#: views/admin/blacklist/index.php:18
 #, php-format
 msgid "%u Nutzer"
 msgstr ""
 
-#: views/admin/blacklist/index.php:20
 msgid "Personen auf der schwarzen Liste"
 msgstr ""
 
-#: views/admin/blacklist/index.php:34
 msgid "Benutzer"
 msgstr ""
 
-#: views/admin/blacklist/index.php:53
 msgid "Benutzer von der schwarzen Liste entfernen"
 msgstr ""
 
-#: views/admin/blacklist/index.php:64
 msgid "Entfernen"
 msgstr ""
 
-#: views/admin/duplicates/index.php:2
 msgid "Es scheint keine doppelten Einträge zu geben."
 msgstr ""
 
-#: views/search/index.php:2
 #, php-format
 msgid "Suchergebnisse für \"%s\""
 msgstr ""
 
-#: views/search/index.php:8
 msgid "Es wurden keine passenden Anzeigen gefunden."
 msgstr ""
 
-#: views/search/index.php:10
 msgid ""
 "Der eingegebene Suchbegriff ist zu kurz. Geben Sie bitte mindestens drei "
 "Zeichen ein."
 msgstr ""
 
-#: views/article/mail-bad-words.php:1
 msgid "Folgende Anzeige enthält diese unzulässigen Begriffe"
 msgstr ""
 
-#: views/article/mail-bad-words.php:6 views/article/mail-blame.php:8
 msgid "Text"
 msgstr ""
 
-#: views/article/mail-bad-words.php:10 views/article/mail-blame.php:12
 msgid "Anzeige anzeigen"
 msgstr ""
 
-#: views/article/mail-bad-words.php:12 views/article/mail-blame.php:14
-#: views/article-tr.php:43
 msgid "Anzeige löschen"
 msgstr ""
 
-#: views/article/blame.php:12 views/article/mail-blame.php:4
 msgid "Grund"
 msgstr ""
 
-#: views/article/blame.php:14
 msgid ""
 "Bitte geben Sie einen aussagekräftigen Grund ein, weshalb diese Anzeige "
 "nicht den Regeln entspricht."
 msgstr ""
 
-#: views/article/blame.php:19 views/article-tr.php:34
 msgid "Anzeige melden"
 msgstr ""
 
-#: views/article/own.php:2
 msgid "Sie haben momentan keine eigenen Anzeigen."
 msgstr ""
 
-#: views/article/view.php:11
 #, php-format
 msgid "%u weitere Anzeige"
 msgid_plural "%u weitere Anzeigen"
 msgstr[0] ""
 msgstr[1] ""
 
-#: views/article/view.php:19
 #, php-format
 msgid "%u mal gesehen"
 msgstr ""
 
-#: views/article/view.php:39 views/article/mail-blame.php:15
-#: views/article-tr.php:30
 msgid "Antworten"
 msgstr ""
 
-#: views/article/view.php:49
 msgid "Nicht merken"
 msgstr ""
 
-#: views/article/view.php:55
 msgid "Merken"
 msgstr ""
 
-#: views/article/view.php:63
 msgid "Verstoß melden"
 msgstr ""
 
-#: views/article/view.php:71
 msgid "Bearbeiten"
 msgstr ""
 
-#: views/article/view.php:78
 msgid "Wollen Sie diesen Artikel wirklich löschen?"
 msgstr ""
 
-#: views/article/edit.php:3
 #, php-format
 msgid "%u Tag"
 msgid_plural "%u Tage"
 msgstr[0] ""
 msgstr[1] ""
 
-#: views/article/edit.php:5
 msgid "bis zum %d.%m.%Y"
 msgstr ""
 
-#: views/article/edit.php:23
 msgid "Thema"
 msgstr ""
 
-#: views/article/edit.php:26
 msgid "Kategorie auswählen"
 msgstr ""
 
-#: views/article/edit.php:50
 msgid "Inhalt"
 msgstr ""
 
-#: views/article/edit.php:55
 msgid "Laufzeit"
 msgstr ""
 
-#: views/article/edit.php:56
 msgid "Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht."
 msgstr ""
 
-#: views/article/edit.php:80
 msgid "Diese Anzeige darf im RSS-Feed veröffentlich werden."
 msgstr ""
 
-#: views/article/mail-blame.php:1
 msgid "Folgende Anzeige wurde gemeldet"
 msgstr ""
 
-#: views/article/mail-blame.php:3
 msgid "Gemeldet von"
 msgstr ""
 
-#: views/watchlist/index.php:2
 msgid "Sie haben sich momentan keine Anzeigen gemerkt."
 msgstr ""
 
-#: views/watchlist/index.php:29
 msgid "Markierte Einträge entfernen"
 msgstr ""
 
-#: views/watchlist/index.php:30
 msgid "Möchten Sie die markierten Einträge wirklich von der Merkliste löschen?"
 msgstr ""
 
-#: views/article-tr.php:42
 msgid "Wollen Sie diese Anzeige wirklich löschen?"
 msgstr ""

@@ -1,0 +1,496 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the SchwarzesBrettWidget package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: SchwarzesBrettWidget\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-03-01 13:21+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+msgid ""
+"Config-Eintrag für die Anzeige der ungesehenen Anzeigen in der Navigation "
+"anlegen"
+msgstr ""
+
+msgid "Einträge für Themen-RSS werden angelegt"
+msgstr ""
+
+msgid "Schwarzes Brett"
+msgstr ""
+
+msgid "Übersicht"
+msgstr ""
+
+msgid "Merkliste"
+msgstr ""
+
+msgid "Meine Anzeigen"
+msgstr ""
+
+msgid "Administration"
+msgstr ""
+
+msgid "Grundeinstellungen"
+msgstr ""
+
+msgid "Benutzer-Blacklist"
+msgstr ""
+
+msgid "Doppelte Einträge suchen"
+msgstr ""
+
+msgid "Meine aktuellen Anzeigen im Schwarzen Brett"
+msgstr ""
+
+#, php-format
+msgid "Aktuelle Anzeigen von %s im Schwarzen Brett"
+msgstr ""
+
+msgid "Unbekannt"
+msgstr ""
+
+msgid "RSS-Feed"
+msgstr ""
+
+msgid "Suchbegriff"
+msgstr ""
+
+msgid "Nur in dieser Kategorie"
+msgstr ""
+
+msgid "Dieses Thema als besucht markieren"
+msgstr ""
+
+msgid "Alle Themen als besucht markieren"
+msgstr ""
+
+msgid "Neue Anzeige erstellen"
+msgstr ""
+
+msgid "Neues Thema anlegen"
+msgstr ""
+
+msgid "Dieses Thema bearbeiten"
+msgstr ""
+
+msgid "Dieses Thema löschen"
+msgstr ""
+
+msgid ""
+"Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen "
+"löschen?"
+msgstr ""
+
+msgid "RSS-Feed dieser Kategorie"
+msgstr ""
+
+msgid "Kategorie"
+msgstr ""
+
+msgid "Schwarzes Brett-Cronjob"
+msgstr ""
+
+msgid "Cronjob für das Schwarze Brett, der abgelaufene Anzeigen entfernt."
+msgstr ""
+
+msgid "Einstellung für das Schwarze Brett Widget"
+msgstr ""
+
+msgid "Einstellungen"
+msgstr ""
+
+msgid "RSS-Exporte sind nicht aktiviert."
+msgstr ""
+
+msgid "Stud.IP Schwarzes Brett"
+msgstr ""
+
+msgid ""
+"Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden "
+"Sie sich an den Systemadministrator."
+msgstr ""
+
+#, php-format
+msgid "Thema \"%s\" wurde als besucht markiert."
+msgstr ""
+
+msgid "Alle Themen wurden als besucht markiert"
+msgstr ""
+
+msgid "Thema erstellen"
+msgstr ""
+
+msgid "Thema bearbeiten"
+msgstr ""
+
+msgid "Das Thema wurde angelegt."
+msgstr ""
+
+msgid "Das Thema wurde gespeichert."
+msgstr ""
+
+#, php-format
+msgid "Das Thema \"%s\" und alle %u darin enthaltenen Anzeigen wurde gelöscht."
+msgstr ""
+
+msgid "Neue Kategorie"
+msgstr ""
+
+#, php-format
+msgid "%u Artikel wurde(n) verschoben."
+msgstr ""
+
+#, php-format
+msgid "%u Artikel wurde(n) gelöscht."
+msgstr ""
+
+msgid "Die Einstellungen wurden gespeichert."
+msgstr ""
+
+msgid "Der Nutzer wurde von der schwarzen Liste entfernt."
+msgstr ""
+
+#, php-format
+msgid "%u Nutzer wurden von der schwarzen Liste entfernt."
+msgstr ""
+
+msgid ""
+"Aufgrund von wiederholten Verstößen gegen die Nutzungsordnung wurde Ihr "
+"Zugang zum Schwarzen Brett gesperrt."
+msgstr ""
+
+msgid "Sie können keine weiteren Anzeigen erstellen."
+msgstr ""
+
+msgid "Bei Fragen wenden Sie sich bitte an die Systemadministratoren."
+msgstr ""
+
+msgid "Schwarzes Brett: Sie wurden gesperrt."
+msgstr ""
+
+msgid "Der Nutzer wurde auf die schwarze Liste gesetzt."
+msgstr ""
+
+msgid "Gemerkte Anzeigen"
+msgstr ""
+
+#, php-format
+msgid "Alle Anzeigen von %s"
+msgstr ""
+
+msgid "Anzeige erstellen"
+msgstr ""
+
+msgid "Anzeige bearbeiten"
+msgstr ""
+
+msgid "Anzeige enthält unzulässige Begriffe"
+msgstr ""
+
+msgid "Die Anzeige wurde erstellt."
+msgstr ""
+
+msgid "Die Anzeige wurde gespeichert."
+msgstr ""
+
+msgid "Sie dürfen diese Anzeige nicht löschen."
+msgstr ""
+
+msgid "Die Anzeige wurde gelöscht."
+msgstr ""
+
+msgid "Die Funktionen zum Anzeigen melden sind nicht aktiviert."
+msgstr ""
+
+msgid "Die Anzeige wurde den Administratoren gemeldet."
+msgstr ""
+
+#, php-format
+msgid "Anzeige \"%s\" von %s melden"
+msgstr ""
+
+#, php-format
+msgid "Es wurden %u Anzeigen aus der Datenbank gelöscht."
+msgstr ""
+
+msgid "Es gibt keine Artikel in der Datenbank, die gelöscht werden können."
+msgstr ""
+
+msgid "Wollen Sie dieses Thema wirklich löschen?"
+msgstr ""
+
+msgid "Thema löschen"
+msgstr ""
+
+msgid "RSS-Feed zu dieser Kategorie abrufen"
+msgstr ""
+
+msgid "Zeige mir"
+msgstr ""
+
+msgid "Anzeigen"
+msgstr ""
+
+msgid "Aus den folgenden Themen"
+msgstr ""
+
+msgid "Speichern"
+msgstr ""
+
+msgid "Abbrechen"
+msgstr ""
+
+msgid "Momentan liegen keine Anzeigen vor."
+msgstr ""
+
+msgid "Keine Anzeigen vorhanden."
+msgstr ""
+
+msgid "Themenübersicht"
+msgstr ""
+
+#, php-format
+msgid "Die %u neuesten Anzeigen"
+msgstr ""
+
+#, php-format
+msgid "%u Anzeigen"
+msgstr ""
+
+msgid "Titel"
+msgstr ""
+
+msgid "Datum"
+msgstr ""
+
+msgid "Besucher"
+msgstr ""
+
+msgid "Autor"
+msgstr ""
+
+msgid "Aktionen"
+msgstr ""
+
+msgid "Dieses Thema enthält noch keine Anzeigen."
+msgstr ""
+
+msgid "Alle markierten"
+msgstr ""
+
+msgid "Verschieben"
+msgstr ""
+
+msgid "Löschen"
+msgstr ""
+
+msgid "Sollen die Anzeigen wirklich gelöscht werden?"
+msgstr ""
+
+msgid "Thema anlegen"
+msgstr ""
+
+msgid "Beschreibung"
+msgstr ""
+
+msgid "Berechtigung"
+msgstr ""
+
+msgid ""
+"Diese Berechtigung bezieht sich auf die Benutzer, die einen Artikel "
+"erstellen dürfen."
+msgstr ""
+
+msgid "Betrachten können alle Benutzer!"
+msgstr ""
+
+msgid "Kurzhinweis"
+msgstr ""
+
+msgid ""
+"Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese "
+"Kategorie ausgewählt wird."
+msgstr ""
+
+msgid "Regeln"
+msgstr ""
+
+msgid ""
+"Die Regeln werden oberhalb einer Kategorie in deren Übersicht angezeigt."
+msgstr ""
+
+msgid "Regeln in Anzeige"
+msgstr ""
+
+msgid "Die Regeln werden zusätzlich unterhalb einer Anzeige angezeigt."
+msgstr ""
+
+msgid "Sichtbar"
+msgstr ""
+
+msgid "Veröffentlichung"
+msgstr ""
+
+msgid "Anzeigen dieses Thema dürfen im RSS-Feed veröffentlich werden."
+msgstr ""
+
+msgid "Einstellung"
+msgstr ""
+
+msgid "Wert"
+msgstr ""
+
+msgid "Hinweise"
+msgstr ""
+
+msgid ""
+"Bei Aktivierung der RSS Feeds muss das Plugin für nobody freigegeben werden, "
+"damit die Feeds ohne Login abgerufen werden können."
+msgstr ""
+
+msgid "Benutzer auf die schwarze Liste setzen"
+msgstr ""
+
+msgid "Es befinden sich keine Benutzer auf der schwarzen Liste."
+msgstr ""
+
+#, php-format
+msgid "%u Nutzer"
+msgstr ""
+
+msgid "Personen auf der schwarzen Liste"
+msgstr ""
+
+msgid "Benutzer"
+msgstr ""
+
+msgid "Benutzer von der schwarzen Liste entfernen"
+msgstr ""
+
+msgid "Entfernen"
+msgstr ""
+
+msgid "Es scheint keine doppelten Einträge zu geben."
+msgstr ""
+
+#, php-format
+msgid "Suchergebnisse für \"%s\""
+msgstr ""
+
+msgid "Es wurden keine passenden Anzeigen gefunden."
+msgstr ""
+
+msgid ""
+"Der eingegebene Suchbegriff ist zu kurz. Geben Sie bitte mindestens drei "
+"Zeichen ein."
+msgstr ""
+
+msgid "Folgende Anzeige enthält diese unzulässigen Begriffe"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Anzeige anzeigen"
+msgstr ""
+
+msgid "Anzeige löschen"
+msgstr ""
+
+msgid "Grund"
+msgstr ""
+
+msgid ""
+"Bitte geben Sie einen aussagekräftigen Grund ein, weshalb diese Anzeige "
+"nicht den Regeln entspricht."
+msgstr ""
+
+msgid "Anzeige melden"
+msgstr ""
+
+msgid "Sie haben momentan keine eigenen Anzeigen."
+msgstr ""
+
+#, php-format
+msgid "%u weitere Anzeige"
+msgid_plural "%u weitere Anzeigen"
+msgstr[0] ""
+msgstr[1] ""
+
+#, php-format
+msgid "%u mal gesehen"
+msgstr ""
+
+msgid "Antworten"
+msgstr ""
+
+msgid "Nicht merken"
+msgstr ""
+
+msgid "Merken"
+msgstr ""
+
+msgid "Verstoß melden"
+msgstr ""
+
+msgid "Bearbeiten"
+msgstr ""
+
+msgid "Wollen Sie diesen Artikel wirklich löschen?"
+msgstr ""
+
+#, php-format
+msgid "%u Tag"
+msgid_plural "%u Tage"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "bis zum %d.%m.%Y"
+msgstr ""
+
+msgid "Thema"
+msgstr ""
+
+msgid "Kategorie auswählen"
+msgstr ""
+
+msgid "Inhalt"
+msgstr ""
+
+msgid "Laufzeit"
+msgstr ""
+
+msgid "Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht."
+msgstr ""
+
+msgid "Diese Anzeige darf im RSS-Feed veröffentlich werden."
+msgstr ""
+
+msgid "Folgende Anzeige wurde gemeldet"
+msgstr ""
+
+msgid "Gemeldet von"
+msgstr ""
+
+msgid "Sie haben sich momentan keine Anzeigen gemerkt."
+msgstr ""
+
+msgid "Markierte Einträge entfernen"
+msgstr ""
+
+msgid "Möchten Sie die markierten Einträge wirklich von der Merkliste löschen?"
+msgstr ""
+
+msgid "Wollen Sie diese Anzeige wirklich löschen?"
+msgstr ""

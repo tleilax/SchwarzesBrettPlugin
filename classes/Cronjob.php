@@ -12,7 +12,7 @@ class Cronjob extends GlobalCronjob
 
     public static function getDescription()
     {
-        return _('Cronjob für das Schwarze Brett, der abgelaufene Anzeigen entfernt.');
+        return _('Cronjob fÃ¼r das Schwarze Brett, der abgelaufene Anzeigen entfernt.');
     }
 
     public function setUp()
@@ -23,7 +23,7 @@ class Cronjob extends GlobalCronjob
         require_once __DIR__ . '/../models/Watchlist.php';
     }
 
-    public function execute($last_result, $parameters = array())
+    public function execute($last_result, $parameters = [])
     {
         $articles = Article::findBySQL('expires < UNIX_TIMESTAMP()');
 

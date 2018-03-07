@@ -3,7 +3,7 @@ class Rss2 extends Migration
 {
     public function description ()
     {
-        return _('Einträge für Themen-RSS werden angelegt');
+        return _('EintrÃ¤ge fÃ¼r Themen-RSS werden angelegt');
     }
 
     public function up ()

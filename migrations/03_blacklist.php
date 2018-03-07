@@ -3,7 +3,7 @@ class Blacklist extends Migration
 {
     public function description ()
     {
-        return 'es wird eine neue db für benutzer auf einer schwarzen liste erstellst.';
+        return 'es wird eine neue db fÃ¼r benutzer auf einer schwarzen liste erstellst.';
     }
 
     public function up ()

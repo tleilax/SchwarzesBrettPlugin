@@ -12,6 +12,7 @@ class Admin_DuplicatesController extends SchwarzesBrett\Controller
 
     public function index_action()
     {
+        PageLayout::setTitle("{$this->_('Schwarzes Brett')} - {$this->_('Doppelte Einträge')}");
         Navigation::activateItem('/schwarzesbrettplugin/root/duplicates');
 
         $this->duplicates = Article::findDuplicates();

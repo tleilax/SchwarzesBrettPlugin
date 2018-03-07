@@ -12,7 +12,7 @@ use StudipLog;
 class Article extends SimpleORMap
 {
     private static $watched = [];
-    
+
     public static function configure($config = [])
     {
         $config['db_table'] = 'sb_artikel';
@@ -77,9 +77,9 @@ class Article extends SimpleORMap
 
     public static function countNew($category_id = null)
     {
-        $cache_hash = '/schwarzes-brett/counts/new/' . $GLOBALS['user']->id;
+        $cache_hash = "/schwarzes-brett/counts/new/{$GLOBALS['user']->id}";
         if ($category_id) {
-            $cache_hash .= '/' . $category_id;
+            $cache_hash .= "/{$category_id}";
         }
 
         $cache = StudipCacheFactory::getCache();
@@ -87,14 +87,15 @@ class Article extends SimpleORMap
         if ($count === false) {
             $query = "SELECT COUNT(*)
                       FROM sb_artikel AS a
+                      JOIN auth_user_md5 USING (user_id)
                       LEFT JOIN sb_visits AS v0 ON v0.object_id = a.artikel_id AND v0.user_id = :user_id
                       LEFT JOIN sb_visits AS v1 ON v1.object_id = a.thema_id AND v1.user_id = :user_id
-                      WHERE expires > UNIX_TIMESTAMP()
-                         AND visible = 1
+                      WHERE a.expires > UNIX_TIMESTAMP()
+                         AND a.visible = 1
                          AND a.user_id != :user_id
                          AND v0.object_id IS NULL
                          AND (v1.last_visitdate IS NULL OR a.mkdate > v1.last_visitdate)
-                         AND thema_id = IFNULL(:category_id, thema_id)";
+                         AND a.thema_id = IFNULL(:category_id, thema_id)";
             $statement = DBManager::get()->prepare($query);
             $statement->bindValue(':user_id', $GLOBALS['user']->id);
             $statement->bindValue(':category_id', $category_id);
@@ -109,34 +110,46 @@ class Article extends SimpleORMap
 
     public static function findValidByCategoryId($category_id)
     {
-        return self::findBySQL("thema_id = :category_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id));
+        $condition = "JOIN auth_user_md5 USING (user_id)
+                      WHERE sb_artikel.thema_id = :category_id
+                        AND sb_artikel.expires > UNIX_TIMESTAMP()
+                      ORDER BY sb_artikel.mkdate DESC";
+        return self::findBySQL($condition, [':category_id' => $category_id]);
     }
 
     public static function findValidByUserId($user_id)
     {
-        return self::findBySQL("user_id = :user_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':user_id' => $user_id));
+        return self::findBySQL("user_id = :user_id AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", [':user_id' => $user_id]);
     }
 
     public static function findVisibleByUserId($user_id)
     {
-        return self::findBySQL("user_id = :user_id AND visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':user_id' => $user_id));
+        return self::findBySQL("user_id = :user_id AND visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", [':user_id' => $user_id]);
     }
 
     public static function findVisibleByCategoryId($category_id)
     {
-        return self::findBySQL("thema_id = :category_id AND (visible = 1 OR user_id = :user_id) AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC", array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));
+        $condition = "JOIN auth_user_md5 USING (user_id)
+                      WHERE sb_artikel.thema_id = :category_id
+                        AND (sb_artikel.visible = 1 OR sb_artikel.user_id = :user_id)
+                        AND sb_artikel.expires > UNIX_TIMESTAMP()
+                      ORDER BY sb_artikel.mkdate DESC";
+        return self::findBySQL($condition, [':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id]);
     }
 
     public static function findNewByCategoryId($category_id)
     {
-        $visit = Visit::findOneBySQL("object_id = :category_id AND user_id = :user_id AND type = 'thema'",
-                                       array(':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id));
+        $visit = Visit::findOneBySQL(
+            "object_id = :category_id AND user_id = :user_id AND type = 'thema'",
+            [':category_id' => $category_id, ':user_id' => $GLOBALS['user']->id]
+        );
         $last_visit = $visit
                     ? $visit->last_visitdate
                     : 0;
 
         $query = "SELECT a.artikel_id
                   FROM sb_artikel AS a
+                  JOIN auth_user_md5 AS aum USING (user_id)
                   LEFT JOIN sb_visits AS v ON v.object_id = a.artikel_id AND v.user_id = :user_id
                   WHERE v.object_id IS NULL
                     AND a.thema_id = :category_id
@@ -156,12 +169,21 @@ class Article extends SimpleORMap
 
     public static function findNewest($limit, $categories = false)
     {
-        $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() ORDER BY mkdate DESC LIMIT ' . (int)$limit;
-        $params = array();
+        $query  = "JOIN auth_user_md5 USING (user_id)
+                   WHERE sb_artikel.visible = 1
+                     AND sb_artikel.expires > UNIX_TIMESTAMP()
+                   ORDER BY sb_artikel.mkdate DESC
+                   LIMIT " . (int)$limit;
+        $params = [];
 
         if ($categories !== false && !empty($categories)) {
-            $query  = 'visible = 1 AND expires > UNIX_TIMESTAMP() AND thema_id IN (:categories) ORDER BY mkdate DESC LIMIT ' . (int)$limit;
-            $params = array(':categories' => $categories);
+            $query  = "JOIN auth_user_md5 USING (user_id)
+                       WHERE sb_artikel.visible = 1
+                         AND expires > UNIX_TIMESTAMP()
+                         AND sb_artikel.thema_id IN (:categories)
+                      ORDER BY sb_artikel.mkdate DESC
+                      LIMIT " . (int)$limit;
+            $params = [':categories' => $categories];
         }
 
         return self::findBySQL($query, $params);
@@ -171,6 +193,7 @@ class Article extends SimpleORMap
     {
         $query = "SELECT a.artikel_id
                   FROM sb_artikel AS a
+                  JOIN auth_user_md5 USING (user_id)
                   JOIN sb_themen AS t USING (thema_id)
                   WHERE thema_id = IFNULL(:category_id, thema_id)
                     AND expires > UNIX_TIMESTAMP()
@@ -190,7 +213,7 @@ class Article extends SimpleORMap
 
     public function visit()
     {
-        $visit = Visit::find(array($this->id, $GLOBALS['user']->id));
+        $visit = Visit::find([$this->id, $GLOBALS['user']->id]);
         if (!$visit) {
             $visit = new Visit();
             $visit->object_id = $this->id;
@@ -221,7 +244,7 @@ class Article extends SimpleORMap
                   ORDER BY dupe_count DESC";
         $statement = DBManager::get()->query($query);
 
-        $duplicates = array();
+        $duplicates = [];
         while ($ids = $statement->fetchColumn()) {
             $ids = explode(',', $ids);
 
@@ -229,7 +252,7 @@ class Article extends SimpleORMap
             $user_id  = $articles[0]->user_id;
 
             if (!isset($duplicates[$user_id])) {
-                $duplicates[$user_id] = array();
+                $duplicates[$user_id] = [];
             }
 
             foreach ($articles as $article) {
@@ -266,9 +289,12 @@ class Article extends SimpleORMap
     {
         $query = "SELECT artikel_id
                   FROM sb_artikel
-                  WHERE (visible = 1 OR user_id = :user_id)
-                    AND (titel LIKE CONCAT('%', :needle, '%')
-                     OR beschreibung LIKE CONCAT('%', :needle, '%'))";
+                  JOIN auth_user_md5 USING (user_id)
+                  WHERE (sb_artikel.visible = 1 OR user_id = :user_id)
+                    AND (
+                        sb_artikel.titel LIKE CONCAT('%', :needle, '%')
+                        OR sb_artikel.beschreibung LIKE CONCAT('%', :needle, '%')
+                    )";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':needle', $needle);
         $statement->bindValue(':user_id', $GLOBALS['user']->id);
@@ -281,14 +307,14 @@ class Article extends SimpleORMap
 
     public static function groupByCategory($articles)
     {
-        $categories = array();
+        $categories = [];
         foreach ($articles as $article) {
             $category = $article->category;
             if (!isset($categories[$category->id])) {
-                $categories[$category->id] = array(
+                $categories[$category->id] = [
                     'titel'    => $category->titel,
-                    'articles' => array(),
-                );
+                    'articles' => [],
+                ];
             }
             $categories[$category->id]['articles'][] = $article;
         }
@@ -311,7 +337,7 @@ class Article extends SimpleORMap
         }, $needle);
 
         if ($subject) {
-            return preg_replace_callback('/' . $needle . '/', $replacer, $subject);
+            return preg_replace_callback("/{$needle}/", $replacer, $subject);
         } else {
             StudipFormat::addStudipMarkup('sb-highlight', $needle, false, function ($markup, $matches, $contents) use ($replacer) {
                 return $replacer($matches);

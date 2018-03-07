@@ -18,7 +18,7 @@ class AddBadWords extends Migration
 
         $statement->bindValue(':id', 'BULLETIN_BOARD_BAD_WORDS');
         $statement->bindValue(':value', '');
-        $statement->bindValue('description', 'Liste von "verbotenen" Wörtern, bei denen der Support informiert wird, falls diese in einer Anzeige auftauchen (komma-separiert)');
+        $statement->bindValue('description', 'Liste von "verbotenen" WÃ¶rtern, bei denen der Support informiert wird, falls diese in einer Anzeige auftauchen (komma-separiert)');
         $statement->execute();
     }
     

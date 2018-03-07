@@ -1,10 +1,10 @@
 <table class="default">
-    <caption><?= sprintf($_('Suchergebnisse für "%s"'), $needle) ?></caption>
+    <caption><?= sprintf($_('Suchergebnisse fÃ¼r "%s"'), htmlReady($needle)) ?></caption>
 <? if (!$categories): ?>
     <tbody>
         <tr>
             <td>
-            <? if (strlen($needle) >= 3): ?>
+            <? if (mb_strlen($needle) >= 3): ?>
                 <?= MessageBox::info($_('Es wurden keine passenden Anzeigen gefunden.')) ?>
             <? else: ?>
                 <?= MessageBox::info($_('Der eingegebene Suchbegriff ist zu kurz. Geben Sie bitte mindestens drei Zeichen ein.')) ?>
@@ -17,13 +17,13 @@
     <tbody class="sb-articles">
         <tr>
             <th colspan="5">
-                <a href="<?= $controller->url_for('category/' . $id) ?>">
+                <a href="<?= $controller->url_for("category/{$id}") ?>">
                     <?= htmlReady($category['titel']) ?>
                 </a>
             </th>
         </tr>
     <? foreach ($category['articles'] as $article): ?>
-        <?= $this->render_partial('article-tr', compact('article', 'needle')) ?>
+        <?= $this->render_partial('article-tr.php', compact('article', 'needle')) ?>
     <? endforeach; ?>
     </tbody>
 <? endforeach; ?>

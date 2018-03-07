@@ -13,7 +13,7 @@ abstract class Plugin extends StudIPPlugin
         parent::__construct();
 
         bindtextdomain(static::GETTEXT_DOMAIN, $this->getPluginPath() . '/locale');
-        bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'ISO-8859-1');
+        bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'UTF-8');
     }
 
     /**
@@ -70,17 +70,5 @@ abstract class Plugin extends StudIPPlugin
         }
 
         return $result;
-    }
-
-    protected function legacyAssets()
-    {
-        // OpenGraphURLCollection was introduced in Stud.IP 3.4 which is the
-        // first version that does not need it's own og handling
-        if (class_exists('OpenGraphURLCollection')) {
-            return;
-        }
-
-        $this->addStylesheet('assets/opengraph.less');
-        PageLayout::addScript($this->getPluginURL() . '/assets/opengraph.js');
     }
 }

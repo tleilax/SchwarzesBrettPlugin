@@ -32,9 +32,9 @@ class RssController extends SchwarzesBrett\Controller
         $this->link        = $this->url_for('category');
         if ($category_id !== null) {
             $category = Category::find($category_id);
-            $this->title       .= ' - ' . $category->titel;
+            $this->title       .= " - {$category->titel}";
             $this->description  = $category->beschreibung;
-            $this->link         = $this->absolute_url_for('category/' . $category->id);
+            $this->link         = $this->absolute_url_for("category/{$category->id}");
         }
 
         $this->set_content_type('application/rss+xml;charset=utf-8');

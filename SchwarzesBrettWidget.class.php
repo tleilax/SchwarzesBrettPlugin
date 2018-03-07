@@ -15,8 +15,6 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
 
-        $this->legacyAssets();
-
         $widget = $GLOBALS['template_factory']->open('shared/string');
         $widget->content = $this->getContent();
         $widget->icons   = $this->getNavigation();
@@ -26,7 +24,7 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
 
     public function settings_action()
     {
-        PageLayout::setTitle($this->_('Einstellung für das Schwarze Brett Widget'));
+        PageLayout::setTitle($this->_('Einstellung fÃ¼r das Schwarze Brett Widget'));
 
         if (Request::isPost()) {
             $selection = Request::getArray('categories');
@@ -41,23 +39,24 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
             return;
         }
 
-        if (Request::isXhr()) {
-            header('X-Title: ' . PageLayout::getTitle());
+        if (true || Request::isXhr()) {
+            header('X-Title: ' . rawurlencode(PageLayout::getTitle()));
+            header('Content-Type: text/html;charset=utf-8');
         }
 
         $template = $this->getTemplate('widget/settings.php', true);
-        $template->url        = PluginEngine::getLink($this, array(), 'settings');
-        $template->categories = Category::findBySQL('1 ORDER BY titel COLLATE latin1_german1_ci ASC');
+        $template->url        = PluginEngine::getLink($this, [], 'settings');
+        $template->categories = Category::findBySQL('1 ORDER BY titel ASC');
         $template->config   = $this->getConfig();
         echo $template->render();
     }
 
     protected function getNavigation()
     {
-        $navigation = array();
+        $navigation = [];
 
         $nav = new Navigation('', PluginEngine::getLink($this, [], 'settings'));
-        $nav->setImage(Icon::create('admin', 'clickable', tooltip2($this->_('Einstellungen'))));
+        $nav->setImage(Icon::create('admin'), tooltip2($this->_('Einstellungen')));
         $nav->setLinkAttributes(['data-dialog' => '']);
         $navigation[] = $nav;
 
@@ -75,10 +74,6 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
 
     protected function getTemplate($template, $layout = false)
     {
-        if (Request::isXhr()) {
-            header('Content-Type: text/html;charset=windows-1252');
-        }
-
         $factory  = new Flexi_TemplateFactory(__DIR__ . '/views');
         $template = $factory->open($template);
         $template->_ = function ($string) { return $this->_($string); };

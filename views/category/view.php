@@ -1,5 +1,5 @@
 <? if ($GLOBALS['user']->perms === 'root'): ?>
-<form action="<?= $controller->url_for('category/bulk/' . $category->id) ?>" method="post">
+<form action="<?= $controller->url_for("category/bulk/{$category->id}") ?>" method="post">
 <? endif; ?>
 <? if ($category->terms): ?>
     <div class="category-disclaimer">
@@ -45,20 +45,20 @@
 <? if (count($articles) === 0): ?>
         <tr class="nohover">
             <td colspan="<?= 5 + (int)($GLOBALS['user']->perms === 'root') ?>" style="text-align: center;">
-                <?= $_('Dieses Thema enthält noch keine Anzeigen.') ?><br>
+                <?= $_('Dieses Thema enthÃ¤lt noch keine Anzeigen.') ?><br>
                 <?= Studip\LinkButton::create(
                     $_('Anzeige erstellen'),
-                    $controller->url_for('article/create'),
+                    $controller->url_for("article/create/{$category->id}"),
                     ['data-dialog' => '']
                 ) ?>
             </td>
         </tr>
 <? else: ?>
     <? foreach ($articles as $article): ?>
-        <?= $this->render_partial('article-tr.php', compact('article') + array(
-                'return_to' => $controller->url_for('category/view/' . $category->id),
-                'checkbox'  => $GLOBALS['user']->perms === 'root',
-        )) ?>
+        <?= $this->render_partial('article-tr.php', compact('article') + [
+            'return_to' => $controller->url_for("category/view/{$category->id}"),
+            'checkbox'  => $GLOBALS['user']->perms === 'root',
+        ]) ?>
     <? endforeach; ?>
 <? endif; ?>
     </tbody>
@@ -70,8 +70,8 @@
                 <?= Studip\Button::create($_('Verschieben'), 'move', [
                     'data-dialog' => 'size=auto',
                 ]) ?>
-                <?= Studip\Button::create($_('Löschen'), 'delete', [
-                        'onclick' => "return confirm('" . $_('Sollen die Anzeigen wirklich gelöscht werden?') . "');",
+                <?= Studip\Button::create($_('LÃ¶schen'), 'delete', [
+                        'onclick' => "return confirm('" . $_('Sollen die Anzeigen wirklich gelÃ¶scht werden?') . "');",
                 ]) ?>
             </td>
         </tr>

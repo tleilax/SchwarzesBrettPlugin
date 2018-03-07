@@ -29,7 +29,7 @@ class ConvertUserConfigToJson extends Migration
                     `mkdate`, `chdate`
                   ) VALUES (
                     :id, 'SCHWARZESBRETT_WIDGET_SETTINGS', '[]', 1,
-                    'array', 'user', 'Einstellungen für das Schwarze Brett-Widget', '',
+                    'array', 'user', 'Einstellungen fÃ¼r das Schwarze Brett-Widget', '',
                     UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
                   )";
         $statement = DBManager::get()->prepare($query);

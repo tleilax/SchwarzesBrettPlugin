@@ -3,7 +3,7 @@ class Optimizedb extends Migration
 {
     public function description ()
     {
-        return 'es werden neue indexe für die datenbank-tabellen angelegt.';
+        return 'es werden neue indexe fÃ¼r die datenbank-tabellen angelegt.';
     }
 
     public function up ()

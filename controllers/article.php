@@ -21,7 +21,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
         $this->article->visit();
 
-        PageLayout::setTitle($this->article->titel . ' (' . $this->article->category->titel . ')');
+        PageLayout::setTitle("{$this->article->titel} ({$this->article->category->titel})");
     }
 
     public function own_action()
@@ -98,7 +98,7 @@ class ArticleController extends SchwarzesBrett\Controller
             $article->publishable  = Request::int('publishable', 1);
             $article->user_id      = $article->user_id ?: $GLOBALS['user']->id;
             $article->duration     = $duration;
-            $article->expires      = strtotime('+' . $duration . ' days 23:59:59', $article->mkdate ?: time());
+            $article->expires      = strtotime("+{$duration} days 23:59:59", $article->mkdate ?: time());
             $article->store();
 
             $config_words = Config::get()->BULLETIN_BOARD_BAD_WORDS;
@@ -106,12 +106,13 @@ class ArticleController extends SchwarzesBrett\Controller
             if (!empty($needles)) {
                 $regexp = '/' . implode('|', $needles) . '/i';
 
-                $haystack = $article->titel . '###' . $article->beschreibung;
+                $haystack = "{$article->titel}###{$article->beschreibung}";
                 if (preg_match_all($regexp, $haystack, $matches)) {
                     $bad_words = array_unique($matches[0]);
 
                     $url = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                     $template = $this->get_template_factory()->open('article/mail-bad-words.php');
+                    $template->_          = function ($s) { return $this->_($s); };
                     $template->controller = $this;
                     $template->article    = $article;
                     $template->bad_words  = $bad_words;
@@ -120,7 +121,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
                     $mail = new StudipMail();
                     $mail->addRecipient(Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS)
-                         ->setSubject($this->_('Anzeige enthält unzulässige Begriffe'))
+                         ->setSubject($this->_('Anzeige enthÃ¤lt unzulÃ¤ssige Begriffe'))
                          ->setBodyText($mailbody)
                          ->setBodyHtml(formatReady($mailbody))
                          ->send();
@@ -130,27 +131,27 @@ class ArticleController extends SchwarzesBrett\Controller
             $message = $id === null
                      ? $this->_('Die Anzeige wurde erstellt.')
                      : $this->_('Die Anzeige wurde gespeichert.');
-            PageLayout::postMessage(MessageBox::success($message));
+            PageLayout::postSuccess($message);
         }
 
-        $this->redirect(Request::get('return_to') ?: $this->url_for('category/view/' . $article->thema_id . '#sb-article-' . $article->id));
+        $this->redirect(Request::get('return_to') ?: $this->url_for("category/view/{$article->thema_id}#sb-article-{$article->id}"));
     }
 
     private function getCategories()
     {
-        return Category::findByVisible(1, 'ORDER BY titel COLLATE latin1_german1_ci');
+        return Category::findByVisible(1, 'ORDER BY titel ASC');
     }
 
     public function delete_action($id)
     {
         $article = Article::find($id);
         if (!$this->is_admin && $article->user_id !== $GLOBALS['user']->id) {
-            throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht löschen.'));
+            throw new AccessDeniedException($this->_('Sie dÃ¼rfen diese Anzeige nicht lÃ¶schen.'));
         }
 
         $article->delete();
 
-        PageLayout::postMessage(MessageBox::success($this->_('Die Anzeige wurde gelöscht.')));
+        PageLayout::postSuccess($this->_('Die Anzeige wurde gelÃ¶scht.'));
 
         $this->redirect(Request::get('return_to') ?: $this->url_for('category'));
     }
@@ -168,6 +169,7 @@ class ArticleController extends SchwarzesBrett\Controller
 
             $url = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
             $template = $this->get_template_factory()->open('article/mail-blame.php');
+            $template->_          = function ($s) { return $this->_($s); };
             $template->controller = $this;
             $template->article    = $this->article;
             $template->reason     = $reason;
@@ -176,21 +178,23 @@ class ArticleController extends SchwarzesBrett\Controller
 
             $mail = new StudipMail();
             $mail->addRecipient(Config::get()->BULLETIN_BOARD_BLAME_RECIPIENTS)
-                 ->setSubject($this->_('Anzeige wurde gemeldet') . ': ' . $article->titel)
+                 ->setSubject("{$this->_('Anzeige wurde gemeldet')}: {$article->titel}")
                  ->setReplyToEmail($GLOBALS['user']->email)
                  ->setBodyText($mailbody)
                  ->setBodyHtml(formatReady($mailbody))
                  ->send();
 
-            PageLayout::postMessage(MessageBox::info($this->_('Die Anzeige wurde den Administratoren gemeldet.')));
+            PageLayout::postInfo($this->_('Die Anzeige wurde den Administratoren gemeldet.'));
 
-            $this->redirect('category/' . $this->article->category->id);
+            $this->redirect("category/{$this->article->category->id}");
             return;
         }
 
-        PageLayout::setTitle(sprintf($this->_('Anzeige "%s" von %s melden'),
-                                     $this->article->titel,
-                                     $this->article->user->getFullname()));
+        PageLayout::setTitle(sprintf(
+            $this->_('Anzeige "%s" von %s melden'),
+            $this->article->titel,
+            $this->article->user->getFullname()
+        ));
     }
 
     public function purge_action()
@@ -203,8 +207,8 @@ class ArticleController extends SchwarzesBrett\Controller
         }
 
         $message = count($articles) > 0
-                 ? MessageBox::success(sprintf($this->_('Es wurden %u Anzeigen aus der Datenbank gelöscht.'), count($articles)))
-                 : MessageBox::info($this->_('Es gibt keine Artikel in der Datenbank, die gelöscht werden können.'));
+                 ? MessageBox::success(sprintf($this->_('Es wurden %u Anzeigen aus der Datenbank gelÃ¶scht.'), count($articles)))
+                 : MessageBox::info($this->_('Es gibt keine Artikel in der Datenbank, die gelÃ¶scht werden kÃ¶nnen.'));
 
         PageLayout::postMessage($message);
 

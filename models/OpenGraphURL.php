@@ -17,7 +17,7 @@ class OpenGraphURL extends GlobalOpenGraphURL
     {
         if (self::$proxy_url !== null) {
             $old_base = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
-            $this['image'] = URLHelper::getURL(self::$proxy_url, array('url' => $this['image']));
+            $this['image'] = URLHelper::getURL(self::$proxy_url, ['url' => $this['image']]);
             URLHelper::setBaseURL($old_base);
         }
 

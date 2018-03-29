@@ -4,4 +4,5 @@ pluginclassname=SchwarzesBrettWidget
 origin=IBIT
 version=3.20.3
 studipMinVersion=3.5
+studipMaxVersion=3.99
 description=Globales Schwarzes Brett für Kleinanzeigen mit Kategorien (Gesuche/Angebote)

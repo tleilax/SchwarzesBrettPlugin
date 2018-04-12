@@ -53,7 +53,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         // Hauptmenüpunkt
         $nav = new Navigation($this->_('Schwarzes Brett'), $this->url_for('category'));
         $nav->setImage('icons/lightblue/billboard.svg', tooltip2($this->_('Schwarzes Brett')));
-        if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
+        if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE  && $GLOBALS['user']->cfg->BULLETIN_BOARD_SHOW_BADGE) {
             $nav->setBadgeNumber(Article::countNew());
         }
         Navigation::addItem('/schwarzesbrettplugin', $nav);

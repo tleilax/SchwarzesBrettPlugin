@@ -220,7 +220,7 @@ class Controller extends StudipController
         } elseif (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
             $options = new OptionsWidget();
             $options->addCheckbox(
-                $this->_('Anzahl der neuen EintrÃ¤ge in der Navigation einblenden'),
+                $this->_('Anzahl der neuen Einträge in der Navigation einblenden'),
                 $GLOBALS['user']->cfg->BULLETIN_BOARD_SHOW_BADGE,
                 $this->url_for('config/toggle_badge')
             );

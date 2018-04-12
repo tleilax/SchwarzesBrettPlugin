@@ -7,6 +7,7 @@ use Config;
 use ExportWidget;
 use Icon;
 use NotificationCenter;
+use OptionsWidget;
 use PageLayout;
 use Request;
 use SearchWidget;
@@ -215,6 +216,14 @@ class Controller extends StudipController
         if ($category_id) {
             $this->temp_storage = $category_id;
             NotificationCenter::addObserver($this, 'addCategorySelector', 'SidebarWillRender');
+        } elseif (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE) {
+            $options = new OptionsWidget();
+            $options->addCheckbox(
+                $this->_('Anzahl der neuen Einträge in der Navigation einblenden'),
+                $GLOBALS['user']->cfg->BULLETIN_BOARD_SHOW_BADGE,
+                $this->url_for('config/toggle_badge')
+            );
+            Sidebar::get()->addWidget($options);
         }
     }
 

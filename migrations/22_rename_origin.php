@@ -13,10 +13,16 @@ class RenameOrigin extends Migration
         $new_path = $GLOBALS['PLUGINS_PATH'] . '/UOL/SchwarzesBrettPlugin';
 
         if (file_exists($old_path)) {
-            if (!file_exists($uol_path)) {
-                mkdir($uol_path);
+            if (file_exists($new_path)) {
+                // Plugin was uploaded and currently exists twice
+                rmdirr($old_path);
+            } else {
+                // Plugin was updated in filesystem and exists only once
+                if (!file_exists($uol_path)) {
+                    mkdir($uol_path);
+                }
+                rename($old_path, $new_path);
             }
-            rename($old_path, $new_path);
         }
     }
 

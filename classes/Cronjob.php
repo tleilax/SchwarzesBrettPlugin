@@ -31,8 +31,8 @@ class Cronjob extends GlobalCronjob
             $article->delete();
         }
 
-        if (count($artikel) > 0) {
-            printf('Removed %u items' . "\n", count($artikel));
+        if (count($article) > 0) {
+            printf('Removed %u items' . "\n", count($article));
         }
 
         // Do big garbage collection with a chance of 5%

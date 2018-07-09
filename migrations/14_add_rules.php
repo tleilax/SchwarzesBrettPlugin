@@ -5,26 +5,24 @@ class AddRules extends Migration
     {
         return 'Adds the config entry for the now editable rules of the bulletin board.';
     }
-    
+
     public function up()
     {
-        $query = "INSERT IGNORE INTO `config` (`config_id`, `parent_id`, `field`, `value`, `is_default`, `type`,
-                                               `range`, `section`, `position`, `mkdate`, `chdate`, `description`, `comment`, `message_template`)
-                  VALUES (MD5(:id), '', :id, :value, '1', 'string',
-                          'global', 'SchwarzesBrettPlugin', '0', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), :description, '', '')";
-        $statement = DBManager::get()->prepare($query);
 
-        $statement->bindValue(':id', 'BULLETIN_BOARD_RULES');
-        $statement->bindValue(':value', $this->getRules());
-        $statement->bindValue('description', 'Die angezeigten Regeln des Schwarzen Bretts');
-        $statement->execute();
+        Config::get()->create('BULLETIN_BOARD_RULES', [
+            'value'       => $this->getRules(),
+            'type'        => 'string',
+            'range'       => 'global',
+            'section'     => 'SchwarzesBrettPlugin',
+            'description' => 'Die angezeigten Regeln des Schwarzen Bretts',
+        ]);
     }
-    
+
     public function down()
     {
-        DBManager::get()->exec("DELETE FROM `config` WHERE `config_id` = MD5('BULLETIN_BOARD_RULES')");
+        Config::get()->delete('BULLETIN_BOARD_RULES');
     }
-    
+
     private function getRules()
     {
         $rules  = '!!!Allgemeine Hinweise:' . "\n";

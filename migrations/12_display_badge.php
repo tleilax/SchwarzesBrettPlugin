@@ -8,22 +8,17 @@ class DisplayBadge extends Migration
 
     public function up ()
     {
-        $query = "INSERT IGNORE INTO `config`
-                  (`config_id`, `parent_id`, `field`, `value`, `is_default`, `type`, `range`,
-                   `section`, `position`, `mkdate`, `chdate`, `description`, `comment`, `message_template`)
-                  VALUES (MD5(:config_id), '', :config_id, :value, '1', :type, 'global', 'SchwarzesBrettPlugin', '0', '0', UNIX_TIMESTAMP(), :comment, '', '')";
-        $statement = DBManager::get()->prepare($query);
-
-        $statement->bindValue(':config_id', 'BULLETIN_BOARD_DISPLAY_BADGE');
-        $statement->bindValue(':value', 0);
-        $statement->bindValue(':type', 'boolean');
-        $statement->bindValue(':comment', 'Anzahl der ungelesen Anzeigen in der Navigation anzeigen');
-        $statement->execute();
+        Config::get()->create('BULLETIN_BOARD_DISPLAY_BADGE', [
+            'value'       => false,
+            'type'        => 'boolean',
+            'range'       => 'global',
+            'section'     => 'SchwarzesBrettPlugin',
+            'description' => 'Anzahl der ungelesen Anzeigen in der Navigation anzeigen',
+        ]);
     }
 
     public function down ()
     {
-        $query = "DELETE FROM `config` WHERE `config_id` IN (MD5('BULLETIN_BOARD_DISPLAY_BADGE'))";
-        DBManager::get()->exec($query);
+        Config::get()->delete('BULLETIN_BOARD_DISPLAY_BADGE');
     }
 }

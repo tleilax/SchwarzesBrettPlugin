@@ -3,7 +3,7 @@ class ConvertUserConfigToJson extends Migration
 {
     public function up()
     {
-        if (class_exists('StudipVersion') && StudipVersion::newerThan('4.1')) {
+        if (class_exists('StudipVersion') && StudipVersion::newerThan('4.0')) {
             $query = "SELECT `range_id`, `value`
                       FROM `config_values`
                       WHERE `field` = 'SCHWARZESBRETT_WIDGET_SETTINGS'";
@@ -25,12 +25,12 @@ class ConvertUserConfigToJson extends Migration
             }
 
             $query = "INSERT IGNORE INTO `config` (
-                        `field`, `value`, `is_default`,
-                        `type`, `range`, `description`, `comment`,
+                        `field`, `value`, 
+                        `type`, `range`, `description`,
                         `mkdate`, `chdate`
                       ) VALUES (
-                        'SCHWARZESBRETT_WIDGET_SETTINGS', '[]', 1,
-                        'array', 'user', 'Einstellungen für das Schwarze Brett-Widget', '',
+                        'SCHWARZESBRETT_WIDGET_SETTINGS', '[]',
+                        'array', 'user', 'Einstellungen für das Schwarze Brett-Widget', 
                         UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
                       )";
             DBManager::get()->exec($query);
@@ -73,7 +73,7 @@ class ConvertUserConfigToJson extends Migration
 
     public function down()
     {
-        if (class_exists('StudipVersion') && StudipVersion::newerThan('4.1')) {
+        if (class_exists('StudipVersion') && StudipVersion::newerThan('4.0')) {
             $query = "SELECT `range_id`, `value`
                       FROM `config_values`
                       WHERE `field` = 'SCHWARZESBRETT_WIDGET_SETTINGS'";

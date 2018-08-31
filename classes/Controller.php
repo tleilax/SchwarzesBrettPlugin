@@ -172,7 +172,7 @@ class Controller extends StudipController
                 Icon::create('accept')
             )->asDialog();
         }
-        if (!User::get()->isBlacklisted()) {
+        if (!User::get()->isBlacklisted() && User::get()->mayPostTo($category_id)) {
             //wenn auf der blacklist, darf man keine artikel mehr erstellen
             $actions->addLink(
                 $this->_('Neue Anzeige erstellen'),

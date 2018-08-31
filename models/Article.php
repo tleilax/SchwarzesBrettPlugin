@@ -1,6 +1,7 @@
 <?php
 namespace SchwarzesBrett;
 
+use AccessDeniedException;
 use Config;
 use DBManager;
 use PDO;
@@ -71,6 +72,12 @@ class Article extends SimpleORMap
         ];
 
         $config['default_values']['duration'] = Config::Get()->BULLETIN_BOARD_DURATION;
+
+        $config['registered_callbacks']['before_store'][] = function ($article) {
+            if (!User::get()->mayPostTo($article->category)) {
+                throw new AccessDeniedException('You may not post to this category');
+            }
+        };
 
         parent::configure($config);
     }

@@ -48,4 +48,17 @@ class User extends GlobalUser
         $statement->execute();
         return (bool)$statement->fetchColumn();
     }
+
+    public function mayPostTo($category)
+    {
+        if (!$category) {
+            return true;
+        }
+
+        if (is_string($category)) {
+            $category = Category::find($category);
+        }
+
+        return $GLOBALS['perm']->have_perm($category->perm, $this->id);
+    }
 }

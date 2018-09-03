@@ -15,6 +15,17 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
 
+        if (StudipVersion::olderThan('4.2')) {
+            PageLayout::addSqueezePackage('lightbox');
+        }
+
+        if (Config::get()->BULLETIN_BOARD_ALLOW_FILE_UPLOADS) {
+            PageLayout::addScript($this->getPluginURL() . '/assets/sb-upload.js');
+
+            $this->addStylesheet('assets/lazy-load.less');
+            PageLayout::addScript($this->getPluginURL() . '/assets/lazy-load.js');
+        }
+
         $widget = $GLOBALS['template_factory']->open('shared/string');
         $widget->content = $this->getContent();
         $widget->icons   = $this->getNavigation();

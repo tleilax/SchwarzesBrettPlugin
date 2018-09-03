@@ -10,7 +10,7 @@ $expired_test = function ($duration, $now = null) {
     return strtotime("+{$duration} days", $now ?: time()) <= time();
 };
 ?>
-<form method="post" action="<?= $controller->url_for("article/store/{$article->id}", ['return_to' => Request::get('return_to')]) ?>" class="default">
+<form method="post" action="<?= $controller->url_for("article/store/{$article->id}", ['return_to' => Request::get('return_to')]) ?>" class="default" enctype="multipart/form-data" data-secure>
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
 
@@ -80,13 +80,77 @@ $expired_test = function ($duration, $now = null) {
              <?= $_('Diese Anzeige darf im RSS-Feed veröffentlich werden.') ?>
         </label>
     <? endif; ?>
-
-        <div data-dialog-button>
-            <?= Studip\Button::createAccept($_('Speichern')) ?>
-            <?= Studip\LinkButton::createCancel(
-                $_('Abbrechen'),
-                $controller->url_for('category/list')
-            ) ?>
-        </div>
     </fieldset>
+
+<? if (Config::get()->BULLETIN_BOARD_ALLOW_FILE_UPLOADS): ?>
+    <fieldset>
+        <legend><?= $_('Bilder') ?></legend>
+
+        <div class="sb-file-upload" data-multiple-caption="<?= _('%u Bilder ausgewählt') ?>">
+            <label for="files">
+                <input type="file" id="files" name="images[]" accept="image/*"
+                       multiple data-target="<?= $controller->link_for('files/upload') ?>">
+                <?= _('Bild(er) auswählen') ?>
+                <span class="drag-available"><?= _('oder hierher ziehen') ?></span>
+                <span class="selected-files"></span>
+            </label>
+        </div>
+
+        <table class="default sb-article-images-edit">
+            <colgroup>
+                <col width="100px">
+                <col>
+                <col width="24px">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th><?= $_('Bild') ?></th>
+                    <th><?= $_('Titel') ?></th>
+                    <th class="actions">
+                        <?= Icon::create('trash', Icon::ROLE_INFO)->asImg(tooltip2($_('Bild löschen?'))) ?>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="empty-placeholder">
+                    <td colspan="3">
+                        <?= $_('Es wurden keine Bilder hinterlegt') ?>
+                    </td>
+                </tr>
+            <? foreach ($article->images as $image): ?>
+                <tr>
+                    <td>
+                        <input type="hidden" name="img[<?= htmlReady($image->image->id) ?>][position]"
+                               value="<?= (int) $image->position ?>">
+
+                        <label for="imagetext-<?= htmlReady($image->image->id) ?>">
+                            <?= $image->thumbnail->getImageTag(false, false) ?>
+                        </label>
+                    </td>
+                    <td>
+                        <input type="text" value="<?= htmlReady($image->image->description) ?>"
+                               name="img[<?= htmlReady($image->image->id) ?>][title]"
+                               id="imagetext-<?= htmlReady($image->image->id) ?>">
+                    </td>
+                    <td class="actions">
+                        <input type="checkbox" class="studip-checkbox"
+                               id="image-<?= htmlReady($image->image->id) ?>"
+                               name="img[<?= htmlReady($image->image->id) ?>][delete]"
+                               value="1">
+                        <label for="image-<?= htmlReady($image->image->id) ?>"></label>
+                    </td>
+                </tr>
+            <? endforeach; ?>
+            </tbody>
+        </table>
+    </fieldset>
+<? endif; ?>
+
+    <footer data-dialog-button>
+        <?= Studip\Button::createAccept($_('Speichern')) ?>
+        <?= Studip\LinkButton::createCancel(
+            $_('Abbrechen'),
+            $controller->url_for('category/list')
+        ) ?>
+    </footer>
 </form>

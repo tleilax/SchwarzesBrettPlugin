@@ -5,11 +5,15 @@ use AccessDeniedException;
 use ActionsWidget;
 use Config;
 use ExportWidget;
+use FileManager;
+use Folder;
+use FolderType;
 use Icon;
 use NotificationCenter;
 use OptionsWidget;
 use PageLayout;
 use Request;
+use RuntimeException;
 use SearchWidget;
 use SelectElement;
 use SelectWidget;
@@ -248,6 +252,10 @@ class Controller extends StudipController
 
     protected function checkTicket($force_ticket = true)
     {
+        if (\Studip\ENV === 'development') {
+            return true;
+        }
+
         $ticket = Request::get('studip_ticket');
         if (!$ticket && !$force_ticket) {
             return true;
@@ -258,5 +266,52 @@ class Controller extends StudipController
         }
 
         return true;
+    }
+
+    protected function getFolder()
+    {
+        static $folder = null;
+
+        if ($folder === null) {
+            $root = Folder::findTopFolder($GLOBALS['user']->id)->getTypedFolder();
+
+            $condition = implode(' AND ', [
+                "parent_id = :parent_id",
+                "folder_type = 'PublicFolder'",
+                "data_content = :content",
+            ]);
+            $f = Folder::findOneBySQL($condition, [
+                ':parent_id' => $root->id,
+                ':content'   => json_encode(['SchwarzesBrett']),
+            ]);
+
+            if ($f) {
+                $folder = $f->getTypedFolder();
+            } else {
+                $folder = FileManager::createSubFolder(
+                    $root,
+                    $GLOBALS['user']->getAuthenticatedUser(),
+                    'PublicFolder',
+                    _('Schwarzes Brett'),
+                    _('Bilder zu Ihren Anzeigen im Schwarzen Brett')
+                );
+
+                if (!$folder instanceof FolderType) {
+                    throw new Exception($folder[0]);
+                }
+
+                $folder->data_content = ['SchwarzesBrett'];
+                $folder->store();
+            }
+        }
+       return $folder;
+    }
+
+    protected function addHeader($key, $value, $replace = true)
+    {
+        if ($replace) {
+            header_remove($key);
+        }
+        $this->response->add_header($key, $value);
     }
 }

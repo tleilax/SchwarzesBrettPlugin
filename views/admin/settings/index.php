@@ -45,8 +45,10 @@
                     <input type="hidden" name="<?= htmlReady($option['key']) ?>" value="0">
                     <input type="checkbox" name="<?= htmlReady($option['key']) ?>"
                            id="option-<?= md5($key) ?>" value="1"
+                           class="studip-checkbox"
                            <? if ((bool)$option['value']) echo 'checked'; ?>
                            <? if ($option['activates']) printf('data-activates="#option-%s"', md5($option['activates'])); ?>>
+                    <label for="option-<?= md5($key) ?>"></label>
                 <? else: ?>
                     <input type="<?= $option['type'] ?>" name="<?= $option['key'] ?>"
                            id="option-<?= md5($key) ?>"

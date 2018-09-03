@@ -1,6 +1,7 @@
 <?php
 namespace SchwarzesBrett;
 
+use NotificationCenter;
 use PageLayout;
 use StudIPPlugin;
 
@@ -14,6 +15,15 @@ abstract class Plugin extends StudIPPlugin
 
         bindtextdomain(static::GETTEXT_DOMAIN, $this->getPluginPath() . '/locale');
         bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'UTF-8');
+
+        foreach (get_class_methods($this) as $method) {
+            if (!preg_match('/^on\w+(Did|Will)\w+$/', $method)) {
+                continue;
+            }
+
+            $trigger = mb_substr($method, 2);
+            NotificationCenter::addObserver($this, $method, $trigger);
+        }
     }
 
     /**

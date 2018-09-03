@@ -1,4 +1,4 @@
-/*jslint browser: true, unparam: true */
+/*jslint esversion: 6, browser: true, unparam: true */
 /*global jQuery, STUDIP */
 (function ($, STUDIP) {
     'use strict';
@@ -62,5 +62,63 @@
 
         reloadWatchlist();
     };
+
+    $(document).on('dialog-update', function (event, dialog) {
+        if (! $(dialog).has('[data-lightbox]')) {
+            return;
+        }
+
+        $('[data-lightbox]').on('keydown.escapebuster', function (evt) {
+            if (!evt.keyCode || evt.keyCode !== $.ui.keyCode.ESCAPE) {
+                return;
+            }
+
+            if ($('#lightbox').is(':visible')) {
+                evt.preventDefault();
+            }
+        });
+    }).on('dialog-close', function (event) {
+        $(document).off('.escapebuster');
+    });
+
+    // Article edit - images sortable
+    function sortableImages() {
+        $('.sb-article-images-edit:not(.ui-sortable)').each(function () {
+            $(this).sortable({
+                axis: 'y',
+                containment: this,
+                helper: function (event, element) {
+                    var helper = $(element).clone().addClass('sb-sortable-helper');
+                    $('td', element).each(function (index) {
+                        $('td:eq(' + index + ')', helper).width($(this).width());
+                    });
+                    return helper;
+                },
+                items: 'tbody > tr',
+                cancel: 'input,.queued,.uploading,.upload-error,.empty-placeholder',
+                placeholder: 'sb-sortable-placeholder',
+                tolerance: 'pointer',
+
+                start: function (event, ui) {
+                    $('.sb-sortable-placeholder', this).height(
+                        $(ui.item).height()
+                    );
+                },
+                update: function (event, ui) {
+                    var position = 0;
+                    $(this).find('tbody > tr').each(function () {
+                        $(this).find('input[name*="position"]').val(position);
+
+                        position += 1;
+                    });
+                }
+            });
+        });
+    }
+    $(document).ready(sortableImages).on('dialog-update', sortableImages);
+
+    $(document).on('change', '.sb-article-images-edit :checkbox[name*="delete"]', function () {
+        $(this).closest('tr').toggleClass('remove', this.checked);
+    });
 
 }(jQuery, STUDIP));

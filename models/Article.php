@@ -4,8 +4,10 @@ namespace SchwarzesBrett;
 use AccessDeniedException;
 use Config;
 use DBManager;
+use FileRef;
 use PDO;
 use SimpleORMap;
+use SimpleORMapCollection;
 use StudipCacheFactory;
 use StudipFormat;
 use StudipLog;
@@ -30,6 +32,7 @@ class Article extends SimpleORMap
             'class_name'  => 'SchwarzesBrett\\User',
             'foreign_key' => 'user_id',
         ];
+
         $config['additional_fields']['views'] = [
             'get' => function ($object) {
                 $query = "SELECT COUNT(*)
@@ -70,6 +73,24 @@ class Article extends SimpleORMap
                 return in_array($article->id, self::$watched[$user_id]);
             },
         ];
+
+        $config['additional_fields']['images'] = [
+            'get' => function (Article $article) {
+                return SimpleORMapCollection::createFromArray(
+                    ArticleImage::findByArtikel_id($article->id, 'ORDER BY position ASC')
+                );
+            },
+        ];
+
+        $config['registered_callbacks']['after_create'][] = function (Article $article) {
+            StudipLog::log('SB_ARTICLE_CREATED', $article->category->id, null, $article->titel);
+        };
+        $config['registered_callbacks']['after_delete'][] = function (Article $article) {
+            ArticleImage::deleteBySQL('artikel_id = ?', [$article->id]);
+            Watchlist::deleteBySQL('artikel_id = ?', [$article->id]);
+
+            StudipLog::log('SB_ARTICLE_DELETED', $article->category->id, null, $article->titel);
+        };
 
         $config['default_values']['duration'] = Config::Get()->BULLETIN_BOARD_DURATION;
 
@@ -275,21 +296,25 @@ class Article extends SimpleORMap
         return $duplicates;
     }
 
-    public function store()
+    public function addImage(FileRef $ref, $position = null)
     {
-        if ($this->isNew()) {
-            StudipLog::log('SB_ARTICLE_CREATED', $this->category->id, null, $this->titel);
-        }
+        $thru = new ArticleImage();
+        $thru->artikel_id = $this->id;
+        $thru->image_id   = $ref->id;
+        $thru->position   = $position;
+        $thru->store();
 
-        return parent::store();
+        return $thru;
     }
 
-    public function delete()
+    public function removeImage(FileRef $ref)
     {
-        Watchlist::deleteBySQL('artikel_id = ?', [$this->id]);
-        StudipLog::log('SB_ARTICLE_DELETED', $this->category->id, null, $this->titel);
+        $thru = ArticleImage::deleteBySQL(
+            'artikel_id = ? AND image_id = ?',
+            [$this->id, $ref->id]
+        );
 
-        return parent::delete();
+        ArticleImage::gc($this->id);
     }
 
     public static function search($needle)

@@ -1,6 +1,36 @@
 <article class="sb-article">
-    <header>
-        <h2 class="hide-in-dialog"><?= htmlReady($article->titel) ?></h2>
+    <section>
+        <div class="sb-content">
+        <? if ($article->category->terms && $article->category->display_terms_in_article): ?>
+            <div class="category-disclaimer">
+                <?= formatReady($article->category->terms) ?>
+            </div>
+        <? endif; ?>
+
+            <?= formatReady($article->beschreibung) ?>
+
+            <?= OpenGraph::extract($article->beschreibung)->render(true) ?>
+        </div>
+
+    <? if (count($article->images) > 0): ?>
+        <div class="sb-article-images">
+            <strong><?= sprintf(ngettext(
+                '%u Bild',
+                '%u Bilder',
+                count($article->images)
+            ), count($article->images)) ?></strong>
+            <ul>
+            <? foreach ($article->images as $image): ?>
+                <li>
+                    <?= $image->thumbnail->getImageTag(true) ?>
+                </li>
+            <? endforeach; ?>
+            </ul>
+        </div>
+    <? endif; ?>
+    </section>
+
+    <footer class="meta">
         <address>
             <a href="<?= URLHelper::getLink('dispatch.php/profile', ['username' => $article->user->username]) ?>">
                 <?= Avatar::getAvatar($article->user_id)->getImageTag(Avatar::SMALL) ?>
@@ -18,20 +48,7 @@
         <span>
             <?= sprintf($_('%u mal gesehen'), $article->views) ?>
         </span>
-    </header>
-
-    <section>
-    <? if ($article->category->terms && $article->category->display_terms_in_article): ?>
-        <span></span>
-        <div class="category-disclaimer">
-            <?= formatReady($article->category->terms) ?>
-        </div>
-    <? endif; ?>
-
-        <?= formatReady($article->beschreibung) ?>
-
-        <?= OpenGraph::extract($article->beschreibung)->render(true) ?>
-    </section>
+    </footer>
 
     <footer class="button-group" data-dialog-button>
     <? if ($article->user->id !== $GLOBALS['user']->id): ?>

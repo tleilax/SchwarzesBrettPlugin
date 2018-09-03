@@ -38,6 +38,7 @@ class Cronjob extends GlobalCronjob
         // Do big garbage collection with a chance of 5%
         if (mt_rand() / PHP_INT_MAX >= 0.95) {
             Visit::gc();
+            Thumbnail::gc();
         }
     }
 }

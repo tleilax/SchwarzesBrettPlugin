@@ -26,7 +26,7 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
             $options = $this->getOptions();
 
             foreach ($options as $key => $option) {
-                if (in_array($option['type'], words('number checkbox'))) {
+                if (in_array($option['type'], ['number', 'checkbox'])) {
                     $value = Request::int($option['key']);
                 } else {
                     $value = Request::get($option['key']);
@@ -102,6 +102,11 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
         ];
         $options['BULLETIN_BOARD_MEDIA_PROXY_CACHED'] = [
             'key'  => 'cacheMediaProxy',
+            'type' => 'checkbox',
+        ];
+
+        $options['BULLETIN_BOARD_ALLOW_FILE_UPLOADS'] = [
+            'key'  => 'allowFileUploads',
             'type' => 'checkbox',
         ];
 

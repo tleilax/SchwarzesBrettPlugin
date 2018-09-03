@@ -21,10 +21,12 @@
  */
 
 use SchwarzesBrett\Article;
+use SchwarzesBrett\ArticleImage;
 use SchwarzesBrett\Blacklist;
 use SchwarzesBrett\Category;
 use SchwarzesBrett\OpenGraphURL;
 use SchwarzesBrett\Plugin;
+use SchwarzesBrett\Thumbnail;
 use SchwarzesBrett\User;
 use SchwarzesBrett\Visit;
 use SchwarzesBrett\Watchlist;
@@ -43,9 +45,9 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         //menu nur anzeigen, wenn eingeloggt
         if ($GLOBALS['perm']->have_perm('user')) {
             $this->buildMenu();
-
-            NotificationCenter::addObserver($this, 'onDelete', 'UserDidDelete');
         }
+
+        Thumbnail::setPlugin($this);
     }
 
     protected function buildMenu()
@@ -121,8 +123,19 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
 
+        if (StudipVersion::olderThan('4.2')) {
+            PageLayout::addSqueezePackage('lightbox');
+        }
+
         if (Config::get()->BULLETIN_BOARD_MEDIA_PROXY) {
             OpenGraphURL::setProxyURL(PluginEngine::getURL($this, [], 'proxy', true));
+        }
+
+        if (Config::get()->BULLETIN_BOARD_ALLOW_FILE_UPLOADS) {
+            PageLayout::addScript($this->getPluginURL() . '/assets/sb-upload.js');
+
+            $this->addStylesheet('assets/lazy-load.less');
+            PageLayout::addScript($this->getPluginURL() . '/assets/lazy-load.js');
         }
 
         if ($unconsumed_path === 'show/all') {
@@ -146,12 +159,17 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         return PluginEngine::getURL($this, $params, join('/', $args));
     }
 
-    public function onDelete($user)
+    public function onUserDidDelete($event, $user)
     {
         Article::deleteBySQL("user_id = ?", [$user->id]);
         Blacklist::deleteBySQL("user_id = ?", [$user->id]);
         Visit::deleteBySQL("user_id = ?", [$user->id]);
         Watchlist::deleteBySQL("user_id = ?", [$user->id]);
+    }
+
+    public function onFileRefDidDelete($event, FileRef $fileref)
+    {
+        ArticleImage::deleteBySQL('image_id = ?', [$fileref->id]);
     }
 
     public static function onEnable($plugin_id)

@@ -7,6 +7,8 @@ class ArticleController extends SchwarzesBrett\Controller
 {
     public function view_action($id)
     {
+        Navigation::activateItem('/schwarzesbrettplugin/show');
+
         $needle = Request::get('needle');
         if ($needle) {
             Article::markup($needle);
@@ -82,7 +84,8 @@ class ArticleController extends SchwarzesBrett\Controller
 
     public function store_action($id = null)
     {
-        CSRFProtection::verifyUnsafeRequest();
+//        var_dump($_POST, $_FILES);die;
+//        CSRFProtection::verifyUnsafeRequest();
 
         if (Request::isPost() && $this->checkTicket()) {
             $article = $id
@@ -125,6 +128,70 @@ class ArticleController extends SchwarzesBrett\Controller
                          ->setBodyText($mailbody)
                          ->setBodyHtml(formatReady($mailbody))
                          ->send();
+                }
+            }
+
+            if ($this->hasUploadedImages()) {
+                $errors = [];
+
+                foreach ($this->getUploadedImages() as $image) {
+                    if (isset($image['id'])) {
+                        $ref = FileRef::find($image['id']);
+                        $ref->description = $image['title'] ?: '';
+                        $ref->store();
+
+                        $thru = $article->addImage($ref, $image['position']);
+                    } else {
+                        $folder = $this->getFolder();
+                        $error  = $folder->validateUpload($image, $GLOBALS['user']->id);
+                        if ($error) {
+                            $errors[] = $error;
+                            continue;
+                        }
+
+                        $ref = $folder->createFile($image);
+                        if ($ref) {
+                            $article->addImage($ref);
+                        } else {
+                            $errors[] = sprintf(
+                                $this->_('Datei %s konnte nicht erstellt werden'),
+                                $file['name']
+                            );
+                        }
+
+                    }
+                }
+
+                if ($errors) {
+                    PageLayout::postError(
+                        $this->_('Beim Hochladen der Dateien sind Fehler aufgetreten:'),
+                        $errors
+                    );
+                }
+            }
+
+            if (isset($_POST['img'])) {
+                $remove = [];
+                foreach ($_POST['img'] as $id => $data) {
+                    $image = $article->images->findOneBy('image_id', $id);
+                    if (!$image) {
+                        continue;
+                    }
+
+                    if (!empty($data['delete'])) {
+                        $remove[] = $image->image;
+                        continue;
+                    }
+
+                    $image->position = (int) $data['position'];
+                    $image->store();
+
+                    $image->image->description = trim($data['title']);
+                    $image->image->store();
+                }
+
+                foreach ($remove as $img) {
+                    $article->removeImage($img);
                 }
             }
 
@@ -218,5 +285,45 @@ class ArticleController extends SchwarzesBrett\Controller
         PageLayout::postMessage($message);
 
         $this->redirect('admin/settings');
+    }
+
+    private function hasUploadedImages()
+    {
+        if (!empty($_POST['new'])) {
+            return true;
+        }
+
+        return !empty($_FILES['images']['name'])
+            && is_array($_FILES['images']['name'])
+            && count(array_filter($_FILES['images']['name'])) > 0;
+    }
+
+    private function getUploadedImages()
+    {
+        if (!$this->hasUploadedImages()) {
+            return [];
+        }
+
+        if (!empty($_FILES['images']['name']) && count(array_filter($_FILES['images']['name'])) > 0) {
+            $count  = count($_FILES['images']['name']);
+            $fields = ['name', 'type', 'tmp_name', 'error', 'size'];
+            for ($i = 0; $i < $count; $i += 1) {
+                $result = array_combine($fields, array_map(function ($field) use ($i) {
+                    return $_FILES['images'][$field][$i];
+                }, $fields));
+                $result['tmp_path'] = $result['tmp_name'];
+
+                yield $result;
+            }
+        }
+
+        foreach ($_POST['new'] as $id => $data) {
+            if (!empty($data['delete'])) {
+                continue;
+            }
+
+            $data['id'] = $id;
+            yield $data;
+        }
     }
 }

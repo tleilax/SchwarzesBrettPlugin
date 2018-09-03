@@ -73,19 +73,20 @@
 .sb-article {
     @info-size: 2em;
 
+    min-height: 100%;
     position: relative;
 
     .flex();
-    .flex-direction-row();
-    .flex-wrap(wrap);
+    .flex-direction-column();
+    .flex-wrap(nowrap);
 
     section,
     footer {
         .box-sizing(border-box);
-        .flex-item(1, 0, 100%);
     }
 
     section {
+        .flex-item(1);
         order: 1;
 
         .flex();
@@ -111,6 +112,7 @@
         }
     }
     footer.meta {
+        .flex-item(0);
         order: 2;
 
         .flex();

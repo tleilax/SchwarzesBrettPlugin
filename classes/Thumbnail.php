@@ -11,7 +11,7 @@ class Thumbnail
 {
     const MAX_SIZE = 128;
     const ID_PREFIX = 'sb-';
-    const MAX_LIFETIME = 7 * 24 * 60 * 60; // One week
+    const MAX_LIFETIME = 604800; // 7 * 24 * 60 * 60; // One week
 
     private static $plugin = null;
 

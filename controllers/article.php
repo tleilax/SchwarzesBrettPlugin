@@ -304,6 +304,8 @@ class ArticleController extends SchwarzesBrett\Controller
             return [];
         }
 
+        $images = [];
+
         if (!empty($_FILES['images']['name']) && count(array_filter($_FILES['images']['name'])) > 0) {
             $count  = count($_FILES['images']['name']);
             $fields = ['name', 'type', 'tmp_name', 'error', 'size'];
@@ -313,7 +315,7 @@ class ArticleController extends SchwarzesBrett\Controller
                 }, $fields));
                 $result['tmp_path'] = $result['tmp_name'];
 
-                yield $result;
+                $images[] = $result;
             }
         }
 
@@ -323,7 +325,10 @@ class ArticleController extends SchwarzesBrett\Controller
             }
 
             $data['id'] = $id;
-            yield $data;
+
+            $images[] = $data;
         }
+
+        return $images;
     }
 }

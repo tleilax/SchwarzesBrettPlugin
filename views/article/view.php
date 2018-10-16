@@ -54,11 +54,7 @@
     <? if ($article->user->id !== $GLOBALS['user']->id): ?>
         <?= Studip\LinkButton::create(
             $_('Antworten'),
-            URLHelper::getURL('dispatch.php/messages/write', [
-                'rec_uname'       => $article->user->username,
-                'default_subject' => "Re: {$article->titel}",
-                'default_body'    => "[quote]{$article->beschreibung}[/quote]",
-            ]),
+            $controller->url_for("article/reply/{$article->id}"),
             ['data-dialog' => '']
         ) ?>
         <? if ($article->watched): ?>

@@ -269,6 +269,23 @@ class ArticleController extends SchwarzesBrett\Controller
         ));
     }
 
+    public function reply_action($article_id)
+    {
+        $article = Article::find($article_id);
+        $quoted  = quotes_encode(
+            mb_strlen($article->beschreibung) > 1003
+                ? mb_substr($article->beschreibung, 0, 1000) . '...' :
+                $article->beschreibung,
+            $article->user->getFullname()
+        );
+
+        $this->redirect(URLHelper::getURL('dispatch.php/messages/write', [
+            'rec_uname'       => $article->user->username,
+            'default_subject' => "Re: {$article->titel}",
+            'default_body'    => $quoted,
+        ]));
+    }
+
     public function purge_action()
     {
         $GLOBALS['perm']->check('root');

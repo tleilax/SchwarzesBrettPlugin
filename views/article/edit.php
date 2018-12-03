@@ -55,15 +55,24 @@ $expired_test = function ($duration, $now = null) {
             <?= $_('Laufzeit') ?>
             <small><?= $_('Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht.') ?></small>
 
-            <select name="duration">
+            <select name="duration" id="duration">
             <? for ($i = 1; $i <= Config::Get()->BULLETIN_BOARD_DURATION; $i += 1): ?>
                 <option value="<?= $i ?>" <? if (($article->duration ?: Config::Get()->BULLETIN_BOARD_DURATION) == $i) echo 'selected'; ?>
-                        <? if ($expired_test($i, $article->mkdate)) echo 'disabled'; ?>>
+                        <? if ($expired_test($i, $article->mkdate)) echo 'disabled class="activatable"'; ?>>
                     <?= $format_duration($i, $article->mkdate) ?>
                 </option>
             <? endfor; ?>
             </select>
         </label>
+
+    <? if (!$article->isNew() && $GLOBALS['perm']->have_perm('root')): ?>
+        <input type="hidden" name="reset" value="0">
+        <label>
+            <input type="checkbox" name="reset" value="1" data-activates="#duration option.activatable">
+            <?= $_('Anzeige verlängern') ?>
+            <?= tooltipIcon($_('Hierdurch wird das Erstellungsdatum der Anzeige auf den aktuellen Zeitpunkt gesetzt und die Laufzeit zurückgesetzt')) ?>
+        </label>
+    <? endif; ?>
 
         <input type="hidden" name="visible" value="0">
         <label>

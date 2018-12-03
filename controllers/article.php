@@ -104,6 +104,10 @@ class ArticleController extends SchwarzesBrett\Controller
             $article->expires      = strtotime("+{$duration} days 23:59:59", $article->mkdate ?: time());
             $article->store();
 
+            if ($GLOBALS['perm']->have_perm('root') && Request::int('reset')) {
+                $article->resetCreation();
+            }
+
             $config_words = Config::get()->BULLETIN_BOARD_BAD_WORDS;
             $needles    = array_filter(explode(',', $config_words));
             if (!empty($needles)) {

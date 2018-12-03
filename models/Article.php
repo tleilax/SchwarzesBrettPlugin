@@ -252,6 +252,16 @@ class Article extends SimpleORMap
         $visit->store();
     }
 
+    public function resetCreation()
+    {
+        $query = "UPDATE `sb_artikel`
+                  SET `mkdate` = UNIX_TIMESTAMP(),
+                      `chdate` = UNIX_TIMESTAMP(),
+                      `expires` = UNIX_TIMESTAMP(NOW() + INTERVAL `duration` DAY)
+                  WHERE `artikel_id` = ?";
+        DBManager::get()->execute($query, [$this->id]);
+    }
+
     public function findDuplicates()
     {
         $query = "SELECT DISTINCT artikel_ids FROM (

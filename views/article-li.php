@@ -1,6 +1,5 @@
-<li data-article-id="<?= htmlReady($article->id) ?>" <? if ($article->watched) echo 'class="watched"'; ?>>
-    <a href="<?= $controller->url_for("article/view/{$article->id}") ?>"
-         class="article <?= $article->new ? 'unseen' : 'seen' ?>" data-dialog>
+<li data-article-id="<?= htmlReady($article->id) ?>" class="article <?= $article->new ? 'unseen' : 'seen' ?> <? if ($article->watched) echo 'watched'; ?>">
+    <a href="<?= $controller->url_for("article/view/{$article->id}") ?>" data-dialog>
         <?= htmlReady($article->titel) ?>
     </a>
     <a href="<?= $controller->url_for("category/view/{$article->category->id}") ?>">

@@ -162,23 +162,19 @@
     @border-radius: ceil((@border-width / 2));
     @padding: 0.5ex;
 
+    padding-left: @padding;
+
     &.unseen {
         font-weight: bold;
-        li & {
-            border-left: @border-width solid @red;
-            border-top-left-radius: @border-radius;
-            border-bottom-left-radius: @border-radius;
-        }
+        border-left: @border-width solid @red;
+        border-top-left-radius: @border-radius;
+        border-bottom-left-radius: @border-radius;
+
         td & {
             .icon('after', 'star', 'attention', 8);
+            border-left: 0;
+            padding-left: 0;
         }
-    }
-    li & {
-        padding-left: @padding;
-    }
-    li &.seen {
-        // font-weight: lighter;
-        // margin-left: @border-width;
     }
 }
 
@@ -514,5 +510,17 @@ tbody.sb-articles {
     .ui-dialog .sb-article footer.meta {
         position: relative;
         bottom: auto;
+    }
+}
+
+.responsive-display {
+    .schwarzesbrett-widget {
+        .sb-articles > li {
+            .flex-direction-column();
+
+            a:last-child {
+                font-weight: normal;
+            }
+        }
     }
 }

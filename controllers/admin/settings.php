@@ -26,7 +26,12 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
             $options = $this->getOptions();
 
             foreach ($options as $key => $option) {
-                if (in_array($option['type'], ['number', 'checkbox'])) {
+                if ($option['type'] === 'i18n') {
+                    $i18n = Request::i18n($key);
+                    SchwarzesBrett\Rules::store($i18n);
+
+                    $value = $i18n->original();
+                } elseif (in_array($option['type'], ['number', 'checkbox'])) {
                     $value = Request::int($option['key']);
                 } else {
                     $value = Request::get($option['key']);
@@ -46,6 +51,11 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
         static $config = null;
         if ($config === null) {
             $config = Config::getInstance();
+        }
+
+        if ($key === 'BULLETIN_BOARD_RULES' && $type === 'value') {
+            $rules = new SchwarzesBrett\Rules($config[$key]);
+            return $rules->getContent();
         }
 
         if ($type === 'value') {
@@ -112,7 +122,7 @@ class Admin_SettingsController extends SchwarzesBrett\Controller
 
         $options['BULLETIN_BOARD_RULES'] = [
             'key'  => 'rules',
-            'type' => 'textarea',
+            'type' => 'i18n',
         ];
 
         foreach ($options as $key => $data) {

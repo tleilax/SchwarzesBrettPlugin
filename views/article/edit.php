@@ -31,7 +31,7 @@ $expired_test = function ($duration, $now = null) {
             <? endforeach; ?>
             </select>
         <? foreach ($categories as $category): ?>
-            <? if ($category->disclaimer): ?>
+            <? if ((string) $category->disclaimer): ?>
                 <div class="category-disclaimer" id="disclaimer-<?= $category->id ?>"
                      <? if ($category->id !== $article->thema_id) echo 'style="display: none;"'; ?>>
                     <?= formatReady($category->disclaimer) ?>

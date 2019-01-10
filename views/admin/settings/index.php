@@ -33,6 +33,16 @@
                     <textarea name="<?= htmlReady($option['key']) ?>" class="add_toolbar"><?= htmlReady($option['value']) ?></textarea>
                 </td>
             </tr>
+        <? elseif ($option['type'] === 'i18n'): ?>
+            <tr>
+                <td colspan="2">
+                    <label for="option-<?= md5($key) ?>">
+                        <?= htmlReady($option['description']) ?>
+                    </label><br>
+
+                    <?= I18N::textarea($key, $option['value'], ['class' => 'add_toolbar']) ?>
+                </td>
+            </tr>
         <? else: ?>
             <tr>
                 <td>

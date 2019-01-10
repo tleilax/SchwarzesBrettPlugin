@@ -118,8 +118,8 @@ class CategoryController extends SchwarzesBrett\Controller
             $category->perm         = Request::option('thema_perm');
             $category->visible      = Request::int('visible', 0);
             $category->publishable  = Request::int('publishable', 0);
-            $category->terms        = trim(Request::get('terms'));
-            $category->disclaimer   = trim(Request::get('disclaimer'));
+            $category->terms        = Request::i18n('terms');
+            $category->disclaimer   = Request::i18n('disclaimer');
             $category->user_id      = $category->user_id ?: $GLOBALS['user']->id;
             $category->display_terms_in_article =
                 Request::int('display_terms_in_article');

@@ -2,7 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the SchwarzesBrettWidget package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
@@ -27,7 +27,7 @@ msgid "Einträge für Themen-RSS werden angelegt"
 msgstr "Entries for topic RSS have been created"
 
 msgid "Schwarzes Brett"
-msgstr "Notice board:"
+msgstr "Notice board"
 
 msgid "Übersicht"
 msgstr "Overview"

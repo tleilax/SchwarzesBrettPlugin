@@ -1,7 +1,7 @@
 <? if ($GLOBALS['user']->perms === 'root'): ?>
 <form action="<?= $controller->url_for("category/bulk/{$category->id}") ?>" method="post">
 <? endif; ?>
-<? if ($category->terms): ?>
+<? if ((string) $category->terms): ?>
     <div class="category-disclaimer">
         <?= formatReady($category->terms) ?>
     </div>

@@ -40,14 +40,20 @@
             <?= $_('Kurzhinweis') ?>
             <?= tooltipIcon($_('Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese Kategorie ausgewählt wird.')) ?>
 
-            <textarea name="disclaimer" class="add_toolbar wysiwyg" style="min-height: 4em"><?= htmlReady($category->disclaimer) ?></textarea>
+            <?= I18N::textarea('disclaimer', $category->disclaimer, [
+                'class' => 'add_toolbar wysiwyg',
+                'id'    => 'disclaimer',
+            ]) ?>
         </label>
 
         <label>
             <?= $_('Regeln') ?>
             <?= tooltipIcon($_('Die Regeln werden oberhalb einer Kategorie in deren Übersicht angezeigt.')) ?>
 
-            <textarea class="add_toolbar wysiwyg" name="terms" id="terms"><?= htmlReady($category->terms) ?></textarea>
+            <?= I18N::textarea('terms', $category->terms, [
+                'class' => 'add_toolbar wysiwyg',
+                'id'    => 'terms',
+                ]) ?>
         </label>
 
         <input type="hidden" name="display_terms_in_article" value="0">

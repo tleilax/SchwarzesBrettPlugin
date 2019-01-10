@@ -15,4 +15,4 @@
 </ul>
 <? endif; ?>
 
-<?= formatReady(Config::get()->BULLETIN_BOARD_RULES) ?>
+<?= formatReady(SchwarzesBrett\Rules::get(Config::get()->BULLETIN_BOARD_RULES)) ?>

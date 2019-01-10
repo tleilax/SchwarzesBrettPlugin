@@ -167,16 +167,16 @@ class RouteMap extends GlobalRouteMap
             }
 
             if ($value === '#bool') {
-                $array[$key] = (bool)$array[$key];
+                $array[$key] = (bool) $array[$key];
             } elseif ($value === '#int') {
-                $array[$key] = (int)$array[$key];
+                $array[$key] = (int) $array[$key];
             } elseif ($value === '#date') {
                 $array[$key] = date('c', $array[$key]);
             } elseif ($value === '#formatReady') {
                 $array[$target ?: $key] = formatReady($array[$key]);
             } elseif (!$target || $target === $type) {
                 if ($value !== false) {
-                    $array[$value] = $array[$key];
+                    $array[$value] = (string) $array[$key];
                 }
                 unset($array[$key]);
             }

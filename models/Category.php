@@ -30,6 +30,8 @@ class Category extends SimpleORMap
             }
         ];
 
+        $config['i18n_fields']['titel'] = true;
+        $config['i18n_fields']['beschreibung'] = true;
         $config['i18n_fields']['terms'] = true;
         $config['i18n_fields']['disclaimer'] = true;
 

@@ -113,8 +113,8 @@ class CategoryController extends SchwarzesBrett\Controller
                       ? Category::find($id)
                       : new Category();
 
-            $category->titel        = trim(Request::get('titel'));
-            $category->beschreibung = trim(Request::get('beschreibung'));
+            $category->titel        = Request::i18n('titel');
+            $category->beschreibung = Request::i18n('beschreibung');
             $category->perm         = Request::option('thema_perm');
             $category->visible      = Request::int('visible', 0);
             $category->publishable  = Request::int('publishable', 0);

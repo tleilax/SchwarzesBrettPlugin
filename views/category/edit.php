@@ -13,13 +13,12 @@
 
         <label>
             <?= $_('Titel') ?>
-            <input required type="text" name="titel"
-                   value="<?= htmlReady($category->titel) ?>">
+            <?= I18n::input('titel', $category->titel, ['required' => '']) ?>
         </label>
 
         <label>
             <?= $_('Beschreibung') ?>
-            <textarea required name="beschreibung" id="description"><?= htmlReady($category->beschreibung) ?></textarea>
+            <?= I18n::textarea('beschreibung', $category->beschreibung) ?>
         </label>
 
         <label>

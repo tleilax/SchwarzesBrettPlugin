@@ -373,7 +373,7 @@ class Article extends SimpleORMap
             return sprintf('<span class="sb-highlighted">%s</span>', $matches[0]);
         };
 
-        $needle = preg_quote($needle);
+        $needle = preg_quote($needle, '/');
         $needle = preg_replace_callback('/[a-z]/i', function ($match) {
             return sprintf('[%s%s]', strtolower($match[0]), strtoupper($match[0]));
         }, $needle);

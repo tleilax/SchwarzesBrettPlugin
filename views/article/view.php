@@ -3,7 +3,7 @@
         <div class="sb-content">
         <? if ($article->category->terms && $article->category->display_terms_in_article): ?>
             <div class="category-disclaimer">
-                <?= formatReady($article->category->terms) ?>
+                <?= formatReady((string) $article->category->terms) ?>
             </div>
         <? endif; ?>
 

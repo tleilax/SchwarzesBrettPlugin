@@ -81,4 +81,13 @@ abstract class Plugin extends StudIPPlugin
 
         return $result;
     }
+
+    protected function getPluginVersion()
+    {
+        static $manifest = null;
+        if ($manifest === null) {
+            $manifest = $this->getMetadata();
+        }
+        return $manifest['version'];
+    }
 }

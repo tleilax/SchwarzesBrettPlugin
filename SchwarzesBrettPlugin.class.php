@@ -121,7 +121,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         PageLayout::setTitle($this->_('Schwarzes Brett'));
 
         $this->addStylesheet('assets/schwarzesbrett.less');
-        PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
+        PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js?v=' . $this->getPluginVersion());
 
         if (StudipVersion::olderThan('4.1')) {
             PageLayout::addSqueezePackage('lightbox');
@@ -132,10 +132,10 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         }
 
         if (Config::get()->BULLETIN_BOARD_ALLOW_FILE_UPLOADS) {
-            PageLayout::addScript($this->getPluginURL() . '/assets/sb-upload.js');
+            PageLayout::addScript($this->getPluginURL() . '/assets/sb-upload.jsv=' . $this->getPluginVersion());
 
             $this->addStylesheet('assets/lazy-load.less');
-            PageLayout::addScript($this->getPluginURL() . '/assets/lazy-load.js');
+            PageLayout::addScript($this->getPluginURL() . '/assets/lazy-load.jsv=' . $this->getPluginVersion());
         }
 
         if ($unconsumed_path === 'show/all') {

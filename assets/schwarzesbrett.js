@@ -22,7 +22,7 @@
             $('#layout_content').prepend(messages.join(''));
             messages = [];
         }
-    }).on('click', 'a.article.unseen', function () {
+    }).on('click', '.article.unseen', function () {
         $(this).toggleClass('unseen seen');
     }).on('change', 'select.has-disclaimer', function () {
         var id = $(this).val();

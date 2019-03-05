@@ -340,6 +340,10 @@ class ArticleController extends SchwarzesBrett\Controller
             }
         }
 
+        if (!isset($_POST['new'])) {
+            return $images;
+        }
+
         foreach ($_POST['new'] as $id => $data) {
             if (!empty($data['delete'])) {
                 continue;

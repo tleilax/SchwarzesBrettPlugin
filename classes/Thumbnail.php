@@ -144,7 +144,7 @@ class Thumbnail
                 return $blob;
             }
 
-            $image = imagecreatefromstring($blob);
+            $image = @imagecreatefromstring($blob);
             if ($image === false) {
                 return $blob;
             }

@@ -146,7 +146,7 @@ class Thumbnail
 
             $image = imagecreatefromstring($blob);
             if ($image === false) {
-                throw new Exception('Cannot process data');
+                return $blob;
             }
 
             $original_width  = imagesx($image);

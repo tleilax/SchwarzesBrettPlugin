@@ -46,7 +46,7 @@ class Thumbnail
 
         foreach ($iterator as $item) {
             if ($item->getMTime() < time() - self::MAX_LIFETIME) {
-                unlink($item->getPathname());
+                @unlink($item->getPathname());
             }
         }
     }

@@ -36,6 +36,10 @@ class Thumbnail
 
     public static function gc()
     {
+        if (mt_rand(0, 100) <= 95) {
+            return;
+        }
+
         $pattern = sprintf(
             '%s/%s*.jpg',
             self::getStoragePath(),
@@ -45,8 +49,11 @@ class Thumbnail
         $iterator = new GlobIterator($pattern);
 
         foreach ($iterator as $item) {
-            if ($item->getMTime() < time() - self::MAX_LIFETIME) {
-                @unlink($item->getPathname());
+            try {
+                if ($item->getMTime() < time() - self::MAX_LIFETIME) {
+                    @unlink($item->getPathname());
+                }
+            } catch (Exception $e) {
             }
         }
     }

@@ -81,18 +81,24 @@ class FilesController extends SchwarzesBrett\Controller
             return;
         }
 
-        $thumbnail = SchwarzesBrett\Thumbnail::create($ref);
-        $thumbnail->setWidth($width);
-        $thumbnail->setHeight($height);
+        try {
+            $thumbnail = SchwarzesBrett\Thumbnail::create($ref);
+            $thumbnail->setWidth($width);
+            $thumbnail->setHeight($height);
+            $content = $thumbnail->render($width, $height);
 
-        $this->set_content_type('image/jpeg');
-        $this->addHeader('Content-Disposition', 'inline; filename="thumbnail.jpg"');
-        $this->addHeader('Expires', $this->gmdate('+1 year'));
-        $this->addHeader('Last-Modified', $this->gmdate());
-        $this->addHeader('Cache-Control', 'public,max-age=' . 365 * 24 * 60 * 60);
-        $this->addHeader('Pragma', 'public');
+            $this->set_content_type('image/jpeg');
+            $this->addHeader('Content-Disposition', 'inline; filename="thumbnail.jpg"');
+            $this->addHeader('Expires', $this->gmdate('+1 year'));
+            $this->addHeader('Last-Modified', $this->gmdate());
+            $this->addHeader('Cache-Control', 'public,max-age=' . 365 * 24 * 60 * 60);
+            $this->addHeader('Pragma', 'public');
 
-        $this->render_text($thumbnail->render($width, $height));
+            $this->render_text($content);
+        } catch (Exception $e) {
+            $this->set_status(404);
+            $this->render_nothing();
+        }
     }
 
     protected function gmdate($offset = null)

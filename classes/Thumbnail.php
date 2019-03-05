@@ -144,7 +144,11 @@ class Thumbnail
                 return $blob;
             }
 
-            $image   = imagecreatefromstring($blob);
+            $image = imagecreatefromstring($blob);
+            if ($image === false) {
+                throw new Exception('Cannot process data');
+            }
+
             $original_width  = imagesx($image);
             $original_height = imagesy($image);
 

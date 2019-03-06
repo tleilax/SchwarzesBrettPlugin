@@ -96,7 +96,7 @@ class Thumbnail
         if ($this->width === null || $this->height === null) {
             if ($this->image_size === null) {
                 $this->image_size = getimagesize($this->ref->file->getPath());
-                if ($this->image_size === null) {
+                if ($this->image_size === false) {
                     throw new Exception('Could not determine image size');
                 }
             }

@@ -15,7 +15,7 @@ class SchwarzesBrettWidget extends Plugin implements PortalPlugin
         $this->addStylesheet('assets/schwarzesbrett.less');
         PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js');
 
-        if (StudipVersion::olderThan('4.2')) {
+        if (StudipVersion::olderThan('4.1')) {
             PageLayout::addSqueezePackage('lightbox');
         }
 

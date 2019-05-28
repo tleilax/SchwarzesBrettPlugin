@@ -80,17 +80,22 @@ class ArticleController extends SchwarzesBrett\Controller
         $this->id         = $id;
         $this->article    = Article::find($id);
         $this->categories = $this->getCategories();
+
+        if (!$this->article->mayEdit()) {
+            throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht bearbeiten.'));
+        }
     }
 
     public function store_action($id = null)
     {
-//        var_dump($_POST, $_FILES);die;
-//        CSRFProtection::verifyUnsafeRequest();
-
         if (Request::isPost() && $this->checkTicket()) {
             $article = $id
                      ? Article::find($id)
                      : new Article();
+
+            if (!$article->mayEdit()) {
+                throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht bearbeiten.'));
+            }
 
             $duration = max(1, min(Config::get()->BULLETIN_BOARD_DURATION, Request::int('duration')));
 
@@ -221,10 +226,9 @@ class ArticleController extends SchwarzesBrett\Controller
     public function delete_action($id)
     {
         $article = Article::find($id);
-        if (!$this->is_admin && $article->user_id !== $GLOBALS['user']->id) {
+        if (!$article->mayEdit()) {
             throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht löschen.'));
         }
-
         $article->delete();
 
         PageLayout::postSuccess($this->_('Die Anzeige wurde gelöscht.'));

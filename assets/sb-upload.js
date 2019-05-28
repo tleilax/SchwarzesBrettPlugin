@@ -65,8 +65,6 @@
                 return xhr;
             }
         }).done(function (response) {
-            console.log(response);
-
             item.row.empty().append([
                 '<td><input type="hidden" name="new[' + response.id + '][position]"></td>',
                 '<td><input type="text" name="new[' + response.id + '][title]"></td>',

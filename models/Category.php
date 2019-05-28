@@ -10,18 +10,18 @@ class Category extends SimpleORMap
     {
         $config['db_table'] = 'sb_themen';
         $config['has_many']['articles'] = [
-            'class_name' => 'SchwarzesBrett\\Article',
-            'assoc_func' => 'findValidByCategoryId',
+            'class_name'        => 'SchwarzesBrett\\Article',
+            'assoc_func'        => 'findValidByCategoryId',
             'assoc_foreign_key' => 'thema_id',
         ];
         $config['has_many']['visible_articles'] = [
-            'class_name' => 'SchwarzesBrett\\Article',
-            'assoc_func' => 'findVisibleByCategoryId',
+            'class_name'        => 'SchwarzesBrett\\Article',
+            'assoc_func'        => 'findVisibleByCategoryId',
             'assoc_foreign_key' => 'thema_id',
         ];
         $config['has_many']['new_articles'] = [
-            'class_name' => 'SchwarzesBrett\\Article',
-            'assoc_func' => 'findNewByCategoryId',
+            'class_name'        => 'SchwarzesBrett\\Article',
+            'assoc_func'        => 'findNewByCategoryId',
             'assoc_foreign_key' => 'thema_id',
         ];
         $config['additional_fields']['new'] = [
@@ -29,6 +29,9 @@ class Category extends SimpleORMap
                 return count($object->new_articles) > 0;
             }
         ];
+
+        $config['registered_callbacks']['before_store'][] = 'checkUserRights';
+        $config['registered_callbacks']['before_delete'][] = 'checkUserRights';
 
         $config['i18n_fields']['titel'] = true;
         $config['i18n_fields']['beschreibung'] = true;
@@ -49,5 +52,18 @@ class Category extends SimpleORMap
         $statement->bindValue(':user_id', $user_id ?: $GLOBALS['user']->id);
         $statement->bindValue(':category_id', $category_id);
         $statement->execute();
+    }
+
+    public function mayEdit($user_or_id = null)
+    {
+        return is_object($GLOBALS['perm'])
+            && $GLOBALS['perm']->have_perm('root');
+    }
+
+    public function checkUserRights()
+    {
+        if (!is_object($GLOBALS['perm']) || !$GLOBALS['perm']->have_perm('root')) {
+            throw new AccessDeniedException('You may not alter this category');
+        }
     }
 }

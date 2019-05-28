@@ -21,6 +21,9 @@ class Watchlist extends SimpleORMap
             'foreign_key' => 'artikel_id',
         ];
 
+        $config['registered_callbacks']['before_store'][] = 'checkUserRights';
+        $config['registered_callbacks']['before_delete'][] = 'checkUserRights';
+
         parent::configure($config);
     }
 
@@ -34,5 +37,15 @@ class Watchlist extends SimpleORMap
         $statement->execute();
 
         return $statement->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    public function checkUserRights()
+    {
+        if (!is_object($GLOBALS['perm'])
+            || !$GLOBALS['perm']->have_perm('root')
+            || $this->user_id !== $GLOBALS['user']->id)
+        {
+            throw new AccessDeniedException('You may not alter this watchlist');
+        }
     }
 }

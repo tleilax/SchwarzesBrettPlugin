@@ -30,6 +30,9 @@ class Category extends SimpleORMap
             }
         );
 
+        $config['registered_callbacks']['before_store'][] = 'checkUserRights';
+        $config['registered_callbacks']['before_delete'][] = 'checkUserRights';
+
         parent::configure($config);
     }
 
@@ -44,5 +47,18 @@ class Category extends SimpleORMap
         $statement->bindValue(':user_id', $user_id ?: $GLOBALS['user']->id);
         $statement->bindValue(':category_id', $category_id);
         $statement->execute();
+    }
+
+    public function mayEdit($user_or_id = null)
+    {
+        return is_object($GLOBALS['perm'])
+            && $GLOBALS['perm']->have_perm('root');
+    }
+
+    public function checkUserRights()
+    {
+        if (!is_object($GLOBALS['perm']) || !$GLOBALS['perm']->have_perm('root')) {
+            throw new AccessDeniedException('You may not alter this category');
+        }
     }
 }

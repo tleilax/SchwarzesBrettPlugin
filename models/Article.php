@@ -12,7 +12,7 @@ use StudipLog;
 class Article extends SimpleORMap
 {
     private static $watched = [];
-    
+
     public static function configure($config = [])
     {
         $config['db_table'] = 'sb_artikel';
@@ -69,6 +69,9 @@ class Article extends SimpleORMap
                 return in_array($article->id, self::$watched[$user_id]);
             },
         ];
+
+        $config['registered_callbacks']['before_store'][] = 'checkUserRights';
+        $config['registered_callbacks']['before_delete'][] = 'checkUserRights';
 
         $config['default_values']['duration'] = Config::Get()->BULLETIN_BOARD_DURATION;
 
@@ -316,6 +319,33 @@ class Article extends SimpleORMap
             StudipFormat::addStudipMarkup('sb-highlight', $needle, false, function ($markup, $matches, $contents) use ($replacer) {
                 return $replacer($matches);
             });
+        }
+    }
+
+    public function mayEdit($user_or_id = null)
+    {
+        if (is_object($GLOBALS['perm']) && $GLOBALS['perm']->have_perm('root')) {
+            return true;
+        }
+
+        if ($this->isNew()) {
+            return true;
+        }
+
+        if ($user_or_id === null) {
+            $user_or_id = $GLOBALS['user']->id;
+        }
+        if (is_object($user_or_id)) {
+            $user_or_id = $user_or_id->id;
+        }
+
+        return $this->user_id === $user_or_id;
+    }
+
+    public function checkUserRights()
+    {
+        if (!$this->mayEdit()) {
+            throw new AccessDeniedException('You may not alter this article');
         }
     }
 }

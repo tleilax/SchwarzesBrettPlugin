@@ -102,6 +102,10 @@ class CategoryController extends SchwarzesBrett\Controller
         PageLayout::setTitle($this->_('Thema bearbeiten'));
 
         $this->category = Category::find($id);
+
+        if (!$this->category->mayEdit()) {
+            throw new AccessDeniedException($this->_('Sie dürfen dieses Thema nicht bearbeiten.'));
+        }
     }
 
     public function store_action($id = null)
@@ -112,6 +116,10 @@ class CategoryController extends SchwarzesBrett\Controller
             $category = $id
                       ? Category::find($id)
                       : new Category();
+
+            if (!$category->mayEdit()) {
+                throw new AccessDeniedException($this->_('Sie dürfen dieses Thema nicht bearbeiten.'));
+            }
 
             $category->titel        = trim(Request::get('titel'));
             $category->beschreibung = trim(Request::get('beschreibung'));
@@ -141,8 +149,15 @@ class CategoryController extends SchwarzesBrett\Controller
         $count = count($category->articles);
         $category->delete();
 
-        $message = sprintf($this->_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelöscht.'),
-                           $title, $count);
+        if (!$category->mayEdit()) {
+            throw new AccessDeniedException($this->_('Sie dürfen dieses Thema nicht löschen.'));
+        }
+
+        $message = sprintf(
+            $this->_('Das Thema "%s" und alle %u darin enthaltenen Anzeigen wurde gelöscht.'),
+            $title,
+            $count
+        );
         PageLayout::postMessage(MessageBox::success($message));
 
         $this->redirect('category/list');

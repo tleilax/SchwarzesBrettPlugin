@@ -13,6 +13,16 @@ class Blacklist extends SimpleORMap
             'foreign_key' => 'user_id',
         );
 
+        $config['registered_callbacks']['before_store'][] = 'checkUserRights';
+        $config['registered_callbacks']['before_delete'][] = 'checkUserRights';
+
         parent::configure($config);
+    }
+
+    public function checkUserRights()
+    {
+        if (!is_object($GLOBALS['perm']) || !$GLOBALS['perm']->have_perm('root')) {
+            throw new AccessDeniedException('You may not alter this category');
+        }
     }
 }

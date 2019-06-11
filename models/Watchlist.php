@@ -7,6 +7,8 @@ use SimpleORMap;
 
 class Watchlist extends SimpleORMap
 {
+    use SORMAllowAccessTrait;
+
     protected static function configure($config = [])
     {
         $config['db_table'] = 'sb_watchlist';
@@ -41,6 +43,10 @@ class Watchlist extends SimpleORMap
 
     public function checkUserRights()
     {
+        if (self::$allow_access) {
+            return;
+        }
+
         if (!is_object($GLOBALS['perm'])
             || !$GLOBALS['perm']->have_perm('root')
             || $this->user_id !== $GLOBALS['user']->id)

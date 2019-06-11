@@ -17,6 +17,8 @@ class Cronjob extends GlobalCronjob
 
     public function setUp()
     {
+        require_once __DIR__ . '/../classes/SORMAllowAccessTrait.php';
+
         require_once __DIR__ . '/../models/Article.php';
         require_once __DIR__ . '/../models/ArticleImage.php';
         require_once __DIR__ . '/../models/Category.php';
@@ -26,11 +28,14 @@ class Cronjob extends GlobalCronjob
 
     public function execute($last_result, $parameters = [])
     {
-        $articles = Article::findBySQL('expires < UNIX_TIMESTAMP()');
+        Article::allowAccess(true);
 
+        $articles = Article::findBySQL('expires < UNIX_TIMESTAMP()');
         foreach ($articles as $article) {
             $article->delete();
         }
+
+        Article::allowAccess(false);
 
         if (count($article) > 0) {
             printf('Removed %u items' . "\n", count($article));

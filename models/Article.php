@@ -11,6 +11,8 @@ use StudipLog;
 
 class Article extends SimpleORMap
 {
+    use SORMAllowAccessTrait;
+
     private static $watched = [];
 
     public static function configure($config = [])
@@ -259,7 +261,10 @@ class Article extends SimpleORMap
 
     public function delete()
     {
+        WatchList::allowAccess(true);
         Watchlist::deleteBySQL('artikel_id = ?', [$this->id]);
+        WatchList::allowAccess(false);
+
         StudipLog::log('SB_ARTICLE_DELETED', $this->category->id, null, $this->titel);
 
         return parent::delete();
@@ -344,6 +349,10 @@ class Article extends SimpleORMap
 
     public function checkUserRights()
     {
+        if (self::$allow_access) {
+            return;
+        }
+
         if (!$this->mayEdit()) {
             throw new AccessDeniedException('You may not alter this article');
         }

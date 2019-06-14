@@ -62,7 +62,7 @@ class Category extends SimpleORMap
 
     public function checkUserRights()
     {
-        if (!is_object($GLOBALS['perm']) || !$GLOBALS['perm']->have_perm('root')) {
+        if (!$this->mayEdit()) {
             throw new AccessDeniedException('You may not alter this category');
         }
     }

@@ -47,11 +47,14 @@ class Watchlist extends SimpleORMap
             return;
         }
 
+        if ($this->user_id === $GLOBALS['user']->id) {
+            return true;
+        }
+
         if (!is_object($GLOBALS['perm'])
-            || !$GLOBALS['perm']->have_perm('root')
-            || $this->user_id !== $GLOBALS['user']->id)
+            || !$GLOBALS['perm']->have_perm('root'))
         {
-            throw new AccessDeniedException('You may not alter this watchlist');
+            throw new \AccessDeniedException('You may not alter this watchlist');
         }
     }
 }

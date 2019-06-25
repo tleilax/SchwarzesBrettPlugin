@@ -225,13 +225,14 @@ class ArticleController extends SchwarzesBrett\Controller
 
     public function delete_action($id)
     {
-        $article = Article::find($id);
-        if (!$article->mayEdit()) {
-            throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht löschen.'));
-        }
-        $article->delete();
+        if ($article = Article::find($id)) {
+            if (!$article->mayEdit()) {
+                throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht löschen.'));
+            }
+            $article->delete();
 
-        PageLayout::postSuccess($this->_('Die Anzeige wurde gelöscht.'));
+            PageLayout::postSuccess($this->_('Die Anzeige wurde gelöscht.'));
+        }
 
         $this->redirect(Request::get('return_to') ?: $this->url_for('category'));
     }

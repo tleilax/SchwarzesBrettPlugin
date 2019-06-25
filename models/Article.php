@@ -93,9 +93,9 @@ class Article extends SimpleORMap
         $config['registered_callbacks']['after_delete'][] = function (Article $article) {
             ArticleImage::deleteBySQL('artikel_id = ?', [$article->id]);
 
-            WatchList::allowAccess(true);
+            Watchlist::allowAccess(true);
             Watchlist::deleteBySQL('artikel_id = ?', [$article->id]);
-            WatchList::allowAccess(false);
+            Watchlist::allowAccess(false);
 
             StudipLog::log('SB_ARTICLE_DELETED', $article->category->id, null, $article->titel);
         };

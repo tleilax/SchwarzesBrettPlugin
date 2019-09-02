@@ -1,12 +1,12 @@
 <?php
 class Blame extends Migration
 {
-    public function description ()
+    public function description()
     {
         return 'config eintraege fuer blame funktion werden angelegt';
     }
 
-    public function up ()
+    public function up()
     {
 
         Config::get()->create('BULLETIN_BOARD_BLAME_RECIPIENTS', [
@@ -17,7 +17,7 @@ class Blame extends Migration
             'description' => 'Mailadressen, an die die Nachricht geschickt werden soll',
         ]);
         Config::get()->create('BULLETIN_BOARD_ENABLE_BLAME', [
-            'value'       => true,
+            'value'       => (int) true,
             'type'        => 'boolean',
             'range'       => 'global',
             'section'     => 'SchwarzesBrettPlugin',
@@ -25,7 +25,7 @@ class Blame extends Migration
         ]);
     }
 
-    public function down ()
+    public function down()
     {
         Config::get()->delete('BULLETIN_BOARD_BLAME_RECIPIENTS');
         Config::get()->delete('BULLETIN_BOARD_ENABLE_BLAME');

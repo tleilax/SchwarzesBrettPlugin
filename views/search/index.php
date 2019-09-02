@@ -17,7 +17,7 @@
     <tbody class="sb-articles">
         <tr>
             <th colspan="5">
-                <a href="<?= $controller->url_for("category/{$id}") ?>">
+                <a href="<?= $controller->link_for("category/{$id}") ?>">
                     <?= htmlReady($category['titel']) ?>
                 </a>
             </th>

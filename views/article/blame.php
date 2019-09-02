@@ -1,4 +1,4 @@
-<form method="post" action="<?= $controller->url_for("article/blame/{$article->id}") ?>" class="default" data-dialog>
+<form method="post" action="<?= $controller->blame($article) ?>" class="default" data-dialog>
     <fieldset>
         <legend class="hide-in-dialog">
             <?= htmlReady(sprintf(

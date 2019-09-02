@@ -6,7 +6,7 @@
         return $field['description'];
     };
 ?>
-<form method="post" action="<?= $controller->url_for('admin/settings/store') ?>">
+<form method="post" action="<?= $controller->store() ?>">
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
 

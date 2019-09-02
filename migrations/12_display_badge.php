@@ -1,15 +1,15 @@
 <?php
 class DisplayBadge extends Migration
 {
-    public function description ()
+    public function description()
     {
         return _('Config-Eintrag für die Anzeige der ungesehenen Anzeigen in der Navigation anlegen');
     }
 
-    public function up ()
+    public function up()
     {
         Config::get()->create('BULLETIN_BOARD_DISPLAY_BADGE', [
-            'value'       => false,
+            'value'       => (int) false,
             'type'        => 'boolean',
             'range'       => 'global',
             'section'     => 'SchwarzesBrettPlugin',
@@ -17,7 +17,7 @@ class DisplayBadge extends Migration
         ]);
     }
 
-    public function down ()
+    public function down()
     {
         Config::get()->delete('BULLETIN_BOARD_DISPLAY_BADGE');
     }

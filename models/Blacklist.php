@@ -2,6 +2,7 @@
 namespace SchwarzesBrett;
 
 use SimpleORMap;
+use StudipLog;
 
 class Blacklist extends SimpleORMap
 {
@@ -12,6 +13,13 @@ class Blacklist extends SimpleORMap
             'class_name'  => 'SchwarzesBrett\\User',
             'foreign_key' => 'user_id',
         ];
+
+        $config['registered_callbacks']['after_create'][] = function ($item) {
+            StudipLog::SB_BLACKLISTED($item->user_id);
+        };
+        $config['registered_callbacks']['after_delete'][] = function () {
+            StudipLog::SB_UNBLACKLISTED($item->user_id);
+        };
 
         $config['registered_callbacks']['before_store'][] = 'checkUserRights';
         $config['registered_callbacks']['before_delete'][] = 'checkUserRights';

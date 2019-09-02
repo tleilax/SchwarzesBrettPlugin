@@ -1,4 +1,4 @@
-<form method="post" action="<?= $controller->url_for("category/store/{$category->id}") ?>" class="default">
+<form method="post" action="<?= $controller->store($category) ?>" class="default">
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
 
@@ -84,7 +84,7 @@
             <?= Studip\Button::createAccept($_('Speichern')) ?>
             <?= Studip\LinkButton::createCancel(
                 $_('Abbrechen'),
-                $controller->url_for("category/view/{$category->id}")
+                $controller->viewURL($category)
             ) ?>
         </div>
     </fieldset>

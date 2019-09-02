@@ -63,24 +63,6 @@
         reloadWatchlist();
     };
 
-    $(document).on('dialog-update', function (event, dialog) {
-        if (! $(dialog).has('[data-lightbox]')) {
-            return;
-        }
-
-        $('[data-lightbox]').on('keydown.escapebuster', function (evt) {
-            if (!evt.keyCode || evt.keyCode !== $.ui.keyCode.ESCAPE) {
-                return;
-            }
-
-            if ($('#lightbox').is(':visible')) {
-                evt.preventDefault();
-            }
-        });
-    }).on('dialog-close', function (event) {
-        $(document).off('.escapebuster');
-    });
-
     // Article edit - images sortable
     function sortableImages() {
         $('.sb-article-images-edit:not(.ui-sortable)').each(function () {

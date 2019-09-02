@@ -5,7 +5,7 @@
     </td>
 <? endif; ?>
     <td>
-        <a href="<?= $controller->url_for("article/view/{$article->id}", compact('needle', 'return_to')) ?>"
+        <a href="<?= $controller->link_for("article/view", $article, compact('needle', 'return_to')) ?>"
             class="article <?= $article->new ? 'unseen' : 'seen' ?>" data-dialog>
             <?= SchwarzesBrett\Article::markup($needle, htmlReady($article->titel)) ?>
         </a>
@@ -22,7 +22,7 @@
     </td>
     <td class="actions">
     <? if ($article->user_id !== $GLOBALS['user']->id): ?>
-        <a href="<?= URLHelper::getURL('dispatch.php/messages/write', [
+        <a href="<?= URLHelper::getLink('dispatch.php/messages/write', [
             'rec_uname'       => $article->user->username,
             'default_subject' => "Re: {$article->titel}",
             'default_body'    => "[quote]{$article->beschreibung}[/quote]",
@@ -30,16 +30,16 @@
             <?= Icon::create('chat')->asImg(tooltip2($_('Antworten'))) ?>
         </a>
         <? if ($blame_enabled): ?>
-            <a href="<?= $controller->url_for("article/blame/{$article->id}") ?>" data-dialog>
+            <a href="<?= $controller->link_for("article/blame", $article) ?>" data-dialog>
                 <?= Icon::create('exclaim')->asImg(tooltip2($_('Anzeige melden'))) ?>
             </a>
         <? endif; ?>
     <? endif; ?>
     <? if ($article->user_id === $GLOBALS['user']->id || $is_admin): ?>
-        <a href="<?= $controller->url_for("article/edit/{$article->id}") ?>" data-dialog>
+        <a href="<?= $controller->link_for("article/edit", $article) ?>" data-dialog>
             <?= Icon::create('edit')->asImg(tooltip2($_('Anzeige bearbeiten'))) ?>
         </a>
-        <a href="<?= $controller->url_for("article/delete/{$article->id}", $return_to ? compact('return_to') : []) ?>" data-confirm="<?= $_('Wollen Sie diese Anzeige wirklich löschen?') ?>">
+        <a href="<?= $controller->link_for("article/delete", $article, $return_to ? compact('return_to') : []) ?>" data-confirm="<?= $_('Wollen Sie diese Anzeige wirklich löschen?') ?>">
             <?= Icon::create('trash')->asImg(tooltip2($_('Anzeige löschen'))) ?>
         </a>
     <? endif; ?>

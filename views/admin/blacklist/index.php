@@ -1,4 +1,4 @@
-<form method="post" action="<?= $controller->url_for('admin/blacklist/add') ?>" class="sb-search-form">
+<form method="post" action="<?= $controller->add() ?>" class="sb-search-form">
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
     <?= QuickSearch::get('user_id', new StandardSearch('user_id'))->withButton()->render() ?>
@@ -8,7 +8,7 @@
 <? if (count($users) === 0) : ?>
 <?= MessageBox::info($_('Es befinden sich keine Benutzer auf der schwarzen Liste.')) ?>
 <? else: ?>
-<form action="<?= $controller->url_for('admin/blacklist/remove/bulk') ?>" method="post">
+<form action="<?= $controller->remove('bulk') ?>" method="post">
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
 
@@ -51,7 +51,7 @@
                 <td class="actions">
                     <?= Icon::create('trash')->asInput(
                         tooltip2($_('Benutzer von der schwarzen Liste entfernen')) +
-                        ['formaction' => $controller->url_for("admin/blacklist/remove/{$user->id}")]
+                        ['formaction' => $controller->removeURL($user)]
                     ) ?>
                 </td>
             </tr>

@@ -112,7 +112,7 @@
     function fileUploadEnhance(event) {
         $('form .sb-file-upload', event ? '.ui-dialog' : document).each(function () {
             $('input[type="file"]', this).change((event) => {
-                var target = $(event.target).data().target,
+                var target = $(event.target).data().targetUrl,
                     files = event.target.files;
 
                 // Prepare form data and filter non images

@@ -71,7 +71,7 @@ class Controller extends StudipController
         if (isset($variables[$method]) && is_callable($variables[$method])) {
             return call_user_func_array($variables[$method], $arguments);
         }
-        throw new RuntimeException("Method {$method} does not exist");
+        return parent::__call($method, $arguments);
     }
 
     public function before_filter(&$action, &$args)
@@ -153,6 +153,11 @@ class Controller extends StudipController
         $category_id = ($class === 'CategoryController' && $action === 'view' && !empty($args))
                      ? reset($args)
                      : false;
+        if (is_object($category_id)) {
+            $category_id = $category_id->id;
+        } elseif ($category_id) {
+            PageLayout::postInfo('object id');
+        }
 
         $search = new SearchWidget($this->url_for('search'));
         $search->addNeedle($this->_('Suchbegriff'), 'needle', true);

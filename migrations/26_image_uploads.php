@@ -4,7 +4,7 @@ class ImageUploads extends Migration
     public function up()
     {
         Config::get()->create('BULLETIN_BOARD_ALLOW_FILE_UPLOADS', [
-            'value'       => false,
+            'value'       => (int) false,
             'type'        => 'boolean',
             'range'       => 'global',
             'section'     => 'SchwarzesBrettPlugin',
@@ -18,7 +18,7 @@ class ImageUploads extends Migration
                     `mkdate` INT(11) UNSIGNED NOT NULL,
                     `chdate` INT(11) UNSIGNED NOT NULL,
                     PRIMARY KEY (`image_id`, `artikel_id`)
-                  )";
+                ) ENGINE=InnoDB ROW_FORMAT=DYNAMIC";
         DBManager::get()->exec($query);
     }
 

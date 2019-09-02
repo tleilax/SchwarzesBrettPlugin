@@ -1,5 +1,5 @@
 <? if ($GLOBALS['user']->perms === 'root'): ?>
-<form action="<?= $controller->url_for("category/bulk/{$category->id}") ?>" method="post">
+<form action="<?= $controller->bulk($category) ?>" method="post">
 <? endif; ?>
 <? if ((string) $category->terms): ?>
     <div class="category-disclaimer">
@@ -56,7 +56,7 @@
 <? else: ?>
     <? foreach ($articles as $article): ?>
         <?= $this->render_partial('article-tr.php', compact('article') + [
-            'return_to' => $controller->url_for("category/view/{$category->id}"),
+            'return_to' => $controller->viewURL($category),
             'checkbox'  => $GLOBALS['user']->perms === 'root',
         ]) ?>
     <? endforeach; ?>

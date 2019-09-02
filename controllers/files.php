@@ -88,7 +88,7 @@ class FilesController extends SchwarzesBrett\Controller
             $content = $thumbnail->render($width, $height);
 
             $this->set_content_type('image/jpeg');
-            $this->addHeader('Content-Disposition', 'inline; filename="thumbnail.jpg"');
+            $this->addHeader('Content-Disposition', 'inline; ' . encode_header_parameter('filename', 'thumbnail.jpg'));
             $this->addHeader('Expires', $this->gmdate('+1 year'));
             $this->addHeader('Last-Modified', $this->gmdate());
             $this->addHeader('Cache-Control', 'public,max-age=' . 365 * 24 * 60 * 60);

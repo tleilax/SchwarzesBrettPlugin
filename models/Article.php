@@ -88,7 +88,7 @@ class Article extends SimpleORMap
         $config['registered_callbacks']['before_delete'][] = 'checkUserRights';
 
         $config['registered_callbacks']['after_create'][] = function (Article $article) {
-            StudipLog::log('SB_ARTICLE_CREATED', $article->category->id, null, $article->titel);
+            StudipLog::SB_ARTICLE_CREATED($article->category->id, null, $article->titel);
         };
         $config['registered_callbacks']['after_delete'][] = function (Article $article) {
             ArticleImage::deleteBySQL('artikel_id = ?', [$article->id]);
@@ -97,7 +97,7 @@ class Article extends SimpleORMap
             Watchlist::deleteBySQL('artikel_id = ?', [$article->id]);
             Watchlist::allowAccess(false);
 
-            StudipLog::log('SB_ARTICLE_DELETED', $article->category->id, null, $article->titel);
+            StudipLog::SB_ARTICLE_DELETED($article->category->id, null, $article->titel);
         };
 
         $config['default_values']['duration'] = Config::Get()->BULLETIN_BOARD_DURATION;

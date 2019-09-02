@@ -86,17 +86,13 @@ class ArticleController extends SchwarzesBrett\Controller
         }
     }
 
-    public function store_action($id = null)
+    public function store_action(Article $article = null)
     {
+        if (!$article->mayEdit()) {
+            throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht bearbeiten.'));
+        }
+
         if (Request::isPost() && $this->checkTicket()) {
-            $article = $id
-                     ? Article::find($id)
-                     : new Article();
-
-            if (!$article->mayEdit()) {
-                throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht bearbeiten.'));
-            }
-
             $duration = max(1, min(Config::get()->BULLETIN_BOARD_DURATION, Request::int('duration')));
 
             $article->thema_id     = Request::option('thema_id');

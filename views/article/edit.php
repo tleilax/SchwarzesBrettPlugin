@@ -10,7 +10,7 @@ $expired_test = function ($duration, $now = null) {
     return strtotime("+{$duration} days", $now ?: time()) <= time();
 };
 ?>
-<form method="post" action="<?= $controller->url_for("article/store/{$article->id}", ['return_to' => Request::get('return_to')]) ?>" class="default" enctype="multipart/form-data" data-secure>
+<form method="post" action="<?= $controller->store($article, ['return_to' => Request::get('return_to')]) ?>" class="default" enctype="multipart/form-data" data-secure>
     <?= CSRFProtection::tokenTag() ?>
     <input type="hidden" name="studip_ticket" value="<?= get_ticket() ?>">
 
@@ -98,7 +98,7 @@ $expired_test = function ($duration, $now = null) {
         <div class="sb-file-upload" data-multiple-caption="<?= _('%u Bilder ausgewählt') ?>">
             <label for="files">
                 <input type="file" id="files" name="images[]" accept="image/*"
-                       multiple data-target="<?= $controller->link_for('files/upload') ?>">
+                       multiple data-target-url="<?= $controller->link_for('files/upload') ?>">
                 <?= _('Bild(er) auswählen') ?>
                 <span class="drag-available"><?= _('oder hierher ziehen') ?></span>
                 <span class="selected-files"></span>

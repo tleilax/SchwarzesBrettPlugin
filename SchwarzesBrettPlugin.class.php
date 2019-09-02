@@ -36,7 +36,7 @@ require_once __DIR__ . '/bootstrap.inc.php';
 /**
  * SchwarzesBrettPlugin Hauptklasse
  */
-class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugin, Loggable
+class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugin, Loggable, PrivacyPlugin
 {
     public function __construct()
     {
@@ -156,15 +156,16 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
             $params = [];
         }
 
+        $args = array_map(function ($arg) {
+            return $arg instanceof SimpleORMap ? $arg->id : $arg;
+        }, $args);
+
         return PluginEngine::getURL($this, $params, join('/', $args));
     }
 
-    public function onUserDidDelete($event, $user)
+    public function link_for($to)
     {
-        Article::deleteBySQL("user_id = ?", [$user->id]);
-        Blacklist::deleteBySQL("user_id = ?", [$user->id]);
-        Visit::deleteBySQL("user_id = ?", [$user->id]);
-        Watchlist::deleteBySQL("user_id = ?", [$user->id]);
+        return htmlReady(call_user_func_array('self::url_for', func_get_args()));
     }
 
     public function onFileRefDidDelete($event, FileRef $fileref)
@@ -228,11 +229,14 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         return count($template->categories) ? $template : null;
     }
 
+    // Loggable
+
     public static function logFormat(LogEvent $event)
     {
         $replaces = [
             '%title'               => $event->info,
             '%category(%affected)' => dgettext(self::GETTEXT_DOMAIN, 'Unbekannt'),
+            '%user(%affected)'     => dgettext(self::GETTEXT_DOMAIN, 'Unbekannt'),
             '%user(%coaffected)'   => '',
         ];
 
@@ -242,7 +246,14 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
                 URLHelper::getLink("plugins.php/schwarzesbrettplugin/category/view/{$category->id}"),
                 htmlReady($category->titel)
             );
+        } elseif ($user = User::find($event->affected_range_id)) {
+            $replaces['%user(%affected)'] = sprintf(
+                '<a href="%s">%s</a>',
+                URLHelper::getLink('dispatch.php/profile', ['username' => $user->username]),
+                htmlReady($user->getFullName())
+            );
         }
+
 
         if ($event->coaffected_range_id && $event->coaffected_range_id !== $GLOBALS['user']->id) {
             $user = User::find($event->coaffected_range_id);
@@ -263,5 +274,53 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
     public static function logSearch($needle, $action_name = null)
     {
         return [];
+    }
+
+    // PrivacyPlugin
+
+    public function onUserDataDidRemove($event, $user_id, $type)
+    {
+        Article::deleteByUser_id($user_id);
+        Blacklist::deleteByUser_id($user_id);
+        Visit::deleteByUser_id($user_id);
+        Watchlist::deleteByUser_id($user_id);
+    }
+
+    /**
+     * Export available data of a given user into a storage object
+     * (an instance of the StoredUserData class) for that user.
+     *
+     * @param StoredUserData $store object to store data into
+     */
+    public function exportUserData(StoredUserData $storage)
+    {
+        $storage->addTabularData('Schwarzes Brett: Eingestellte Anzeigen', 'sb_artikel', SchwarzesBrett\Article::findAndMapBySQL(
+            function ($article) {
+                return $article->toRawArray();
+            },
+            'user_id = ?',
+            [$storage->user_id]
+        ));
+        $storage->addTabularData('Schwarzes Brett: Einträge auf der Sperrliste', 'sb_blacklist', SchwarzesBrett\Blacklist::findAndMapBySQL(
+            function ($blacklist) {
+                return $blacklist->toRawArray();
+            },
+            'user_id = ?',
+            [$storage->user_id]
+        ));
+        $storage->addTabularData('Schwarzes Brett: Besuchte Bereiche', 'sb_visits', SchwarzesBrett\Visit::findAndMapBySQL(
+            function ($visit) {
+                return $visit->toRawArray();
+            },
+            'user_id = ?',
+            [$storage->user_id]
+        ));
+        $storage->addTabularData('Schwarzes Brett: Gemerkte Anzeigen', 'sb_watchlist', SchwarzesBrett\Watchlist::findAndMapBySQL(
+            function ($watchlist) {
+                return $watchlist->toRawArray();
+            },
+            'user_id = ?',
+            [$storage->user_id]
+        ));
     }
 }

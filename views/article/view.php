@@ -37,7 +37,7 @@
                 <?= htmlReady($article->user->getFullname()) ?>
             </a>
         <? if ($more = count($article->user->articles) - 1): ?>
-            <a href="<?= $controller->url_for('article/user', ['username' => $article->user->username]) ?>">
+            <a href="<?= $controller->user(['username' => $article->user->username]) ?>">
                 (<?= sprintf(ngettext('%u weitere Anzeige', '%u weitere Anzeigen', $more), $more) ?>)
             </a>
         <? endif; ?>
@@ -54,7 +54,7 @@
     <? if ($article->user->id !== $GLOBALS['user']->id): ?>
         <?= Studip\LinkButton::create(
             $_('Antworten'),
-            $controller->url_for("article/reply/{$article->id}"),
+            $controller->replyURL($article),
             ['data-dialog' => '']
         ) ?>
         <? if ($article->watched): ?>
@@ -74,7 +74,7 @@
         <? if ($blame_enabled): ?>
             <?= Studip\LinkButton::create(
                 $_('Verstoß melden'),
-                $controller->url_for("article/blame/{$article->id}"),
+                $controller->blameURL($article),
                 ['data-dialog' => '']
             ) ?>
         <? endif; ?>
@@ -82,12 +82,12 @@
     <? if ($article->user->id === $GLOBALS['user']->id || $is_admin): ?>
         <?= Studip\LinkButton::create(
             $_('Bearbeiten'),
-            $controller->url_for("article/edit/{$article->id}", ['return_to' => Request::get('return_to')]),
+            $controller->editURL($article, ['return_to' => Request::get('return_to')]),
             ['data-dialog' => '']
         ) ?>
         <?= Studip\LinkButton::create(
             $_('Löschen'),
-            $controller->url_for("article/delete/{$article->id}", ['return_to' => Request::get('return_to')]),
+            $controller->deleteURL($article, ['return_to' => Request::get('return_to')]),
             ['data-confirm' => $_('Wollen Sie diesen Artikel wirklich löschen?')]
         ) ?>
     <? endif; ?>

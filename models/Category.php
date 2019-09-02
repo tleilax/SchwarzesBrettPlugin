@@ -3,6 +3,7 @@ namespace SchwarzesBrett;
 
 use DBManager;
 use SimpleORMap;
+use StudipLog;
 
 class Category extends SimpleORMap
 {
@@ -13,6 +14,7 @@ class Category extends SimpleORMap
             'class_name'        => 'SchwarzesBrett\\Article',
             'assoc_func'        => 'findValidByCategoryId',
             'assoc_foreign_key' => 'thema_id',
+            'on_delete' => 'delete',
         ];
         $config['has_many']['visible_articles'] = [
             'class_name'        => 'SchwarzesBrett\\Article',
@@ -29,6 +31,13 @@ class Category extends SimpleORMap
                 return count($object->new_articles) > 0;
             }
         ];
+
+        $config['registered_callbacks']['after_create'][] = function (Category $category) {
+            StudipLog::SB_CATEGORY_CREATED(null, null, $category->titel);
+        };
+        $config['registered_callbacks']['after_delete'][] = function (Category $category) {
+            StudipLog::SB_CATEGORY_DELETED(null, null, $category->titel);
+        };
 
         $config['registered_callbacks']['before_store'][] = 'checkUserRights';
         $config['registered_callbacks']['before_delete'][] = 'checkUserRights';

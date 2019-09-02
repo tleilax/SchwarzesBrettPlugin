@@ -1,7 +1,7 @@
 <?php
 class AddCronjob extends Migration
 {
-    public function description ()
+    public function description()
     {
         return 'Fügt den Cronjob zum Entfernen abgelaufener Anzeigen hinzu..';
     }

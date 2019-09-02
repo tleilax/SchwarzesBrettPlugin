@@ -9,11 +9,11 @@ class AddWatchlist extends Migration
     public function up()
     {
         $query = "CREATE TABLE IF NOT EXISTS `sb_watchlist` (
-                      `user_id` CHAR(32) NOT NULL,
-                      `artikel_id` CHAR(32) NOT NULL,
+                      `user_id` CHAR(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
+                      `artikel_id` CHAR(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL,
                       `mkdate` INT(11) UNSIGNED NOT NULL,
                       PRIMARY KEY (`user_id`, `artikel_id`)
-                  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC";
+                  ) ENGINE=InnoDB ROW_FORMAT=DYNAMIC";
         DBManager::get()->exec($query);
     }
 

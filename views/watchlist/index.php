@@ -2,7 +2,7 @@
     <?= MessageBox::info($_('Sie haben sich momentan keine Anzeigen gemerkt.')) ?>
 <? return; endif; ?>
 
-<form action="<?= $controller->url_for('watchlist/remove/bulk') ?>" method="post">
+<form action="<?= $controller->remove('bulk') ?>" method="post">
 
     <table class="default" id="watchlist">
         <caption class="hide-in-dialog"><?= $_('Gemerkte Anzeigen') ?></caption>

@@ -3,6 +3,8 @@ class MigrateToCoreApi extends Migration
 {
     public function up()
     {
+        require_once __DIR__ . '/../classes/RouteMap.php';
+
         // Convert plugin type to core API plugin type
         $query = "UPDATE `plugins`
                   SET `plugintype` = REPLACE(`plugintype`, 'APIPlugin', 'RESTAPIPlugin')
@@ -11,19 +13,7 @@ class MigrateToCoreApi extends Migration
         DBManager::get()->exec($query);
 
         // Activate routes
-        $permissions = RESTAPI\ConsumerPermissions::get('global');
-        $permissions->set('/schwarzes-brett/categories', 'get', true, true);
-        $permissions->set('/schwarzes-brett/categories/:id', 'get', true, true);
-        $permissions->set('/schwarzes-brett/categories/:id/articles', 'get', true, true);
-
-        $permissions->set('/schwarzes-brett/articles', 'post', true, true);
-        $permissions->set('/schwarzes-brett/article/:id', 'get', true, true);
-        $permissions->set('/schwarzes-brett/article/:id', 'patch', true, true);
-        $permissions->set('/schwarzes-brett/article/:id', 'delete', true, true);
-
-        $permissions->set('/schwarzes-brett/article/:id/visit', 'post', true, true);
-
-        $permissions->store();
+        RESTAPI\ConsumerPermissions::get('global')->activateRouteMap(new SchwarzesBrett\RouteMap());
     }
 
     public function down()

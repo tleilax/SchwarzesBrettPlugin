@@ -5,10 +5,12 @@ use SchwarzesBrett\User;
 
 class CategoryController extends SchwarzesBrett\Controller
 {
+    protected $_autobind = true;
+
     public function before_filter(&$action, &$args)
     {
         $tmp_args = array_filter($args);
-        if ($action === 'view' && empty($tmp_args)) {
+        if ($action === 'view' && !$tmp_args) {
             $action = 'list';
         }
 
@@ -44,13 +46,12 @@ class CategoryController extends SchwarzesBrett\Controller
         $this->inject_rss();
     }
 
-    public function view_action($category_id)
+    public function view_action(SchwarzesBrett\Category $category)
     {
         Navigation::activateItem('/schwarzesbrettplugin/show/all');
 
-        $this->inject_rss($category_id);
+        $this->inject_rss($category->id);
 
-        $this->category = Category::find($category_id);
         $this->articles = $this->is_admin
                         ? $this->category->articles
                         : $this->category->visible_articles;
@@ -97,25 +98,21 @@ class CategoryController extends SchwarzesBrett\Controller
         $this->render_action('edit');
     }
 
-    public function edit_action($id)
+    public function edit_action(SchwarzesBrett\Category $category)
     {
-        PageLayout::setTitle($this->_('Thema bearbeiten'));
-
-        $this->category = Category::find($id);
-
-        if (!$this->category->mayEdit()) {
+        if (!$category->mayEdit()) {
             throw new AccessDeniedException($this->_('Sie dürfen dieses Thema nicht bearbeiten.'));
         }
+
+        PageLayout::setTitle($this->_('Thema bearbeiten'));
     }
 
-    public function store_action($id = null)
+    public function store_action(SchwarzesBrett\Category $category = null)
     {
         CSRFProtection::verifyUnsafeRequest();
 
         if (Request::isPost() && check_ticket(Request::get('studip_ticket'))) {
-            $category = $id
-                      ? Category::find($id)
-                      : new Category();
+            $category = $id ? Category::find($id) : new Category();
 
             if (!$category->mayEdit()) {
                 throw new AccessDeniedException($this->_('Sie dürfen dieses Thema nicht bearbeiten.'));
@@ -128,7 +125,6 @@ class CategoryController extends SchwarzesBrett\Controller
             $category->publishable  = Request::int('publishable', 0);
             $category->terms        = Request::i18n('terms');
             $category->disclaimer   = Request::i18n('disclaimer');
-            $category->user_id      = $category->user_id ?: $GLOBALS['user']->id;
             $category->display_terms_in_article =
                 Request::int('display_terms_in_article');
             $category->store();
@@ -142,9 +138,8 @@ class CategoryController extends SchwarzesBrett\Controller
         $this->redirect("category/view/{$id}");
     }
 
-    public function delete_action($id)
+    public function delete_action(SchwarzesBrett\Category $category)
     {
-        $category = Category::find($id);
         $title = $category->titel;
         $count = count($category->articles);
         $category->delete();

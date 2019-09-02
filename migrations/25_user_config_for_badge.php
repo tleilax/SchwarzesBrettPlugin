@@ -4,7 +4,7 @@ class UserConfigForBadge extends Migration
     public function up()
     {
         Config::get()->create('BULLETIN_BOARD_SHOW_BADGE', [
-            'value'       => true,
+            'value'       => (int) true,
             'type'        => 'boolean',
             'range'       => 'user',
             'section'     => 'SchwarzesBrettPlugin',

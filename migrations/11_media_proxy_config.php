@@ -1,22 +1,22 @@
 <?php
 class MediaProxyConfig extends Migration
 {
-    public function description ()
+    public function description()
     {
         return 'Config-Einträge für den Media-Proxy werden angelegt';
     }
 
-    public function up ()
+    public function up()
     {
         Config::get()->create('BULLETIN_BOARD_MEDIA_PROXY', [
-            'value'       => false,
+            'value'       => (int) false,
             'type'        => 'boolean',
             'range'       => 'global',
             'section'     => 'SchwarzesBrettPlugin',
             'description' => 'Eigenen Media-Proxy aktivieren (bei Problemen mit http-Inhalten in https-Umgebungen',
         ]);
         Config::get()->create('BULLETIN_BOARD_MEDIA_PROXY_CACHED', [
-            'value'       => false,
+            'value'       => (int) false,
             'type'        => 'boolean',
             'range'       => 'global',
             'section'     => 'SchwarzesBrettPlugin',
@@ -24,7 +24,7 @@ class MediaProxyConfig extends Migration
         ]);
     }
 
-    public function down ()
+    public function down()
     {
         Config::get()->delete('BULLETIN_BOARD_MEDIA_PROXY');
         Config::get()->delete('BULLETIN_BOARD_MEDIA_PROXY_CACHED');

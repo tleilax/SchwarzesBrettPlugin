@@ -142,50 +142,54 @@ class Thumbnail
 
     public function render()
     {
-        if (!$this->exists()) {
-            $filepath = $this->ref->file->getPath();
-            if (!file_exists($filepath) || !is_readable($filepath)) {
-                throw new Exception('Cannot read file contents');
+        try {
+            if (!$this->exists()) {
+                $filepath = $this->ref->file->getPath();
+                if (!file_exists($filepath) || !is_readable($filepath)) {
+                    throw new Exception('Cannot read file contents');
+                }
+
+                $blob = file_get_contents($this->ref->file->getPath());
+
+                if (!$this->canResize()) {
+                    return $blob;
+                }
+
+                $image = @imagecreatefromstring($blob);
+                if ($image === false) {
+                    return $blob;
+                }
+
+                $original_width  = imagesx($image);
+                $original_height = imagesy($image);
+
+                $width = $this->getWidth();
+                $height = $this->getHeight();
+
+                if ($original_width <= $width && $original_height <= $height) {
+                    return $this->renderAsString($image);
+                }
+
+                $thumbnail = imagecreatetruecolor($width, $height);
+                imagecopyresampled(
+                    $thumbnail, $image,
+                    0, 0,
+                    0, 0,
+                    $width, $height,
+                    $original_width, $original_height
+                );
+                imagedestroy($image);
+
+                file_put_contents(
+                    $this->getFilename(),
+                    $this->renderAsString($thumbnail)
+                );
             }
 
-            $blob = file_get_contents($this->ref->file->getPath());
-
-            if (!$this->canResize()) {
-                return $blob;
-            }
-
-            $image = @imagecreatefromstring($blob);
-            if ($image === false) {
-                return $blob;
-            }
-
-            $original_width  = imagesx($image);
-            $original_height = imagesy($image);
-
-            $width = $this->getWidth();
-            $height = $this->getHeight();
-
-            if ($original_width <= $width && $original_height <= $height) {
-                return $this->renderAsString($image);
-            }
-
-            $thumbnail = imagecreatetruecolor($width, $height);
-            imagecopyresampled(
-                $thumbnail, $image,
-                0, 0,
-                0, 0,
-                $width, $height,
-                $original_width, $original_height
-            );
-            imagedestroy($image);
-
-            file_put_contents(
-                $this->getFilename(),
-                $this->renderAsString($thumbnail)
-            );
+            return file_get_contents($this->getFilename());
+        } catch (Exception $e) {
+            return file_get_contents($this->ref->file->getPath());
         }
-
-        return file_get_contents($this->getFilename());
     }
 
     public function getURL()
@@ -195,17 +199,24 @@ class Thumbnail
 
     public function getImageTag($link = false, $dimensions = true)
     {
-        if ($dimensions) {
-            $result = sprintf(
-                '<img src="%s" width="%u" height="%u" class="lazy">',
-                $this->getURL(),
-                $this->getWidth(),
-                $this->getHeight()
-            );
-        } else {
+        try {
+            if ($dimensions) {
+                $result = sprintf(
+                    '<img src="%s" width="%u" height="%u" class="lazy">',
+                    $this->getURL(),
+                    $this->getWidth(),
+                    $this->getHeight()
+                );
+            } else {
+                $result = sprintf(
+                    '<img src="%s" class="lazy">',
+                    $this->getURL()
+                );
+            }
+        } catch (Exception $e) {
             $result = sprintf(
                 '<img src="%s" class="lazy">',
-                $this->getURL()
+                $this->ref->getDownloadURL()
             );
         }
 

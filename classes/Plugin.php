@@ -82,7 +82,12 @@ abstract class Plugin extends StudIPPlugin
         return $result;
     }
 
-    protected function getPluginVersion()
+    /**
+     * Returns the plugin version from manifest.
+     *
+     * @return string version
+     */
+    public function getPluginVersion()
     {
         static $manifest = null;
         if ($manifest === null) {

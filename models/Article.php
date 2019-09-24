@@ -4,6 +4,7 @@ namespace SchwarzesBrett;
 use AccessDeniedException;
 use Config;
 use DBManager;
+use Exception;
 use FileRef;
 use PDO;
 use SimpleORMap;
@@ -249,15 +250,17 @@ class Article extends SimpleORMap
 
     public function visit()
     {
-        $visit = Visit::find([$this->id, $GLOBALS['user']->id]);
-        if (!$visit) {
-            $visit = new Visit();
-            $visit->object_id = $this->id;
-            $visit->user_id   = $GLOBALS['user']->id;
-            $visit->type      = 'artikel';
+        $visit = new Visit([$this->id, $GLOBALS['user']->id]);
+        if ($visit->isNew()) {
+            $visit->type = 'artikel';
         }
         $visit->last_visitdate = time();
-        $visit->store();
+
+        // Ignore errors on store since they can be neglected
+        try {
+            $visit->store();
+        } catch (Exception $e) {
+        }
     }
 
     public function resetCreation()

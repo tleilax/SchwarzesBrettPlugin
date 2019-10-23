@@ -20,7 +20,7 @@ $expired_test = function ($duration, $now = null) {
         </legend>
 
         <label>
-            <?= $_('Thema') ?>
+            <span class="required"><?= $_('Thema') ?></span>
 
             <select required name="thema_id" class="has-disclaimer">
                 <option value="">- <?= $_('Kategorie auswählen') ?> -</option>
@@ -41,7 +41,7 @@ $expired_test = function ($duration, $now = null) {
         </label>
 
         <label>
-            <?= $_('Titel') ?>
+            <span class="required"><?= $_('Titel') ?></span>
             <input required type="text" name="titel"
                    value="<?= htmlready($article->titel) ?>">
         </label>

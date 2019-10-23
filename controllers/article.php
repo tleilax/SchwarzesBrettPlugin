@@ -105,6 +105,10 @@ class ArticleController extends SchwarzesBrett\Controller
             $article->expires      = strtotime("+{$duration} days 23:59:59", $article->mkdate ?: time());
             $article->store();
 
+            if (!$article->thema_id) {
+                throw new Exception('Article is not valid');
+            }
+
             if ($GLOBALS['perm']->have_perm('root') && Request::int('reset')) {
                 $article->resetCreation();
             }

@@ -105,7 +105,7 @@ class ArticleController extends SchwarzesBrett\Controller
             $article->expires      = strtotime("+{$duration} days 23:59:59", $article->mkdate ?: time());
             $article->store();
 
-            if (!Cateory::find($article->thema_id)) {
+            if (!Category::find($article->thema_id)) {
                 throw new Exception('Article is not valid');
             }
 

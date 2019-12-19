@@ -14,7 +14,7 @@ class SearchController extends SchwarzesBrett\Controller
 
         $needle = trim(Request::get('needle'));
         if (mb_strlen($needle) >= 3) {
-            $articles = Article::search($needle);
+            $articles = Article::search($needle, Request::optionArray('restrict'));
         } else {
             $articles = [];
         }

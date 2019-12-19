@@ -338,7 +338,7 @@ class Article extends SimpleORMap
         ArticleImage::gc($this->id);
     }
 
-    public static function search($needle)
+    public static function search($needle, $category_id = null)
     {
         $query = "SELECT artikel_id
                   FROM sb_artikel
@@ -347,9 +347,14 @@ class Article extends SimpleORMap
                     AND (
                         sb_artikel.titel LIKE CONCAT('%', :needle, '%')
                         OR sb_artikel.beschreibung LIKE CONCAT('%', :needle, '%')
+                    )
+                    AND (
+                        :category_id IS NULL
+                        OR sb_artikel.thema_id IN (IFNULL(:category_id, ''))
                     )";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':needle', $needle);
+        $statement->bindValue(':category_id', $category_id);
         $statement->bindValue(':user_id', $GLOBALS['user']->id);
         $statement->execute();
 

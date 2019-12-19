@@ -95,6 +95,7 @@ class ArticleController extends SchwarzesBrett\Controller
         if (Request::isPost() && $this->checkTicket()) {
             $duration = max(1, min(Config::get()->BULLETIN_BOARD_DURATION, Request::int('duration')));
 
+            // Set article details
             $article->thema_id     = Request::option('thema_id');
             $article->titel        = Request::get('titel');
             $article->beschreibung = transformBeforeSave(Request::get('beschreibung'));
@@ -103,11 +104,14 @@ class ArticleController extends SchwarzesBrett\Controller
             $article->user_id      = $article->user_id ?: $GLOBALS['user']->id;
             $article->duration     = $duration;
             $article->expires      = strtotime("+{$duration} days 23:59:59", $article->mkdate ?: time());
-            $article->store();
 
+            // Check article validity
             if (!Category::find($article->thema_id)) {
                 throw new Exception('Article is not valid');
             }
+
+            // Store article
+            $article->store();
 
             if ($GLOBALS['perm']->have_perm('root') && Request::int('reset')) {
                 $article->resetCreation();

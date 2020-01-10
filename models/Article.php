@@ -337,10 +337,15 @@ class Article extends SimpleORMap
 
     public static function search($needle)
     {
+        if (is_array($category_id)) {
+            $category_id = array_keys($category_id)[0];
+        }
+
         $query = "SELECT artikel_id
                   FROM sb_artikel
                   JOIN auth_user_md5 USING (user_id)
                   WHERE (sb_artikel.visible = 1 OR user_id = :user_id)
+                    AND expires > UNIX_TIMESTAMP()
                     AND (
                         sb_artikel.titel LIKE CONCAT('%', :needle, '%')
                         OR sb_artikel.beschreibung LIKE CONCAT('%', :needle, '%')

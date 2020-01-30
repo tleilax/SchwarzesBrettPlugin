@@ -37,8 +37,8 @@ class Cronjob extends GlobalCronjob
 
         Article::allowAccess(false);
 
-        if (count($article) > 0) {
-            printf('Removed %u items' . "\n", count($article));
+        if (count($articles) > 0) {
+            printf('Removed %u items' . "\n", count($articles));
         }
 
         // Do big garbage collection with a chance of 5%

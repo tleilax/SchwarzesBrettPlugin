@@ -8,7 +8,7 @@ class FixCronjob extends Migration
 
     public function up()
     {
-        $query = "UPDATE `cronjob_tasks`
+        $query = "UPDATE `cronjobs_tasks`
                   SET `filename` = 'public/plugins_packages/UOL/SchwarzesBrettPlugin/classes/Cronjob.php'
                   WHERE `filename` = 'public/plugins_packages/IBIT/SchwarzesBrettPlugin/classes/Cronjob.php'";
         DBManager::get()->exec($query);

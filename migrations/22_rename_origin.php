@@ -25,7 +25,7 @@ class RenameOrigin extends Migration
             }
         }
 
-        $query = "UPDATE `cronjob_tasks`
+        $query = "UPDATE `cronjobs_tasks`
                   SET `filename` = 'public/plugins_packages/UOL/SchwarzesBrettPlugin/classes/Cronjob.php'
                   WHERE `filename` = 'public/plugins_packages/IBIT/SchwarzesBrettPlugin/classes/Cronjob.php'";
         DBManager::get()->exec($query);
@@ -49,7 +49,7 @@ class RenameOrigin extends Migration
             rename($old_path, $new_path);
         }
 
-        $query = "UPDATE `cronjob_tasks`
+        $query = "UPDATE `cronjobs_tasks`
                   SET `filename` = 'public/plugins_packages/IBIT/SchwarzesBrettPlugin/classes/Cronjob.php'
                   WHERE `filename` = 'public/plugins_packages/UOL/SchwarzesBrettPlugin/classes/Cronjob.php'";
         DBManager::get()->exec($query);

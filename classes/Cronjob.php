@@ -30,15 +30,12 @@ class Cronjob extends GlobalCronjob
     {
         Article::allowAccess(true);
 
-        $articles = Article::findBySQL('expires < UNIX_TIMESTAMP()');
-        foreach ($articles as $article) {
-            $article->delete();
-        }
+        $deleted = Article::deleteBySQL('expires < UNIX_TIMESTAMP()');
 
         Article::allowAccess(false);
 
-        if (count($articles) > 0) {
-            printf('Removed %u items' . "\n", count($articles));
+        if ($deleted > 0) {
+            printf('Removed %u items' . "\n", $deleted);
         }
 
         // Do big garbage collection with a chance of 5%

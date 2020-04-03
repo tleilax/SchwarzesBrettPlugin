@@ -112,8 +112,6 @@ class CategoryController extends SchwarzesBrett\Controller
         CSRFProtection::verifyUnsafeRequest();
 
         if (Request::isPost() && check_ticket(Request::get('studip_ticket'))) {
-            $category = $id ? Category::find($id) : new Category();
-
             if (!$category->mayEdit()) {
                 throw new AccessDeniedException($this->_('Sie dürfen dieses Thema nicht bearbeiten.'));
             }

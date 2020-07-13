@@ -7,7 +7,7 @@ class SearchController extends SchwarzesBrett\Controller
     {
         Navigation::activateItem('/schwarzesbrettplugin/show/all');
 
-        if (Request::int('reset-search')) {
+        if (Request::bool('reset-search')) {
             $this->redirect('category');
             return;
         }

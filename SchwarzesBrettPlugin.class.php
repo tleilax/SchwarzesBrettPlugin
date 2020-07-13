@@ -132,10 +132,10 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         }
 
         if (Config::get()->BULLETIN_BOARD_ALLOW_FILE_UPLOADS) {
-            PageLayout::addScript($this->getPluginURL() . '/assets/sb-upload.js?v=' . $this->getPluginVersion());
+            $this->addScript('assets/sb-upload.js');
 
-            $this->addStylesheet('assets/lazy-load.less');
-            PageLayout::addScript($this->getPluginURL() . '/assets/lazy-load.js?v=' . $this->getPluginVersion());
+            $this->addStylesheet('assets/lazy-load.scss');
+            $this->addScript('assets/lazy-load.js');
         }
 
         if ($unconsumed_path === 'show/all') {

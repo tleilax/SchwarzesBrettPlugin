@@ -99,8 +99,8 @@ class ArticleController extends SchwarzesBrett\Controller
             $article->thema_id     = Request::option('thema_id');
             $article->titel        = Request::get('titel');
             $article->beschreibung = transformBeforeSave(Request::get('beschreibung'));
-            $article->visible      = Request::int('visible', 0);
-            $article->publishable  = Request::int('publishable', 1);
+            $article->visible      = Request::bool('visible', false);
+            $article->publishable  = Request::bool('publishable', true);
             $article->user_id      = $article->user_id ?: $GLOBALS['user']->id;
             $article->duration     = $duration;
             $article->expires      = strtotime("+{$duration} days 23:59:59", $article->mkdate ?: time());
@@ -113,7 +113,7 @@ class ArticleController extends SchwarzesBrett\Controller
             // Store article
             $article->store();
 
-            if ($GLOBALS['perm']->have_perm('root') && Request::int('reset')) {
+            if ($GLOBALS['perm']->have_perm('root') && Request::bool('reset')) {
                 $article->resetCreation();
             }
 

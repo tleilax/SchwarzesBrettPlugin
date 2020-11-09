@@ -155,6 +155,10 @@ class ArticleController extends SchwarzesBrett\Controller
 
                         $thru = $article->addImage($ref, $image['position']);
                     } else {
+                        if (StudipVersion::newerThan('4.5')) {
+                            $image = StandardFile::create($image);
+                        }
+
                         $folder = $this->getFolder();
                         $error  = $folder->validateUpload($image, $GLOBALS['user']->id);
                         if ($error) {
@@ -162,7 +166,11 @@ class ArticleController extends SchwarzesBrett\Controller
                             continue;
                         }
 
-                        $ref = $folder->createFile($image);
+                        if (StudipVersion::newerThan('4.5')) {
+                            $ref = $folder->addFile($image);
+                        } else {
+                            $ref = $folder->createFile($image);
+                        }
                         if ($ref) {
                             $article->addImage($ref);
                         } else {

@@ -194,7 +194,7 @@ class Thumbnail
 
     public function getURL()
     {
-        return PluginEngine::getLink(self::$plugin, [], "files/thumbnail/{$this->ref->id}");
+        return PluginEngine::getLink('schwarzesbrettplugin', [], "files/thumbnail/{$this->ref->id}");
     }
 
     public function getImageTag($link = false, $dimensions = true)

@@ -65,7 +65,9 @@ class RouteMap extends GlobalRouteMap
         $limit  = Request::int('limit', 20) ?: 20;
 
         $total    = $category->articles->count();
-        $articles = $this->flatten($category->articles->limit($this->offset, $this->limit));
+        $articles = $category->articles->limit($this->offset, $this->limit)->map(function ($article) {
+            return $this->convertArticle($article);
+        });
 
         return $this->paginated($articles, $total, compact('id'));
     }
@@ -90,7 +92,7 @@ class RouteMap extends GlobalRouteMap
         if (!$article) {
             $this->notFound();
         }
-        $article = $this->flatten($article);
+        $article = $this->convertArticle($article);
 
         return compact('article');
     }
@@ -183,5 +185,22 @@ class RouteMap extends GlobalRouteMap
         }
 
         return $array;
+    }
+
+    protected function convertArticle($article)
+    {
+        $old_base = \URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+
+        $article = $this->flatten($article);
+        $article['images'] = array_map(function ($image) {
+            return [
+                'src' => $image->image->getDownloadURL(),
+                'thumbnail' => $image->thumbnail->getURL(),
+            ];
+        }, $article['images']);
+
+        \URLHelper::setBaseURL($old_base);
+
+        return $article;
     }
 }

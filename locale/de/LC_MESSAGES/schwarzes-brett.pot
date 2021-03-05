@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SchwarzesBrettWidget\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-12 16:49+0200\n"
+"POT-Creation-Date: 2021-03-05 16:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,6 +101,9 @@ msgstr ""
 msgid "Kategorie"
 msgstr ""
 
+msgid "Bilder zu Ihren Anzeigen im Schwarzen Brett"
+msgstr ""
+
 msgid "Schwarzes Brett-Cronjob"
 msgstr ""
 
@@ -111,6 +114,10 @@ msgid "Einstellung für das Schwarze Brett Widget"
 msgstr ""
 
 msgid "Einstellungen"
+msgstr ""
+
+#, php-format
+msgid "Anzeige von %s"
 msgstr ""
 
 msgid "RSS-Exporte sind nicht aktiviert."
@@ -134,6 +141,9 @@ msgstr ""
 msgid "Thema erstellen"
 msgstr ""
 
+msgid "Sie dürfen dieses Thema nicht bearbeiten."
+msgstr ""
+
 msgid "Thema bearbeiten"
 msgstr ""
 
@@ -141,6 +151,9 @@ msgid "Das Thema wurde angelegt."
 msgstr ""
 
 msgid "Das Thema wurde gespeichert."
+msgstr ""
+
+msgid "Sie dürfen dieses Thema nicht löschen."
 msgstr ""
 
 #, php-format
@@ -156,6 +169,10 @@ msgstr ""
 
 #, php-format
 msgid "%u Artikel wurde(n) gelöscht."
+msgstr ""
+
+#, php-format
+msgid "Datei %s konnte nicht erstellt werden"
 msgstr ""
 
 msgid "Die Einstellungen wurden gespeichert."
@@ -198,7 +215,13 @@ msgstr ""
 msgid "Anzeige bearbeiten"
 msgstr ""
 
+msgid "Sie dürfen diese Anzeige nicht bearbeiten."
+msgstr ""
+
 msgid "Anzeige enthält unzulässige Begriffe"
+msgstr ""
+
+msgid "Beim Hochladen der Dateien sind Fehler aufgetreten:"
 msgstr ""
 
 msgid "Die Anzeige wurde erstellt."
@@ -426,6 +449,12 @@ msgid "Sie haben momentan keine eigenen Anzeigen."
 msgstr ""
 
 #, php-format
+msgid "%u Bild"
+msgid_plural "%u Bilder"
+msgstr[0] ""
+msgstr[1] ""
+
+#, php-format
 msgid "%u weitere Anzeige"
 msgid_plural "%u weitere Anzeigen"
 msgstr[0] ""
@@ -477,7 +506,37 @@ msgstr ""
 msgid "Nach Ablauf dieser Frist wird die Anzeige automatisch gelöscht."
 msgstr ""
 
+msgid "Anzeige verlängern"
+msgstr ""
+
+msgid ""
+"Hierdurch wird das Erstellungsdatum der Anzeige auf den aktuellen Zeitpunkt "
+"gesetzt und die Laufzeit zurückgesetzt"
+msgstr ""
+
 msgid "Diese Anzeige darf im RSS-Feed veröffentlich werden."
+msgstr ""
+
+msgid "Bilder"
+msgstr ""
+
+#, php-format
+msgid "%u Bilder ausgewählt"
+msgstr ""
+
+msgid "Bild(er) auswählen"
+msgstr ""
+
+msgid "oder hierher ziehen"
+msgstr ""
+
+msgid "Bild"
+msgstr ""
+
+msgid "Bild löschen?"
+msgstr ""
+
+msgid "Es wurden keine Bilder hinterlegt"
 msgstr ""
 
 msgid "Folgende Anzeige wurde gemeldet"

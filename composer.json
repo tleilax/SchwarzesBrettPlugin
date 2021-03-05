@@ -1,0 +1,12 @@
+{
+    "name": "tleilax/schwarzes-brett-plugin",
+    "authors": [
+        {
+            "name": "Jan-Hendrik Willms",
+            "email": "tleilax+github@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^2.0"
+    }
+}

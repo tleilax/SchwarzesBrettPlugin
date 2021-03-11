@@ -283,11 +283,4 @@ class Controller extends \PluginController
         }
         $this->response->add_header($key, $value);
     }
-
-    public function get_template_factory()
-    {
-        $factory = parent::get_template_factory();
-        $factory->add_handler('twig', TwigTemplate::class);
-        return $factory;
-    }
 }

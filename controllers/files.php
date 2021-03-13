@@ -9,15 +9,24 @@ class FilesController extends SchwarzesBrett\Controller
             return;
         }
 
+        $file = $_FILES['image'];
+        if (StudipVersion::newerThan('4.5')) {
+            $file = StandardFile::create($file);
+        }
+
         $folder = $this->getFolder();
-        $error  = $folder->validateUpload($_FILES['image'], $GLOBALS['user']->id);
+        $error  = $folder->validateUpload($file, $GLOBALS['user']->id);
         if ($error) {
             $this->set_status(500);
             $this->render_text("Error: {$error}");
             return;
         }
 
-        $ref = $folder->createFile($_FILES['image']);
+        if (StudipVersion::newerThan('4.5')) {
+            $ref = $folder->addFile($file);
+        } else {
+            $ref = $folder->createFile($file);
+        }
         if (!$ref) {
             $this->set_status(500);
             $this->render_text(

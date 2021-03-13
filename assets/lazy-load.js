@@ -1,6 +1,6 @@
 /*jslint esversion: 6, browser: true */
-/*global jQuery */
-(function ($) {
+/*global jQuery, STUDIP */
+(function ($, STUDIP) {
     'use strict';
 
     // Lazy load
@@ -41,6 +41,6 @@
             img.src = src;
         });
     }
-    $(document).ready(lazyLoad).on('dialog-update', lazyLoad);
+    STUDIP.ready(lazyLoad);
 
-}(jQuery));
+}(jQuery, STUDIP));

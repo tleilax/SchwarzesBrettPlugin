@@ -97,7 +97,7 @@
             });
         });
     }
-    $(document).ready(sortableImages).on('dialog-update', sortableImages);
+    STUDIP.ready(sortableImages);
 
     $(document).on('change', '.sb-article-images-edit :checkbox[name*="delete"]', function () {
         $(this).closest('tr').toggleClass('remove', this.checked);

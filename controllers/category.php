@@ -119,12 +119,11 @@ class CategoryController extends SchwarzesBrett\Controller
             $category->titel        = Request::i18n('titel');
             $category->beschreibung = Request::i18n('beschreibung');
             $category->perm         = Request::option('thema_perm');
-            $category->visible      = Request::int('visible', 0);
-            $category->publishable  = Request::int('publishable', 0);
+            $category->visible      = Request::bool('visible', false);
+            $category->publishable  = Request::bool('publishable', false);
             $category->terms        = Request::i18n('terms');
             $category->disclaimer   = Request::i18n('disclaimer');
-            $category->display_terms_in_article =
-                Request::int('display_terms_in_article');
+            $category->display_terms_in_article = Request::bool('display_terms_in_article');
             $category->store();
 
             $message = $id === null

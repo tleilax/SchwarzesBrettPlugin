@@ -20,8 +20,6 @@ class AddDuration extends Migration
                   SET `duration` = ROUND((`expires` - `mkdate`) / (24 * 60 * 60)),
                       `chdate` = `mkdate`";
         DBManager::get()->exec($query);
-
-        SimpleORMap::expireTableScheme();
     }
 
     public function down()
@@ -30,7 +28,5 @@ class AddDuration extends Migration
                   DROP COLUMN `duration`,
                   DROP COLUMN `chdate`";
         DBManager::get()->exec($query);
-
-        SimpleORMap::expireTableScheme();
     }
 }

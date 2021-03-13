@@ -12,8 +12,6 @@ class RemoveUserIdFromCategories extends Migration
         $query = "ALTER TABLE `sb_themen`
                   DROP COLUMN `user_id`";
         DBManager::get()->exec($query);
-
-        SimpleORMap::expireTableScheme();
     }
 
     public function down()
@@ -21,7 +19,5 @@ class RemoveUserIdFromCategories extends Migration
         $query = "ALTER TABLE `sb_themen`
                   ADD COLUMN `user_id` CHAR(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL AFTER `titel`";
         DBManager::get()->exec($query);
-
-        SimpleORMap::expireTableScheme();
     }
 }

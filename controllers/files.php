@@ -23,7 +23,7 @@ class FilesController extends SchwarzesBrett\Controller
         }
 
         if (StudipVersion::newerThan('4.5')) {
-            $ref = $folder->addFile($file);
+            $ref = $folder->addFile($file)->getFileRef();
         } else {
             $ref = $folder->createFile($file);
         }

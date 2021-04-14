@@ -15,15 +15,6 @@ abstract class Plugin extends StudIPPlugin
 
         bindtextdomain(static::GETTEXT_DOMAIN, $this->getPluginPath() . '/locale');
         bind_textdomain_codeset(static::GETTEXT_DOMAIN, 'UTF-8');
-
-        foreach (get_class_methods($this) as $method) {
-            if (!preg_match('/^on\w+(Did|Will)\w+$/', $method)) {
-                continue;
-            }
-
-            $trigger = mb_substr($method, 2);
-            NotificationCenter::addObserver($this, $method, $trigger);
-        }
     }
 
     /**
@@ -32,20 +23,14 @@ abstract class Plugin extends StudIPPlugin
      * parameters.
      *
      * @param String $string String to translate
-     * @return translated string
+     * @return string
      */
     public function _($string)
     {
-        $result = static::GETTEXT_DOMAIN === null
-                ? $string
-                : dcgettext(static::GETTEXT_DOMAIN, $string, LC_MESSAGES);
+        $result = dgettext(static::GETTEXT_DOMAIN, $string);
+
         if ($result === $string) {
             $result = _($string);
-        }
-
-        if (func_num_args() > 1) {
-            $arguments = array_slice(func_get_args(), 1);
-            $result = vsprintf($result, $arguments);
         }
 
         return $result;
@@ -59,7 +44,7 @@ abstract class Plugin extends StudIPPlugin
      * @param String $string0 String to translate (singular)
      * @param String $string1 String to translate (plural)
      * @param mixed  $n       Quantity factor (may be an array or array-like)
-     * @return translated string
+     * @return string
      */
     public function _n($string0, $string1, $n)
     {
@@ -67,32 +52,12 @@ abstract class Plugin extends StudIPPlugin
             $n = count($n);
         }
 
-        $result = static::GETTEXT_DOMAIN === null
-                ? $string0
-                : dngettext(static::GETTEXT_DOMAIN, $string0, $string1, $n);
+        $result = dngettext(static::GETTEXT_DOMAIN, $string0, $string1, $n);
+
         if ($result === $string0 || $result === $string1) {
             $result = ngettext($string0, $string1, $n);
         }
 
-        if (func_num_args() > 3) {
-            $arguments = array_slice(func_get_args(), 3);
-            $result = vsprintf($result, $arguments);
-        }
-
         return $result;
-    }
-
-    /**
-     * Returns the plugin version from manifest.
-     *
-     * @return string version
-     */
-    public function getPluginVersion()
-    {
-        static $manifest = null;
-        if ($manifest === null) {
-            $manifest = $this->getMetadata();
-        }
-        return $manifest['version'];
     }
 }

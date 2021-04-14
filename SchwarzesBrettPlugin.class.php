@@ -42,6 +42,9 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
     {
         parent::__construct();
 
+        NotificationCenter::addObserver($this, 'onFileRefDidDelete', 'FileRefDidDelete');
+        NotificationCenter::addObserver($this, 'onUserDataDidRemove', 'UserDataDidRemove');
+
         //menu nur anzeigen, wenn eingeloggt
         if ($GLOBALS['perm']->have_perm('user')) {
             $this->buildMenu();
@@ -58,7 +61,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
             Icon::create('billboard', Icon::ROLE_NAVIGATION),
             tooltip2($this->_('Schwarzes Brett'))
         );
-        if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE  && $GLOBALS['user']->cfg->BULLETIN_BOARD_SHOW_BADGE) {
+        if (Config::get()->BULLETIN_BOARD_DISPLAY_BADGE && $GLOBALS['user']->cfg->BULLETIN_BOARD_SHOW_BADGE) {
             $nav->setBadgeNumber(Article::countNew());
         }
         Navigation::addItem('/schwarzesbrettplugin', $nav);
@@ -121,7 +124,7 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         PageLayout::setTitle($this->_('Schwarzes Brett'));
 
         $this->addStylesheet('assets/schwarzesbrett.less');
-        PageLayout::addScript($this->getPluginURL() . '/assets/schwarzesbrett.js?v=' . $this->getPluginVersion());
+        $this->addScript('assets/schwarzesbrett.js');
 
         if (StudipVersion::olderThan('4.1')) {
             PageLayout::addSqueezePackage('lightbox');

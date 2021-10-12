@@ -1,4 +1,4 @@
-<tr class="<? if (!$article->visible) echo 'hidden'; ?>  <? if ($article->watched) echo 'watched'; ?>" id="sb-article-<?= $article->id ?>" data-article-id="<?= htmlReady($article->id) ?>">
+<tr class="<? if (!$article->visible) echo 'article-hidden'; ?>  <? if ($article->watched) echo 'watched'; ?>" id="sb-article-<?= $article->id ?>" data-article-id="<?= htmlReady($article->id) ?>">
 <? if (!empty($checkbox)): ?>
     <td>
         <input type="checkbox" name="ids[]" value="<?= htmlReady($article->id) ?>">

@@ -1,4 +1,7 @@
 <article class="sb-article">
+    <h2 class="hide-in-dialog">
+        <?= htmlReady($article->titel) ?>
+    </h2>
     <section>
         <div class="sb-content">
         <? if ($article->category->terms && $article->category->display_terms_in_article): ?>

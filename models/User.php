@@ -40,13 +40,13 @@ class User extends GlobalUser
         return new self($id ?: $GLOBALS['user']->id);
     }
 
-    public function isBlackListed()
+    public function isBlackListed(): bool
     {
         $query = "SELECT 1 FROM sb_blacklist WHERE user_id = :id";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':id', $this->id);
         $statement->execute();
-        return (bool)$statement->fetchColumn();
+        return (bool) $statement->fetchColumn();
     }
 
     public function mayPostTo($category)

@@ -45,8 +45,8 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
         NotificationCenter::addObserver($this, 'onFileRefDidDelete', 'FileRefDidDelete');
         NotificationCenter::addObserver($this, 'onUserDataDidRemove', 'UserDataDidRemove');
 
-        //menu nur anzeigen, wenn eingeloggt
-        if ($GLOBALS['perm']->have_perm('user')) {
+        //menu nur anzeigen, wenn eingeloggt und nicht in einer gesperrten Domain
+        if ($GLOBALS['perm']->have_perm('user') && !SchwarzesBrett\DomainBlacklist::isUserBlacklisted(User::findCurrent())) {
             $this->buildMenu();
         }
 
@@ -94,6 +94,9 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
 
             $nav = new Navigation($this->_('Benutzer-Blacklist'), $this->url_for('admin/blacklist'));
             Navigation::addItem('/schwarzesbrettplugin/root/blacklist', $nav);
+
+            $nav = new Navigation($this->_('Nutzerdomänen-Blacklist'), $this->url_for('admin/domain_blacklist'));
+            Navigation::addItem('/schwarzesbrettplugin/root/domain_blacklist', $nav);
 
             $nav = new Navigation($this->_('Doppelte Einträge suchen'), $this->url_for('admin/duplicates'));
             Navigation::addItem('/schwarzesbrettplugin/root/duplicates', $nav);

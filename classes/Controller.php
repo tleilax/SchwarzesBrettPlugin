@@ -100,7 +100,7 @@ class Controller extends StudipController
         $this->is_admin = is_object($GLOBALS['perm']) && $GLOBALS['perm']->have_perm('root');
 
         // Setup sidebar
-        $this->setup_sidebar(get_class($this), $action, $args);
+        $this->setup_sidebar(static::class, $action, $args);
     }
 
     public function redirect($to)
@@ -159,67 +159,68 @@ class Controller extends StudipController
             PageLayout::postInfo('object id');
         }
 
-        $search = new SearchWidget($this->url_for('search'));
-        $search->addNeedle($this->_('Suchbegriff'), 'needle', true);
-        if ($category_id) {
-            $search->addFilter($this->_('Nur in dieser Kategorie'), "restrict[{$category_id}]");
-        }
-        Sidebar::get()->addWidget($search);
+        if (substr($class, 0, 5) !== 'Admin') {
+            $search = new SearchWidget($this->url_for('search'));
+            $search->addNeedle($this->_('Suchbegriff'), 'needle', true);
+            if ($category_id) {
+                $search->addFilter($this->_('Nur in dieser Kategorie'), "restrict[{$category_id}]");
+            }
+            Sidebar::get()->addWidget($search);
 
-        $actions = new ActionsWidget();
-        if ($category_id && count(Category::find($category_id)->new_articles) > 0) {
-            $actions->addLink(
-                $this->_('Dieses Thema als besucht markieren'),
-                $this->url_for("category/visit/{$category_id}"),
-                Icon::create('check-circle.svg')
-            )->asDialog();
-        }
-        if (!$category_id /* TODO || $newArticles*/) {
-            $actions->addLink(
-                $this->_('Alle Themen als besucht markieren'),
-                $this->url_for('category/visit'),
-                Icon::create('accept')
-            )->asDialog();
-        }
-        if (!User::get()->isBlacklisted() && User::get()->mayPostTo($category_id)) {
-            //wenn auf der blacklist, darf man keine artikel mehr erstellen
-            $actions->addLink(
-                $this->_('Neue Anzeige erstellen'),
-                $this->url_for('article/create/' . ($category_id ?: '')),
-                Icon::create('billboard+add')
-            )->asDialog();
-        }
-        if ($this->is_admin) {
-            $actions->addLink(
-                $this->_('Neues Thema anlegen'),
-                $this->url_for('category/create'),
-                Icon::create('folder-empty+add')
-            )->asDialog();
-        }
-        if ($category_id && $this->is_admin) {
-            $actions->addLink(
-                $this->_('Dieses Thema bearbeiten'),
-                $this->url_for("category/edit/{$category_id}"),
-                Icon::create('edit')
-            )->asDialog();
-            $actions->addLink(
-                $this->_('Dieses Thema löschen'),
-                $this->url_for("category/delete/{$category_id}"),
-                Icon::create('trash'),
-                ['data-confirm' => $this->_('Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen löschen?')]
-            );
-        }
+            $actions = new ActionsWidget();
+            if ($category_id && count(Category::find($category_id)->new_articles) > 0) {
+                $actions->addLink(
+                    $this->_('Dieses Thema als besucht markieren'),
+                    $this->url_for("category/visit/{$category_id}"),
+                    Icon::create('check-circle.svg')
+                )->asDialog();
+            }
+            if (!$category_id /* TODO || $newArticles*/) {
+                $actions->addLink(
+                    $this->_('Alle Themen als besucht markieren'),
+                    $this->url_for('category/visit'),
+                    Icon::create('accept')
+                )->asDialog();
+            }
+            if (!User::get()->isBlacklisted() && User::get()->mayPostTo($category_id)) {
+                //wenn auf der blacklist, darf man keine artikel mehr erstellen
+                $actions->addLink(
+                    $this->_('Neue Anzeige erstellen'),
+                    $this->url_for('article/create/' . ($category_id ?: '')),
+                    Icon::create('billboard+add')
+                )->asDialog();
+            }
+            if ($this->is_admin) {
+                $actions->addLink(
+                    $this->_('Neues Thema anlegen'),
+                    $this->url_for('category/create'),
+                    Icon::create('folder-empty+add')
+                )->asDialog();
+            }
+            if ($category_id && $this->is_admin) {
+                $actions->addLink(
+                    $this->_('Dieses Thema bearbeiten'),
+                    $this->url_for("category/edit/{$category_id}"),
+                    Icon::create('edit')
+                )->asDialog();
+                $actions->addLink(
+                    $this->_('Dieses Thema löschen'),
+                    $this->url_for("category/delete/{$category_id}"),
+                    Icon::create('trash'),
+                    ['data-confirm' => $this->_('Wollen Sie dieses Thema wirklich inklusive aller darin enthaltener Anzeigen löschen?')]
+                );
+            }
+            Sidebar::get()->addWidget($actions);
 
-        Sidebar::get()->addWidget($actions);
-
-        if ($this->rss_enabled) {
-            $export = new ExportWidget();
-            $export->addLink(
-                $category_id ? $this->_('RSS-Feed dieser Kategorie') : $this->_('RSS-Feed'),
-                $this->url_for("rss/{$category_id}"),
-                Icon::create('rss')
-            );
-            Sidebar::get()->addWidget($export);
+            if ($this->rss_enabled) {
+                $export = new ExportWidget();
+                $export->addLink(
+                    $category_id ? $this->_('RSS-Feed dieser Kategorie') : $this->_('RSS-Feed'),
+                    $this->url_for("rss/{$category_id}"),
+                    Icon::create('rss')
+                );
+                Sidebar::get()->addWidget($export);
+            }
         }
 
         if ($category_id) {

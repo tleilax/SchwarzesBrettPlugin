@@ -215,6 +215,11 @@ class SchwarzesBrettPlugin extends Plugin implements SystemPlugin, HomepagePlugi
             return null;
         }
 
+        $user = User::find($user_id);
+        if (SchwarzesBrett\DomainBlacklist::isUserBlacklisted($user)) {
+            return null;
+        }
+
         $this->addStylesheet('assets/schwarzesbrett.less');
 
         $own_profile = $user_id === $GLOBALS['user']->id;

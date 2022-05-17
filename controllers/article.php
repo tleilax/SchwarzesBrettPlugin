@@ -59,11 +59,15 @@ class ArticleController extends SchwarzesBrett\Controller
                 return $article->visible;
             });
         }
-        $this->categories = Article::groupByCategory($this->user->articles);
+        $this->categories = Article::groupByCategory($articles);
     }
 
     public function create_action($category_id = null)
     {
+        if (User::Get()->isBlackListed()) {
+            throw new AccessDeniedException();
+        }
+
         PageLayout::setTitle($this->_('Anzeige erstellen'));
 
         $this->article           = new Article();
@@ -75,6 +79,10 @@ class ArticleController extends SchwarzesBrett\Controller
 
     public function edit_action($id = null)
     {
+        if (User::Get()->isBlackListed()) {
+            throw new AccessDeniedException();
+        }
+
         PageLayout::setTitle($this->_('Anzeige bearbeiten'));
 
         $this->id         = $id;
@@ -88,6 +96,10 @@ class ArticleController extends SchwarzesBrett\Controller
 
     public function store_action(Article $article = null)
     {
+        if (User::Get()->isBlackListed()) {
+            throw new AccessDeniedException();
+        }
+
         if (!$article->mayEdit()) {
             throw new AccessDeniedException($this->_('Sie dürfen diese Anzeige nicht bearbeiten.'));
         }
@@ -176,7 +188,7 @@ class ArticleController extends SchwarzesBrett\Controller
                         } else {
                             $errors[] = sprintf(
                                 $this->_('Datei %s konnte nicht erstellt werden'),
-                                $file['name']
+                                $image['name']
                             );
                         }
 

@@ -2,6 +2,6 @@ pluginname=SchwarzesBrettPlugin
 pluginclassname=SchwarzesBrettPlugin
 pluginclassname=SchwarzesBrettWidget
 origin=UOL
-version=4.6
+version=4.6.1
 description=Globales Schwarzes Brett für Kleinanzeigen mit Kategorien (Gesuche/Angebote)
 studipMinVersion=4.5

@@ -1,6 +1,8 @@
 <?php
 final class Admin_DomainBlacklistController extends SchwarzesBrett\Controller
 {
+    protected $_autobind = true;
+
     public function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
@@ -37,9 +39,15 @@ final class Admin_DomainBlacklistController extends SchwarzesBrett\Controller
     {
         CSRFProtection::verifyUnsafeRequest();
 
+        $restriction = Request::option('restriction', SchwarzesBrett\DomainBlacklist::RESTRICTION_USAGE);
+        if (!in_array($restriction, [SchwarzesBrett\DomainBlacklist::RESTRICTION_USAGE, SchwarzesBrett\DomainBlacklist::RESTRICTION_COMPLETE])) {
+            $restriction = SchwarzesBrett\DomainBlacklist::RESTRICTION_COMPLETE;
+        }
+
         $added = 0;
         foreach (Request::getArray('domain_ids') as $id) {
             $blacklist = new SchwarzesBrett\DomainBlacklist($id);
+            $blacklist->restriction = $restriction;
             $added += $blacklist->store();
         }
 
@@ -52,6 +60,18 @@ final class Admin_DomainBlacklistController extends SchwarzesBrett\Controller
                      );
             PageLayout::postSuccess($message);
         }
+
+        $this->redirect($this->indexURL());
+    }
+
+    public function toggle_action(SchwarzesBrett\DomainBlacklist $domain)
+    {
+        if ($domain->restriction === SchwarzesBrett\DomainBlacklist::RESTRICTION_COMPLETE) {
+            $domain->restriction = SchwarzesBrett\DomainBlacklist::RESTRICTION_USAGE;
+        } else {
+            $domain->restriction = SchwarzesBrett\DomainBlacklist::RESTRICTION_COMPLETE;
+        }
+        $domain->store();
 
         $this->redirect($this->indexURL());
     }

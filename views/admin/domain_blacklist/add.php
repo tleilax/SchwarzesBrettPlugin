@@ -23,6 +23,12 @@
             <? endforeach; ?>
             </select>
         </label>
+
+        <label>
+            <input type="checkbox" name="restriction" value="complete">
+            <?= $_('Zugriff komplett verbieten') ?>
+            <?= tooltipIcon($_('Soll der Zugriff komplett verboten werden, so muss diese Option aktiviert werden. Ansonsten wird lediglich das Erstellen von Anzeigen untersagt.')) ?>
+        </label>
     </fieldset>
 
     <footer data-dialog-button>

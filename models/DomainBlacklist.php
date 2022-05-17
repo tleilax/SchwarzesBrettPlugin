@@ -1,8 +1,17 @@
 <?php
 namespace SchwarzesBrett;
 
+/**
+ * @property string $id
+ * @property string $userdomain_id
+ * @property string $restriction
+ * @property int    $mkdate
+ */
 final class DomainBlacklist extends \SimpleORMap
 {
+    const RESTRICTION_COMPLETE = 'complete';
+    const RESTRICTION_USAGE = 'usage';
+
     protected static function configure($config = [])
     {
         $config['db_table'] = 'sb_domain_blacklist';
@@ -25,7 +34,7 @@ final class DomainBlacklist extends \SimpleORMap
         parent::configure($config);
     }
 
-    public static function isUserBlacklisted(?\User $user): bool
+    public static function isUserBlacklisted(?\User $user, string $restriction = self::RESTRICTION_COMPLETE): bool
     {
         if ($user === null) {
             return true;
@@ -41,13 +50,25 @@ final class DomainBlacklist extends \SimpleORMap
             return false;
         }
 
+        $matched = false;
         foreach ($blacklisted_domains as $domain) {
             $userdomain = $user->domains->findOneBy('id', $domain->id);
-            if ($userdomain && $userdomain->restricted_access) {
-                return true;
+            if (!$userdomain) {
+                continue;
             }
+
+            if (!$userdomain->restricted_access) {
+                return false;
+            }
+
+            if ($domain->restriction === self::RESTRICTION_COMPLETE) {
+                $matched = true;
+            } else {
+                $matched = $domain->restriction === $restriction;
+            }
+
         }
 
-        return false;
+        return $matched;
     }
 }

@@ -21,10 +21,9 @@ class CategoryController extends SchwarzesBrett\Controller
 
         parent::before_filter($action, $args);
 
-        if (User::Get()->isBlacklisted()) {
-            PageLayout::postInfo(
-                $this->_('Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.')
-            );
+        if (User::Get()->isBlacklisted(true)) {
+            $info = MessageBox::info($this->_('Sie wurden gesperrt und können daher keine Anzeigen erstellen. Bitte wenden Sie sich an den Systemadministrator.'));
+            PageLayout::postMessage($info, 'sb-restricted-access');
         }
     }
 

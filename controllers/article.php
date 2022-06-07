@@ -53,9 +53,9 @@ class ArticleController extends SchwarzesBrett\Controller
             $this->user->getFullname()
         ));
 
-        $articles = $this->user->articles->toArray();
+        $articles = $this->user->articles;
         if ($this->user->id !== $GLOBALS['user']->id && !$this->is_admin) {
-            $articles = array_filter($articles, function ($article) {
+            $articles = $articles->filter(function ($article) {
                 return $article->visible;
             });
         }

@@ -23,16 +23,16 @@ class Article extends SimpleORMap
     {
         $config['db_table'] = 'sb_artikel';
         $config['has_many']['visits'] = [
-            'class_name'        => 'SchwarzesBrett\\Visit',
+            'class_name'        => Visit::class,
             'assoc_foreign_key' => 'object_id',
             'on_delete'         => 'delete',
         ];
         $config['belongs_to']['category'] = [
-            'class_name'  => 'SchwarzesBrett\\Category',
+            'class_name'  => Category::class,
             'foreign_key' => 'thema_id',
         ];
         $config['belongs_to']['user'] = [
-            'class_name'  => 'SchwarzesBrett\\User',
+            'class_name'  => User::class,
             'foreign_key' => 'user_id',
         ];
 

@@ -4,7 +4,7 @@
 
 <table class="default">
     <caption class="hide-in-dialog">
-        <?= sprintf($_('Alle Anzeigen von %s'), $user->getFullname()) ?>
+        <?= sprintf($_('Alle Anzeigen von %s'), htmlReady($user->getFullname())) ?>
     </caption>
 <? foreach ($categories as $id => $category): ?>
     <tbody class="sb-articles">

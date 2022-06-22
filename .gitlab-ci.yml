@@ -1,0 +1,8 @@
+stages:
+  - linting
+
+lint:
+  stage: linting
+  image: overtrue/phplint:8.0
+  script:
+    - /root/.composer/vendor/bin/phplint ./

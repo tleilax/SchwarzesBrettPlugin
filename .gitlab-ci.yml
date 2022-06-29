@@ -1,0 +1,40 @@
+image: composer:latest
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+stages:
+  - linting
+  - packaging
+
+lint:
+  stage: linting
+  allow_failure: false
+  cache:
+    - key:
+        files:
+          - composer.lock
+      paths:
+        - vendor
+  before_script:
+    - composer install
+  script:
+    - ./vendor/bin/phplint
+
+packaging:
+  stage: packaging
+  needs: [lint]
+  rules:
+    - if: $CI_COMMIT_TAG
+  before_script:
+    - echo GE_JOB_ID=$CI_JOB_ID >> .packaging.env
+    - mkdir .pkg
+  script:
+      - zip -9r .pkg/schwarzes-brett-$CI_COMMIT_TAG.zip * -x 'vendor/*'
+  artifacts:
+    untracked: true
+    name: Schwarzes Brett v$CI_COMMIT_TAG
+    paths:
+      - .pkg/schwarzes-brett-$CI_COMMIT_TAG.zip
+    reports:
+      dotenv: .packaging.env

@@ -1,0 +1,13 @@
+{
+    "name": "tleilax/schwarzes-brett-plugin",
+    "license": "GPL2",
+    "authors": [
+        {
+            "name": "Jan-Hendrik Willms",
+            "email": "tleilax+github@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "overtrue/phplint": "^3.1"
+    }
+}

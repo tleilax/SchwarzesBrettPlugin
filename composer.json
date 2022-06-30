@@ -9,5 +9,8 @@
     ],
     "require-dev": {
         "overtrue/phplint": "^3.1"
+    },
+    "require": {
+        "ext-pdo": "*"
     }
 }

@@ -39,14 +39,21 @@ class CategoryController extends SchwarzesBrett\Controller
 
         $this->categories = $this->is_admin
                           ? Category::findBySQL('1 ORDER BY titel ASC')
-                          : Category::findByVisible(1, 'ORDER BY titel ASC');
-        $this->newest = Article::findNewest($this->newest_limit);
+                          : Category::findVisible();
+        $this->newest = Article::findNewest(
+            $this->newest_limit,
+            array_column($this->categories, 'id')
+        );
 
         $this->inject_rss();
     }
 
     public function view_action(SchwarzesBrett\Category $category)
     {
+        if (!$category->isAccessibleByUser()) {
+            throw new AccessDeniedException($this->_('Sie dürfen dieses Thema nicht betrachten.'));
+        }
+
         Navigation::activateItem('/schwarzesbrettplugin/show/all');
 
         $this->inject_rss($category->id);
@@ -115,13 +122,17 @@ class CategoryController extends SchwarzesBrett\Controller
                 throw new AccessDeniedException($this->_('Sie dürfen dieses Thema nicht bearbeiten.'));
             }
 
-            $category->titel        = Request::i18n('titel');
-            $category->beschreibung = Request::i18n('beschreibung');
-            $category->perm         = Request::option('thema_perm');
-            $category->visible      = Request::bool('visible', false);
-            $category->publishable  = Request::bool('publishable', false);
-            $category->terms        = Request::i18n('terms');
-            $category->disclaimer   = Request::i18n('disclaimer');
+            $permissions = Request::optionArray('permissions');
+
+            $category->titel           = Request::i18n('titel');
+            $category->beschreibung    = Request::i18n('beschreibung');
+            $category->perm_create     = $permissions['create'] ?: 'autor';
+            $category->perm_access_min = $permissions['access_min'] ?: null;
+            $category->perm_access_max = $permissions['access_max'] ?: null;
+            $category->visible         = Request::bool('visible', false);
+            $category->publishable     = Request::bool('publishable', false);
+            $category->terms           = Request::i18n('terms');
+            $category->disclaimer      = Request::i18n('disclaimer');
             $category->display_terms_in_article = Request::bool('display_terms_in_article');
             $category->store();
 

@@ -13,6 +13,29 @@ use StudipCacheFactory;
 use StudipFormat;
 use StudipLog;
 
+/**
+ * @property string $id
+ * @property string $artikel_id
+ * @property string $thema_id
+ * @property string $user_id
+ * @property string $titel
+ * @property string $beschreibung
+ * @property int $mkdate
+ * @property int $chdate
+ * @property int $duration
+ * @property int $expires
+ * @property bool $visible
+ * @property bool $publishable
+ *
+ * @property Visit[]|SimpleORMapCollection $visits
+ * @property Category $category
+ * @property User $user
+ * @property ArticleImage[]|SimpleORMapCollection $images
+ *
+ * @property-read int $views
+ * @property-read bool $new
+ * @property-read bool $watched
+ */
 class Article extends SimpleORMap
 {
     use SORMAllowAccessTrait;
@@ -44,7 +67,7 @@ class Article extends SimpleORMap
                 $statement = DBManager::get()->prepare($query);
                 $statement->bindValue(':id', $object->id);
                 $statement->execute();
-                return $statement->fetchColumn() ?: 0;
+                return 0 + $statement->fetchColumn();
             }
         ];
         $config['additional_fields']['new'] = [
@@ -192,6 +215,7 @@ class Article extends SimpleORMap
                     AND a.thema_id = :category_id
                     AND a.visible = 1
                     AND a.mkdate > :last_visit
+                    AND a.expires > UNIX_TIMESTAMP()
                   ORDER BY mkdate DESC";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':user_id', $GLOBALS['user']->id);
@@ -237,7 +261,9 @@ class Article extends SimpleORMap
                     AND a.visible = 1
                     AND t.visible = 1
                     AND a.publishable = 1
-                    AND t.publishable = 1";
+                    AND t.publishable = 1
+                    AND t.perm_access_min IS NULL
+                    AND t.perm_access_max IS NULL";
         $statement = DBManager::get()->prepare($query);
         $statement->bindValue(':category_id', $category_id);
         $statement->bindValue(':expire', Config::get()->BULLETIN_BOARD_DURATION * 24 * 60 * 60);

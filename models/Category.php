@@ -1,42 +1,60 @@
 <?php
 namespace SchwarzesBrett;
 
+use AccessDeniedException;
 use DBManager;
 use SimpleORMap;
 use StudipLog;
 
+/**
+ * @property string $id
+ * @property string $thema_id
+ * @property \I18NString $titel
+ * @property int $mkdate
+ * @property \I18NString $beschreibung
+ * @property string $perm_create
+ * @property string $perm_access_min
+ * @property string $perm_access_max
+ * @property bool $visible
+ * @property bool $publishable
+ * @property \I18NString $terms
+ * @property bool $display_terms_in_article
+ * @property \I18NString $disclaimer
+ *
+ * @property-read int $new
+ */
 class Category extends SimpleORMap
 {
     public static function configure($config = [])
     {
         $config['db_table'] = 'sb_themen';
         $config['has_many']['articles'] = [
-            'class_name'        => 'SchwarzesBrett\\Article',
+            'class_name'        => Article::class,
             'assoc_func'        => 'findValidByCategoryId',
             'assoc_foreign_key' => 'thema_id',
             'on_delete' => 'delete',
         ];
         $config['has_many']['visible_articles'] = [
-            'class_name'        => 'SchwarzesBrett\\Article',
+            'class_name'        => Article::class,
             'assoc_func'        => 'findVisibleByCategoryId',
             'assoc_foreign_key' => 'thema_id',
         ];
         $config['has_many']['new_articles'] = [
-            'class_name'        => 'SchwarzesBrett\\Article',
+            'class_name'        => Article::class,
             'assoc_func'        => 'findNewByCategoryId',
             'assoc_foreign_key' => 'thema_id',
         ];
         $config['additional_fields']['new'] = [
-            'get' => function ($object) {
-                return count($object->new_articles) > 0;
+            'get' => function (Category $category) {
+                return count($category->new_articles) > 0;
             }
         ];
 
         $config['registered_callbacks']['after_create'][] = function (Category $category) {
-            StudipLog::SB_CATEGORY_CREATED(null, null, $category->titel);
+            StudipLog::SB_CATEGORY_CREATED(null, null, (string) $category->titel);
         };
         $config['registered_callbacks']['after_delete'][] = function (Category $category) {
-            StudipLog::SB_CATEGORY_DELETED(null, null, $category->titel);
+            StudipLog::SB_CATEGORY_DELETED(null, null, (string) $category->titel);
         };
 
         $config['registered_callbacks']['before_store'][] = 'checkUserRights';
@@ -63,10 +81,31 @@ class Category extends SimpleORMap
         $statement->execute();
     }
 
+    public static function findVisible(string $order = 'ORDER BY titel ASC'): array
+    {
+        $categories = self::findBySQL("visible = 1 {$order}");
+        $categories = array_filter($categories, function (Category $category) {
+            return $category->isAccessibleByUser();
+        });
+        return $categories;
+    }
+
     public function mayEdit($user_or_id = null)
     {
         return is_object($GLOBALS['perm'])
             && $GLOBALS['perm']->have_perm('root');
+    }
+
+    public function isAccessibleByUser(User $user = null): bool
+    {
+        $user = $user ?? User::findCurrent();
+
+        if ($user->perms === 'root') {
+            return true;
+        }
+
+        return (!$this->perm_access_min || $GLOBALS['perm']->have_perm($this->perm_access_min, $user->id))
+            && (!$this->perm_access_max || !$GLOBALS['perm']->have_perm($this->perm_access_max, $user->id));
     }
 
     public function checkUserRights()

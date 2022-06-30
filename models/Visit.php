@@ -4,6 +4,13 @@ namespace SchwarzesBrett;
 use DBManager;
 use SimpleORMAP;
 
+/**
+ * @property array $id
+ * @property string $object_id
+ * @property string $user_id
+ * @property string $type
+ * @property int $last_visitdate
+ */
 class Visit extends SimpleORMAP
 {
     public static function configure($config = [])

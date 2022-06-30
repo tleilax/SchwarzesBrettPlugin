@@ -5,6 +5,19 @@ use DBManager;
 use PDO;
 use SimpleORMap;
 
+/**
+ * @property array $id
+ * @property string $image_id
+ * @property string $artikel_id
+ * @property int $position
+ * @property int $mkdate
+ * @property int $chdate
+ *
+ * @property Article $article
+ * @property \FileRef $image
+ *
+ * @property Thumbnail $thumbnail
+ */
 class ArticleImage extends SimpleORMap
 {
     protected static function configure($config = [])
@@ -12,11 +25,11 @@ class ArticleImage extends SimpleORMap
         $config['db_table'] = 'sb_artikel_images';
 
         $config['belongs_to']['article'] = [
-            'class_name'  => 'SchwarzesBrett\\Article',
+            'class_name'  => Article::class,
             'foreign_key' => 'artikel_id',
         ];
         $config['belongs_to']['image'] = [
-            'class_name'        => 'FileRef',
+            'class_name'        => \FileRef::class,
             'assoc_foreign_key' => 'id',
         ];
 

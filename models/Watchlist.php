@@ -5,6 +5,15 @@ use DBManager;
 use PDO;
 use SimpleORMap;
 
+/**
+ * @property array $id
+ * @property string $user_id
+ * @property string $artikel_id
+ * @property int $mkdate
+ *
+ * @property User $user
+ * @property Article $article
+ */
 class Watchlist extends SimpleORMap
 {
     use SORMAllowAccessTrait;
@@ -14,12 +23,12 @@ class Watchlist extends SimpleORMap
         $config['db_table'] = 'sb_watchlist';
 
         $config['has_one']['user'] = [
-            'class_name'  => 'SchwarzesBrett\\User',
+            'class_name'  => User::class,
             'foreign_key' => 'user_id',
         ];
 
         $config['has_one']['article'] = [
-            'class_name'  => 'SchwarzesBrett\\Article',
+            'class_name'  => Article::class,
             'foreign_key' => 'artikel_id',
         ];
 
@@ -44,7 +53,7 @@ class Watchlist extends SimpleORMap
     public function checkUserRights()
     {
         if (self::$allow_access) {
-            return;
+            return true;
         }
 
         if ($this->user_id === $GLOBALS['user']->id) {

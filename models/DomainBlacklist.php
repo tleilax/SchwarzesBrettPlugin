@@ -6,6 +6,9 @@ namespace SchwarzesBrett;
  * @property string $userdomain_id
  * @property string $restriction
  * @property int    $mkdate
+ *
+ * @property \UserDomain $domain
+ * @property string $name
  */
 final class DomainBlacklist extends \SimpleORMap
 {
@@ -26,7 +29,7 @@ final class DomainBlacklist extends \SimpleORMap
         $config['additional_fields'] = [
             'name' => [
                 'get' => function (DomainBlacklist $domain) {
-                    return $domain->domain->name;
+                    return (string) $domain->domain->name;
                 },
             ],
         ];

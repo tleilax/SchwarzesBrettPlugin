@@ -22,20 +22,6 @@
         </label>
 
         <label>
-            <?= $_('Berechtigung') ?>
-            <?= tooltipIcon($_('Diese Berechtigung bezieht sich auf die Benutzer, die einen Artikel erstellen dürfen.') . ' ' .
-                                $_('Betrachten können alle Benutzer!')) ?>
-
-            <select name="thema_perm" id="perm">
-            <? foreach (['autor', 'tutor', 'dozent', 'admin', 'root'] as $perm): ?>
-                <option <? if ($category->perm === $perm) echo 'selected';?>>
-                    <?= htmlReady($perm) ?>
-                </option>
-            <? endforeach; ?>
-            </select>
-        </label>
-
-        <label>
             <?= $_('Kurzhinweis') ?>
             <?= tooltipIcon($_('Der Kurzhinweis wird angezeigt, wenn beim Erstellen einer Anzeige diese Kategorie ausgewählt wird.')) ?>
 
@@ -80,12 +66,66 @@
         </label>
     <? endif; ?>
 
-        <div data-dialog-button>
-            <?= Studip\Button::createAccept($_('Speichern')) ?>
-            <?= Studip\LinkButton::createCancel(
-                $_('Abbrechen'),
-                $controller->viewURL($category)
-            ) ?>
-        </div>
     </fieldset>
+
+    <fieldset>
+        <legend><?= $_('Berechtigungen') ?></legend>
+
+        <label>
+            <?= $_('Thema betrachten ab Berechtigung') ?>
+            <?= tooltipIcon(implode(' ', [
+                $_('Diese Berechtigung bezieht sich auf die Personen, die dieses Thema sehen dürfen.'),
+                $_('Eine Person muss mindestens diese Berechtigung haben, um das Thema sehen zu können.'),
+                $_('Wird kein Wert angegeben, gibt es keine Anforderung.'),
+            ])) ?>
+
+            <select name="permissions[access_min]">
+                <option value="">- <?= $_('Keine Angabe') ?> -</option>
+            <? foreach (['autor', 'tutor', 'dozent', 'admin'] as $perm): ?>
+                <option <? if ($category->perm_access_min === $perm) echo 'selected';?>>
+                    <?= htmlReady($perm) ?>
+                </option>
+            <? endforeach; ?>
+            </select>
+        </label>
+
+        <label>
+            <?= $_('Thema nicht mehr betrachten ab Berechtigung') ?>
+            <?= tooltipIcon(implode(' ', [
+                $_('Diese Berechtigung bezieht sich auf die Personen, die dieses Thema sehen dürfen.'),
+                $_('Eine Person darf diese Berechtigung nicht haben, um das Thema sehen zu können.'),
+                $_('Wird kein Wert angegeben, gibt es keine Anforderung.'),
+            ])) ?>
+
+            <select name="permissions[access_max]">
+                <option value="">- <?= $_('Keine Angabe') ?> -</option>
+            <? foreach (['autor', 'tutor', 'dozent', 'admin'] as $perm): ?>
+                <option <? if ($category->perm_access_max === $perm) echo 'selected';?>>
+                    <?= htmlReady($perm) ?>
+                </option>
+            <? endforeach; ?>
+            </select>
+        </label>
+
+        <label>
+            <?= $_('Anzeigen erstellen') ?>
+            <?= tooltipIcon($_('Diese Berechtigung bezieht sich auf die Personen, die einen Artikel erstellen dürfen.')) ?>
+
+            <select name="permissions[create]" required>
+            <? foreach (['autor', 'tutor', 'dozent', 'admin', 'root'] as $perm): ?>
+                <option <? if ($category->perm_create === $perm) echo 'selected';?>>
+                    <?= htmlReady($perm) ?>
+                </option>
+            <? endforeach; ?>
+            </select>
+        </label>
+    </fieldset>
+
+    <footer data-dialog-button>
+        <?= Studip\Button::createAccept($_('Speichern')) ?>
+        <?= Studip\LinkButton::createCancel(
+            $_('Abbrechen'),
+            $controller->viewURL($category)
+        ) ?>
+    </footer>
 </form>
